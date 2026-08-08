@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#05020c">
+<title>InTension — Wireframe Walkthrough</title>
+<style>
+  :root{
+    --void:#05020c;
+    --plinth:#0d0618;
+    --vein:#7b2dff;
+    --vein-hot:#b06bff;
+    --filament:#e4ccff;
+    --ash:#6b5a86;
+    --edge:rgba(155,90,255,.28);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+  html,body{position:fixed;top:0;left:0;width:100%;height:100%;height:100dvh;overflow:hidden;
+    background:var(--void);color:var(--filament);
+    font-family:"Helvetica Neue",Inter,Arial,sans-serif;overscroll-behavior:none;touch-action:none;
+    -webkit-user-select:none;user-select:none;-webkit-text-size-adjust:100%}
+  #scene{display:block;position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;touch-action:none;outline:none}
+
+  /* ---------- preloader ---------- */
+  #boot{position:fixed;top:0;left:0;right:0;bottom:0;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+    background:#000;touch-action:none;
+    transition:opacity .9s ease, visibility .9s}
+  #boot.gone{opacity:0;visibility:hidden}
+  .bootwrap{position:relative;display:flex;flex-direction:column;align-items:center;
+    width:90vw;width:min(90vw,780px)}
+  #logo3d{display:block;width:100%;height:auto;
+    filter:drop-shadow(0 30px 70px rgba(88,18,196,.5))}
+  /* fallback wordmark, revealed only if the loader scene can't start */
+  .mark{display:none;font-weight:800;font-style:italic;font-size:clamp(34px,7.4vw,72px);
+    background:linear-gradient(180deg,#fff 0%,#d9bfff 38%,#8d4dff 72%,#f0e2ff 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 40px rgba(150,70,255,.55);padding:1.4em 0}
+  .mark.on{display:block}
+  .mark span{font-style:normal}
+  .bar{position:relative;margin-top:1.9em;width:54%;height:2px;background:rgba(160,110,255,.16);overflow:hidden}
+  .bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#5a1fd6,#c98bff,#fff);
+    box-shadow:0 0 14px #b06bff;transition:width .35s ease}
+  .stage{position:relative;margin-top:1.15em;font-size:10px;letter-spacing:.3em;color:#9e86c4;min-height:1em;
+    text-align:center}
+  #enter{position:relative;margin-top:1.4em;padding:.85em 2.4em;font:inherit;font-size:11px;letter-spacing:.34em;touch-action:none;
+    color:#f0e4ff;background:transparent;border:1px solid rgba(180,120,255,.55);border-radius:999px;
+    cursor:pointer;display:none}
+  #enter.on{display:block}
+
+  /* ---------- hud ---------- */
+  #hud{position:fixed;top:0;left:0;right:0;bottom:0;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity .8s .3s}
+  #hud.on{opacity:1}
+  .panel{position:absolute;font-size:10px;letter-spacing:.16em;color:#a98fd0;
+    background:rgba(10,4,22,.55);border:1px solid var(--edge);border-radius:10px;padding:9px 12px;
+    backdrop-filter:blur(6px)}
+  #stats{top:14px;left:14px;line-height:1.75}
+  #stats b{color:#e7d6ff;font-weight:600}
+  #stats .good{color:#8affc8}
+  #stats .warn{color:#ffb347}
+  #where{bottom:14px;left:50%;transform:translateX(-50%);text-align:center;letter-spacing:.34em;
+    color:#e0ccff;font-size:11px}
+  #keys{top:calc(14px + env(safe-area-inset-top));right:calc(14px + env(safe-area-inset-right));text-align:right;line-height:1.9}
+  #mapbox{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));right:calc(14px + env(safe-area-inset-right));border:1px solid var(--edge);border-radius:10px;
+    background:rgba(8,3,18,.6);padding:6px;backdrop-filter:blur(6px)}
+  #map{display:block;width:212px;height:118px}
+  .brand{position:absolute;top:50%;left:50%;width:16px;height:16px;transform:translate(-50%,-50%);
+    border:1px solid rgba(200,150,255,.35);border-radius:50%}
+  .brand::after{content:"";position:absolute;inset:6px;border-radius:50%;background:#e9d8ff;
+    box-shadow:0 0 8px #c58bff}
+
+  /* ---------- touch ---------- */
+  #touch{position:fixed;top:0;left:0;right:0;bottom:0;inset:0;z-index:30;display:none;touch-action:none}
+  #touch.on{display:block}
+  #stick{position:absolute;left:calc(20px + env(safe-area-inset-left));touch-action:none;
+    bottom:calc(24px + env(safe-area-inset-bottom));
+    width:min(38vw,150px);height:min(38vw,150px);border-radius:50%;
+    border:1px solid rgba(160,100,255,.3);background:radial-gradient(circle,rgba(90,40,180,.16),transparent 70%)}
+  #knob{position:absolute;left:50%;top:50%;width:38%;height:38%;transform:translate(-50%,-50%);
+    margin:0;border-radius:50%;
+    border:1px solid rgba(200,150,255,.55);background:rgba(120,60,220,.28);box-shadow:0 0 18px rgba(140,70,255,.45)}
+  #run{position:absolute;right:calc(22px + env(safe-area-inset-right));touch-action:none;
+    bottom:calc(36px + env(safe-area-inset-bottom));
+    width:min(22vw,86px);height:min(22vw,86px);border-radius:50%;
+    border:1px solid rgba(160,100,255,.35);background:rgba(60,25,120,.22);color:#d9c2ff;
+    font-size:10px;letter-spacing:.2em;display:flex;align-items:center;justify-content:center}
+  #run.hot{background:rgba(150,70,255,.4);box-shadow:0 0 26px rgba(150,70,255,.6);color:#fff}
+  #stats{top:calc(12px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left))}
+  #where{bottom:calc(12px + env(safe-area-inset-bottom))}
+  @media (max-width:820px){
+    #mapbox{display:none}
+    #keys{display:none}
+    #stats{font-size:9px;padding:7px 9px}
+    /* lift the location readout clear of the joystick (stick bottom + size + gap) */
+    #where{font-size:9px;letter-spacing:.2em;max-width:70vw;
+      bottom:calc(env(safe-area-inset-bottom) + 24px + min(38vw,150px) + 14px)}
+  }
+  @media (prefers-reduced-motion:reduce){.veins path{animation-duration:.01s}}
+</style>
+</head>
+<body>
+
+<canvas id="scene" tabindex="0"></canvas>
+
+<div id="hud">
+  <div class="panel" id="stats"></div>
+  <div class="panel" id="keys">
+    W A S D / ARROWS &nbsp;move<br>MOUSE&nbsp;look &nbsp;·&nbsp; SHIFT&nbsp;run<br>ESC&nbsp;release cursor
+  </div>
+  <div class="panel" id="where">FRONT DESK CONCIERGE</div>
+  <div id="mapbox"><canvas id="map" width="424" height="236"></canvas></div>
+  <div class="brand"></div>
+</div>
+
+<div id="touch">
+  <div id="stick"><div id="knob"></div></div>
+  <div id="run">RUN</div>
+</div>
+
+<div id="boot">
+  <div class="bootwrap">
+    <canvas id="logo3d"></canvas>
+    <div class="mark">In<span>T</span>ension</div>
+    <div class="bar"><i id="fill"></i></div>
+    <div class="stage" id="stage">STARTING RENDER CORE</div>
+    <button id="enter">ENTER THE SPACE</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* =====================================================================
+   InTension — wireframe walkthrough
+   Single file · three.js r128 · parallel.js-style worker pool
+   ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1. PALETTE                                                          */
+/* ------------------------------------------------------------------ */
+const C = {
+  shell:    0x6a28c8,   // outer structure
+  wall:     0x8a3dff,   // interior partitions
+  trim:     0xc98bff,   // door frames, ribs
+  fixture:  0x9d5cff,   // furniture
+  hot:      0xe6d2ff,   // highlights / filament
+  floor:    0x2e1155,   // floor grid
+  vein:     0x7a3cff,   // energy cracks
+  mat:      0x5a2be0    // yoga mats, pads
+};
+
+/* ------------------------------------------------------------------ */
+/* 2. FLOOR PLAN DATA (source image pixel space -> metres)             */
+/* ------------------------------------------------------------------ */
+const S = 0.04, OX = 760, OZ = 490;
+const wx = p => (p - OX) * S;
+const wz = p => (p - OZ) * S;
+
+const SHELL = [20, 85, 1520, 900];
+const WALL_H = 3.2, SHELL_H = 4.3;
+
+const ROOMS = [
+  { n:"MEN'S LOCKER ROOM",       r:[30,95,240,272],    d:[{s:'S',t:.72,w:2.0}], f:'locker'  },
+  { n:"STEAM ROOM",              r:[248,95,316,272],   d:[{s:'S',t:.5,w:1.3}],  f:'steam'   },
+  { n:"SAUNA",                   r:[324,95,420,272],   d:[{s:'S',t:.5,w:1.3}],  f:'sauna'   },
+  { n:"SWEDISH MASSAGE",         r:[480,95,652,310],   d:[{s:'S',t:.5,w:1.6}],  f:'massage' },
+  { n:"DEEP TISSUE MASSAGE",     r:[662,95,834,310],   d:[{s:'S',t:.5,w:1.6}],  f:'massage' },
+  { n:"TRIGGER POINT THERAPY",   r:[844,95,1016,310],  d:[{s:'S',t:.5,w:1.6}],  f:'massage' },
+  { n:"WOMEN'S LOCKER ROOM",     r:[1105,95,1292,300], d:[{s:'S',t:.28,w:2.0}], f:'locker'  },
+  { n:"STEAM ROOM",              r:[1298,95,1368,300], d:[{s:'S',t:.5,w:1.3}],  f:'steam'   },
+  { n:"SAUNA",                   r:[1374,95,1482,300], d:[{s:'S',t:.5,w:1.3}],  f:'sauna'   },
+  { n:"MINI GYM / CROSSFIT ZONE",r:[30,345,300,662],   d:[{s:'E',t:.55,w:2.6}], f:'gym'     },
+  { n:"YOGA STUDIO",             r:[1150,345,1500,700],d:[{s:'W',t:.5,w:2.6}],  f:'yoga'    },
+  { n:"SPORTS MASSAGE",          r:[30,700,252,866],   d:[{s:'E',t:.4,w:1.6}],  f:'therapy' },
+  { n:"MEETING ROOM 1",          r:[356,712,590,872],  d:[{s:'N',t:.5,w:1.8}],  f:'meeting' },
+  { n:"MEETING ROOM 2",          r:[930,712,1162,872], d:[{s:'N',t:.5,w:1.8}],  f:'meeting' },
+  { n:"PRENATAL MASSAGE",        r:[1268,700,1490,866],d:[{s:'W',t:.5,w:1.6}],  f:'therapy' }
+];
+
+// open, unwalled zones — used for the "you are here" readout + minimap tint
+const ZONES = [
+  { n:"HALLWAY",              r:[180,272,430,320]  },
+  { n:"HALLWAY",              r:[1100,300,1490,342]},
+  { n:"JUICE BAR",            r:[380,415,552,700]  },
+  { n:"LOUNGE",               r:[606,388,902,644]  },
+  { n:"GIFT SHOP",            r:[956,398,1122,644] },
+  { n:"FRONT DESK CONCIERGE", r:[622,644,890,714]  }
+];
+
+/* ------------------------------------------------------------------ */
+/* 3. LINE BUILDER — every wire in the building merges into one mesh   */
+/* ------------------------------------------------------------------ */
+/* Translucent wall surfaces — the wireframe alone makes it hard to read where
+   one room ends, so every solid wall run also gets a faint gradient film. */
+class PanelBuilder {
+  constructor(){ this.v = []; this.c = []; }
+  quad(x1,z1,x2,z2,h,B,T){
+    this.v.push(x1,0,z1, x2,0,z2, x2,h,z2);
+    this.c.push(B[0],B[1],B[2], B[0],B[1],B[2], T[0],T[1],T[2]);
+    this.v.push(x1,0,z1, x2,h,z2, x1,h,z1);
+    this.c.push(B[0],B[1],B[2], T[0],T[1],T[2], T[0],T[1],T[2]);
+  }
+  build(){
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.v,3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(this.c,3));
+    return g;
+  }
+  get count(){ return this.v.length/9; }
+}
+
+const rgb  = hex => [(hex>>16&255)/255, (hex>>8&255)/255, (hex&255)/255];
+const mixc = (a,b,t) => [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t];
+
+class LineBuilder {
+  constructor(){ this.v = []; this.c = []; }
+  seg(x1,y1,z1,x2,y2,z2,col){
+    const r=(col>>16&255)/255, g=(col>>8&255)/255, b=(col&255)/255;
+    this.v.push(x1,y1,z1,x2,y2,z2); this.c.push(r,g,b,r,g,b);
+  }
+  /* same segment, but each endpoint carries its own colour — the GPU interpolates */
+  segG(x1,y1,z1,x2,y2,z2,cA,cB){
+    this.v.push(x1,y1,z1,x2,y2,z2);
+    this.c.push(cA[0],cA[1],cA[2],cB[0],cB[1],cB[2]);
+  }
+  rect(x1,z1,x2,z2,y,col){
+    this.seg(x1,y,z1,x2,y,z1,col); this.seg(x2,y,z1,x2,y,z2,col);
+    this.seg(x2,y,z2,x1,y,z2,col); this.seg(x1,y,z2,x1,y,z1,col);
+  }
+  box(cx,cy,cz,w,h,d,col,ry=0){
+    const hw=w/2,hh=h/2,hd=d/2,co=Math.cos(ry),si=Math.sin(ry);
+    const P=[[-hw,-hh,-hd],[hw,-hh,-hd],[hw,-hh,hd],[-hw,-hh,hd],
+             [-hw,hh,-hd],[hw,hh,-hd],[hw,hh,hd],[-hw,hh,hd]]
+      .map(p=>[cx+p[0]*co-p[2]*si, cy+p[1], cz+p[0]*si+p[2]*co]);
+    const E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    for(const [a,b] of E) this.seg(P[a][0],P[a][1],P[a][2],P[b][0],P[b][1],P[b][2],col);
+  }
+  ring(cx,cy,cz,rx,rz,col,seg=24,plane='y'){
+    for(let i=0;i<seg;i++){
+      const a=i/seg*Math.PI*2,b=(i+1)/seg*Math.PI*2;
+      if(plane==='y') this.seg(cx+Math.cos(a)*rx,cy,cz+Math.sin(a)*rz,cx+Math.cos(b)*rx,cy,cz+Math.sin(b)*rz,col);
+      else this.seg(cx+Math.cos(a)*rx,cy+Math.sin(a)*rz,cz,cx+Math.cos(b)*rx,cy+Math.sin(b)*rz,cz,col);
+    }
+  }
+  grid(x1,z1,x2,z2,y,step,col){
+    for(let x=Math.ceil(x1/step)*step;x<=x2;x+=step) this.seg(x,y,z1,x,y,z2,col);
+    for(let z=Math.ceil(z1/step)*step;z<=z2;z+=step) this.seg(x1,y,z,x2,y,z,col);
+  }
+  build(){
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(this.v,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(this.c,3));
+    return g;
+  }
+  get count(){ return this.v.length/6; }
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. PARALLEL POOL — parallel.js-compatible surface over a live pool  */
+/* ------------------------------------------------------------------ */
+const WORKER_SRC = `
+let ID=0,OFF=0,N=0,pos=null,vel=null,B=null,seed=1;
+function rnd(){ seed=(seed*1664525+1013904223)>>>0; return seed/4294967296; }
+function vein(x,z,ang,len,depth,out,B){
+  let steps=Math.max(2,Math.floor(len/0.55));
+  for(let i=0;i<steps;i++){
+    const nx=x+Math.cos(ang)*0.55, nz=z+Math.sin(ang)*0.55;
+    if(nx<B.x0||nx>B.x1||nz<B.z0||nz>B.z1) return;
+    out.push(x,0.012,z,nx,0.012,nz);
+    x=nx; z=nz; ang+=(rnd()-0.5)*0.85;
+    if(depth>0&&rnd()<0.07) vein(x,z,ang+(rnd()-0.5)*1.9,len*0.42,depth-1,out,B);
+  }
+}
+self.onmessage=function(e){
+  const m=e.data;
+  if(m.job==='init'){
+    ID=m.id; OFF=m.offset; N=m.count; B=m.bounds; seed=(m.seed>>>0)||1;
+    pos=new Float32Array(N*3); vel=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos[i*3]=B.x0+rnd()*(B.x1-B.x0);
+      pos[i*3+1]=0.05+rnd()*3.8;
+      pos[i*3+2]=B.z0+rnd()*(B.z1-B.z0);
+      vel[i*3]=(rnd()-0.5)*0.3; vel[i*3+1]=0.05+rnd()*0.26; vel[i*3+2]=(rnd()-0.5)*0.3;
+    }
+    self.postMessage({job:'ready',id:ID});
+  }
+  else if(m.job==='step'){
+    if(!pos){ self.postMessage({job:'idle',id:ID}); return; }
+    const dt=Math.min(m.dt,0.05), t=m.t;
+    for(let i=0;i<N;i++){
+      const k=i*3;
+      const x=pos[k],y=pos[k+1],z=pos[k+2];
+      vel[k]  +=Math.sin(y*1.7+t*0.7+i*0.013)*dt*0.4;
+      vel[k+2]+=Math.cos(x*1.3+t*0.5+i*0.017)*dt*0.4;
+      vel[k]*=0.985; vel[k+2]*=0.985;
+      let nx=x+vel[k]*dt, ny=y+vel[k+1]*dt, nz=z+vel[k+2]*dt;
+      if(ny>4.0){ ny=0.03; nx=B.x0+rnd()*(B.x1-B.x0); nz=B.z0+rnd()*(B.z1-B.z0); }
+      if(nx<B.x0) nx=B.x1; else if(nx>B.x1) nx=B.x0;
+      if(nz<B.z0) nz=B.z1; else if(nz>B.z1) nz=B.z0;
+      pos[k]=nx; pos[k+1]=ny; pos[k+2]=nz;
+    }
+    const out=pos.slice();
+    self.postMessage({job:'step',id:ID,offset:OFF,count:N,buf:out.buffer},[out.buffer]);
+  }
+  else if(m.job==='veins'){
+    seed=(m.seed>>>0)||7; const out=[];
+    for(let i=0;i<m.seeds;i++){
+      const x=m.region.x0+rnd()*(m.region.x1-m.region.x0);
+      const z=m.region.z0+rnd()*(m.region.z1-m.region.z0);
+      vein(x,z,rnd()*Math.PI*2,7+rnd()*13,2,out,m.bounds);
+    }
+    const buf=Float32Array.from(out);
+    self.postMessage({job:'veins',id:ID,tag:m.tag,buf:buf.buffer},[buf.buffer]);
+  }
+  else if(m.job==='map'){
+    const fn=new Function('return '+m.fn)();
+    const res=m.items.map(fn);
+    self.postMessage({job:'map',id:ID,tag:m.tag,res:res});
+  }
+  else if(m.job==='bench'){
+    const t0=Date.now(); let s=0;
+    for(let i=1;i<m.n;i++) s+=Math.sqrt(i)*Math.sin(i*0.001);
+    self.postMessage({job:'bench',id:ID,tag:m.tag,ms:Date.now()-t0,v:s});
+  }
+};`;
+
+/* Sandboxed frames (and some CSPs) block blob: workers. LocalWorker runs the exact
+   same job source on the main thread behind an identical postMessage surface, so the
+   scene still builds — just with a smaller particle budget. */
+class LocalWorker {
+  constructor(src){
+    this.onmessage = null;
+    this.onerror = null;
+    const host = { onmessage: null, postMessage: m => {
+      if(this.onmessage) setTimeout(() => this.onmessage({data:m}), 0);
+    }};
+    new Function('self', src)(host);
+    this._host = host;
+  }
+  postMessage(m){ setTimeout(() => { try { this._host.onmessage({data:m}); } catch(e){ console.warn(e); } }, 0); }
+  terminate(){ this._host.onmessage = null; }
+}
+
+class Pool {
+  constructor(){
+    this.mode = 'worker';
+    try { this.url = URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'})); }
+    catch(e){ this.url = null; this.mode = 'inline'; }
+    this.workers = [];
+    this.busy = [];
+    this.handlers = {};
+    this.tag = 0;
+    this.pending = {};
+    this.hw = navigator.hardwareConcurrency || 4;
+    this.max = Math.max(2, Math.min(16, this.hw * 2));   // many degrees of parallelism
+    this.min = 2;
+  }
+  /* Verify a real worker can start AND reply before committing the fleet. */
+  probe(){
+    if(this.mode === 'inline') return Promise.resolve('inline');
+    return new Promise(res => {
+      let w;
+      try { w = new Worker(this.url); }
+      catch(e){ this.mode = 'inline'; return res('inline'); }
+      const done = ok => {
+        try { w.terminate(); } catch(e){}
+        this.mode = ok ? 'worker' : 'inline';
+        res(this.mode);
+      };
+      const timer = setTimeout(() => done(false), 1600);
+      w.onmessage = () => { clearTimeout(timer); done(true); };
+      w.onerror   = () => { clearTimeout(timer); done(false); };
+      try { w.postMessage({job:'bench', n:1000, tag:0}); }
+      catch(e){ clearTimeout(timer); done(false); }
+    });
+  }
+  spawn(){
+    const id = this.workers.length;
+    let w = null;
+    if(this.mode === 'worker'){
+      try { w = new Worker(this.url); w.onerror = ev => { console.warn('worker error', ev.message); }; }
+      catch(e){ this.mode = 'inline'; }
+    }
+    if(!w) w = new LocalWorker(WORKER_SRC);
+    w.onmessage = e => {
+      const m = e.data;
+      if(m.job === 'step' || m.job === 'idle') this.busy[m.id] = false;
+      if(m.tag !== undefined && this.pending[m.tag]){ this.pending[m.tag](m); delete this.pending[m.tag]; }
+      const h = this.handlers[m.job]; if(h) h(m);
+    };
+    this.workers.push(w); this.busy.push(false);
+    return id;
+  }
+  resize(n){
+    n = Math.max(this.min, Math.min(this.max, n));
+    while(this.workers.length < n) this.spawn();
+    while(this.workers.length > n){
+      this.workers.pop().terminate(); this.busy.pop();
+    }
+    return this.workers.length;
+  }
+  on(job, fn){ this.handlers[job] = fn; }
+  each(build){ this.workers.forEach((w,i) => w.postMessage(build(i))); }
+  /* parallel.js-style: pool.map(array, fn) -> Promise, sharded across all workers */
+  map(items, fn){
+    const shards = [], n = this.workers.length;
+    for(let i=0;i<n;i++) shards.push([]);
+    items.forEach((it,i) => shards[i % n].push(it));
+    return Promise.all(shards.map((items,i) => new Promise(res => {
+      if(!items.length) return res([]);
+      const tag = ++this.tag;
+      this.pending[tag] = m => res(m.res);
+      this.workers[i].postMessage({job:'map', fn: fn.toString(), items, tag});
+    }))).then(parts => [].concat(...parts));
+  }
+  request(i, msg, timeout = 4000){
+    return new Promise(res => {
+      const tag = ++this.tag;
+      let settled = false;
+      const finish = m => { if(!settled){ settled = true; delete this.pending[tag]; res(m); } };
+      this.pending[tag] = finish;
+      setTimeout(() => finish(null), timeout);
+      try { this.workers[i].postMessage(Object.assign({tag}, msg)); }
+      catch(e){ finish(null); }
+    });
+  }
+  get size(){ return this.workers.length; }
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. LOGO TEXTURES                                                    */
+/* ------------------------------------------------------------------ */
+function logoTexture(withTagline){
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = withTagline ? 320 : 240;
+  const x = c.getContext('2d');
+  x.clearRect(0,0,c.width,c.height);
+  const grad = x.createLinearGradient(0, 40, 0, 190);
+  grad.addColorStop(0,'#ffffff'); grad.addColorStop(.36,'#dcc4ff');
+  grad.addColorStop(.72,'#9a55ff'); grad.addColorStop(1,'#f4ebff');
+  x.textAlign='center'; x.textBaseline='middle';
+  x.shadowColor='#a75cff'; x.shadowBlur=34;
+  x.fillStyle=grad;
+  x.font='italic 800 132px "Helvetica Neue",Arial,sans-serif';
+  // "In" + upright T + "ension" — mirrors the wordmark's upright T
+  const f1='italic 800 132px "Helvetica Neue",Arial,sans-serif';
+  const f2='800 132px "Helvetica Neue",Arial,sans-serif';
+  x.font=f1; const wIn=x.measureText('In').width;
+  x.font=f2; const wT=x.measureText('T').width;
+  x.font=f1; const wRest=x.measureText('ension').width;
+  const total=wIn+wT+wRest, start=(c.width-total)/2, y=118;
+  x.textAlign='left';
+  x.font=f1; x.fillText('In', start, y);
+  x.font=f2; x.fillText('T', start+wIn, y);
+  x.font=f1; x.fillText('ension', start+wIn+wT, y);
+  if(withTagline){
+    x.shadowBlur=14; x.shadowColor='#8b46e0';
+    x.fillStyle='#c8a6ff'; x.textAlign='center';
+    x.font='600 32px "Helvetica Neue",Arial,sans-serif';
+    x.fillText('T R A I N .   R E C O V E R .   C O N N E C T .', c.width/2, 232);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.anisotropy = 4;
+  return t;
+}
+function glowTexture(){
+  const c=document.createElement('canvas'); c.width=c.height=64;
+  const x=c.getContext('2d');
+  const g=x.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,245,255,1)'); g.addColorStop(.25,'rgba(196,140,255,.75)');
+  g.addColorStop(1,'rgba(120,50,220,0)');
+  x.fillStyle=g; x.fillRect(0,0,64,64);
+  return new THREE.CanvasTexture(c);
+}
+
+/* ------------------------------------------------------------------ */
+/* 5b. LOADER SIGNATURE — the cracked slab from the brand render       */
+/* ------------------------------------------------------------------ */
+/* wordmark plate size, shared by the extruded layers and their halo */
+const TEXT = { W:5.05, H:5.05*400/1400, Y:-0.06 };
+
+function wordmarkRuns(ctx, size){
+  const italic = `italic 800 ${size}px "Helvetica Neue",Arial,sans-serif`;
+  const upright = `800 ${size}px "Helvetica Neue",Arial,sans-serif`;
+  ctx.font = italic; const a = ctx.measureText('In').width;
+  ctx.font = upright; const b = ctx.measureText('T').width;
+  ctx.font = italic; const c = ctx.measureText('ension').width;
+  return { total:a+b+c, runs:[['In',italic,0],['T',upright,a],['ension',italic,a+b]] };
+}
+
+/* polished chrome wordmark with a horizon band and a specular sweep */
+function chromeTexture(){
+  const c = document.createElement('canvas'); c.width = 1400; c.height = 400;
+  const x = c.getContext('2d');
+  x.textBaseline = 'middle';
+  const { total, runs } = wordmarkRuns(x, 208);
+  const sx = (1400-total)/2, sy = 200;
+  const g = x.createLinearGradient(0, 96, 0, 306);
+  g.addColorStop(0.00,'#ffffff'); g.addColorStop(0.16,'#efe6ff');
+  g.addColorStop(0.34,'#b9a4d6'); g.addColorStop(0.47,'#5b3a92');
+  g.addColorStop(0.52,'#241046'); g.addColorStop(0.58,'#7c4bd8');
+  g.addColorStop(0.76,'#d9c6ff'); g.addColorStop(0.92,'#ffffff');
+  g.addColorStop(1.00,'#8f6ad0');
+  x.fillStyle = g;
+  for(const [txt,font,off] of runs){ x.font = font; x.fillText(txt, sx+off, sy); }
+  // specular sweep, clipped to the glyphs
+  x.globalCompositeOperation = 'source-atop';
+  const s = x.createLinearGradient(0, 108, 0, 178);
+  s.addColorStop(0,'rgba(255,255,255,0)'); s.addColorStop(.55,'rgba(255,255,255,.6)');
+  s.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle = s; x.fillRect(0,0,1400,400);
+  x.globalCompositeOperation = 'source-over';
+  // crisp bevelled edge
+  x.strokeStyle = 'rgba(238,224,255,.9)'; x.lineWidth = 2.4;
+  for(const [txt,font,off] of runs){ x.font = font; x.strokeText(txt, sx+off, sy); }
+  const t = new THREE.CanvasTexture(c); t.anisotropy = 8; return t;
+}
+/* purple bloom in the shape of the wordmark, with the letterforms themselves
+   knocked back out — only the light spilling around them survives */
+function bloomCanvas(){
+  const c = document.createElement('canvas'); c.width = 1400; c.height = 400;
+  const x = c.getContext('2d');
+  x.textBaseline = 'middle';
+  const { total, runs } = wordmarkRuns(x, 208);
+  const sx = (1400-total)/2;
+  x.fillStyle = '#8b3dff'; x.shadowColor = '#a855f7';
+  for(const blur of [70, 42, 22]){
+    x.shadowBlur = blur;
+    for(const [txt,font,off] of runs){ x.font = font; x.fillText(txt, sx+off, 200); }
+  }
+  x.shadowBlur = 0;
+  x.globalCompositeOperation = 'destination-out';   // clear the glyphs, keep the halo
+  for(const [txt,font,off] of runs){ x.font = font; x.fillText(txt, sx+off, 200); }
+  x.globalCompositeOperation = 'source-over';
+  return c;
+}
+let loader3d = null;
+function buildLoaderScene(){
+  const cv = document.getElementById('logo3d');
+  const mark = document.querySelector('.mark');
+  let R = null, alive = true;
+  /* One escape path for every loader failure mode: WebGL context creation throws
+     (context limit / GPU unavailable on iOS), the context is lost after creation
+     (iOS can hand out a context that dies immediately without the constructor
+     throwing), or a render call throws. In each case the canvas is hidden and the
+     static `.mark` wordmark is revealed so the boot screen degrades visibly instead
+     of hanging on a black box. */
+  const degrade = () => {
+    if(!alive) return;                     // already gone / disposed deliberately
+    alive = false;
+    mark.classList.add('on');
+    cv.style.display = 'none';
+    try { if(R) R.forceContextLoss(); } catch(e){}
+    try { if(R) R.dispose(); } catch(e){}
+    loader3d = null;
+  };
+  try {
+    R = new THREE.WebGLRenderer({canvas:cv, alpha:true, antialias:true});
+  } catch(e){
+    console.error('[loader] WebGL context creation failed:', e && e.message || e);
+    degrade();
+    return null;
+  }
+  cv.addEventListener('webglcontextlost', ev => {
+    ev.preventDefault();
+    console.warn('[webgl] loader context LOST');
+    degrade();
+  }, false);
+  const sc  = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(29, 1.6, 0.1, 60);
+  cam.position.set(0, 0.05, 9.6);
+
+  const fit = () => {
+    // Size the plate against the container, then clamp so it never exceeds the
+    // visible viewport height — on short landscape phones 90vw alone would push
+    // the wordmark/bar/stage off the bottom of the screen.
+    const wrap = cv.parentElement;
+    const availW = (wrap && wrap.clientWidth) || cv.clientWidth || 720;
+    const availH = (window.visualViewport && visualViewport.height) || innerHeight || 600;
+    const w = Math.min(availW, Math.max(120, (availH - 90) / 0.625));
+    const h = Math.round(w * 0.625);
+    cv.style.width  = w + 'px';
+    cv.style.height = h + 'px';
+    R.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    R.setSize(w, h, false);
+    cam.aspect = w/h; cam.updateProjectionMatrix();
+  };
+
+  const grp = new THREE.Group(); sc.add(grp);
+
+  // --- glowing lights behind the mark ---
+  const glowTex = glowTexture();
+  const softGlow = (w,h,color,op,z) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+      new THREE.MeshBasicMaterial({map:glowTex, color, transparent:true,
+        blending:THREE.AdditiveBlending, depthWrite:false, opacity:op}));
+    m.position.z = z;
+    grp.add(m);
+    return m;
+  };
+  const wash  = softGlow(11.5, 6.6, 0x6d28d9, 0.42, -1.6);   // broad field
+  const core  = softGlow(6.4,  3.2, 0xa855f7, 0.5,  -0.9);   // tight behind the letters
+  const orbs  = [
+    { m: softGlow(3.0, 3.0, 0x7c3aed, 0.42, -1.25), r: 2.5, s: 0.31, p: 0.0 },
+    { m: softGlow(2.4, 2.4, 0xc084fc, 0.34, -1.35), r: 3.1, s: -0.24, p: 2.1 },
+    { m: softGlow(2.0, 2.0, 0xe9d5ff, 0.26, -1.45), r: 1.7, s: 0.43, p: 4.4 }
+  ];
+
+  // --- extruded chrome wordmark, floating ---
+  const chrome = chromeTexture();
+  const TW = TEXT.W, TH = TEXT.H;
+  const tGeo = new THREE.PlaneGeometry(TW, TH);
+  const LAYERS = 14, DEPTH = 0.19;
+  const wordmark = new THREE.Group();
+  // side layers share one hard cutout, so the extrusion reads as a single silhouette
+  for(let i=LAYERS-1;i>=1;i--){
+    const k = i/(LAYERS-1);
+    const mat = new THREE.MeshBasicMaterial({
+      map: chrome, alphaTest: 0.5, transparent: false, side: THREE.DoubleSide,
+      color: new THREE.Color(0x2b1152).lerp(new THREE.Color(0x9a6ae0), (1-k)*0.55)
+    });
+    const m = new THREE.Mesh(tGeo, mat);
+    m.position.z = -i * (DEPTH/(LAYERS-1));
+    wordmark.add(m);
+  }
+  // front face: soft alpha keeps the glyph edges antialiased over the cutout stack
+  const faceMat = new THREE.MeshBasicMaterial({
+    map: chrome, transparent: true, depthWrite: false, alphaTest: 0.02, side: THREE.DoubleSide
+  });
+  const faceMesh = new THREE.Mesh(tGeo, faceMat);
+  faceMesh.renderOrder = 6;
+  wordmark.add(faceMesh);
+  // the mark's own halo, letterforms knocked out, sitting just behind the metal
+  const bloomTex = new THREE.CanvasTexture(bloomCanvas());
+  const bloom = new THREE.Mesh(new THREE.PlaneGeometry(TW*1.16, TH*1.16),
+    new THREE.MeshBasicMaterial({map:bloomTex, transparent:true,
+      blending:THREE.AdditiveBlending, depthWrite:false, opacity:0.95}));
+  bloom.position.z = -DEPTH - 0.02;
+  wordmark.add(bloom);
+  wordmark.position.z = DEPTH/2;
+  grp.add(wordmark);
+
+  fit();
+  addEventListener('resize', fit);
+
+  return {
+    tick(t){
+      if(!alive) return;
+      grp.rotation.y = Math.sin(t*0.34) * 0.32;
+      grp.rotation.x = Math.sin(t*0.23) * 0.11;
+      grp.position.y = Math.sin(t*0.50) * 0.07;
+      bloom.material.opacity = 0.8 + Math.sin(t*1.6)*0.18;
+      core.material.opacity  = 0.42 + Math.sin(t*1.1)*0.14;
+      wash.material.opacity  = 0.36 + Math.sin(t*0.7)*0.1;
+      orbs.forEach(o => {
+        o.m.position.x = Math.cos(t*o.s + o.p) * o.r;
+        o.m.position.y = Math.sin(t*o.s*1.4 + o.p) * o.r * 0.42;
+      });
+      // A render exception inside the transient loader must degrade it, not propagate
+      // into the main loop (a throw here would silently skip the main scene's render).
+      try { R.render(sc, cam); }
+      catch(err){ console.error('[loader] render failed:', err); degrade(); }
+    },
+    dispose(){
+      alive = false;
+      removeEventListener('resize', fit);
+      sc.traverse(o => {
+        if(o.geometry) o.geometry.dispose();
+        if(o.material){
+          const ms = Array.isArray(o.material) ? o.material : [o.material];
+          ms.forEach(m => { for(const k in m) if(m[k] && m[k].isTexture) m[k].dispose(); m.dispose(); });
+        }
+      });
+      try { R.forceContextLoss(); } catch(e){}
+      R.dispose();
+      document.getElementById('logo3d').style.display = 'none';
+    }
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. SCENE SET-UP                                                     */
+/* ------------------------------------------------------------------ */
+const canvas = document.getElementById('scene');
+/* The main renderer is created lazily by ensureMainRenderer(), NOT at parse time.
+   Why this matters on iOS Safari: the preloader (buildLoaderScene) creates its own
+   WebGL context during boot, and two live contexts — especially two actively
+   rendering contexts — are the classic mobile-Safari trigger for the FIRST-created
+   context being evicted/lost, which black-screens the main canvas while the DOM keeps
+   working. Creating the main context only when the walkthrough begins, and therefore
+   AFTER the loader context exists, makes the main context the most-recently-created
+   one, so any eviction takes the transient loader instead. It also means the loader
+   is the only renderer drawing during boot (no simultaneous double render), and the
+   drawing buffer is sized before the first visible frame. */
+let renderer = null;
+let ctxLost = false;                 // set when webglcontextlost fires on #scene
+
+function ensureMainRenderer(){
+  if(renderer) return renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: false,
+      powerPreference: 'high-performance',
+      precision: 'highp'             // explicit — iOS ANGLE is strict about fragment precision
+    });
+    renderer.setClearColor(0x04010b, 1);
+    console.log('[webgl] main renderer created');
+  } catch(err){
+    // iOS can fail context creation silently (context limits, GPU teardown). Never let
+    // that take the rest of the page down — the DOM HUD keeps working either way.
+    console.error('[webgl] main renderer creation failed:', err && err.message || err);
+    renderer = null;
+  }
+  return renderer;
+}
+function onMainCtxLost(e){
+  e.preventDefault();                // keep the door open for a browser-initiated restore
+  ctxLost = true;
+  console.warn('[webgl] main context LOST');
+}
+function onMainCtxRestored(){
+  console.log('[webgl] main context RESTORED');
+  ctxLost = false;
+  // r128 binds programs/buffers to the dead context and cannot heal them; the only
+  // reliable recovery is a fresh renderer on the restored context, which re-uploads
+  // every program, buffer and texture.
+  if(renderer){ try { renderer.dispose(); } catch(e){} renderer = null; }
+  ensureMainRenderer();
+  resize();
+}
+canvas.addEventListener('webglcontextlost', onMainCtxLost, false);
+canvas.addEventListener('webglcontextrestored', onMainCtxRestored, false);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0a0418, 0.026);
+
+const camera = new THREE.PerspectiveCamera(72, innerWidth/innerHeight, 0.05, 220);
+camera.position.set(0, 1.65, 14.5);
+
+const walls = [];                       // collision segments
+const signs = new THREE.Group(); scene.add(signs);
+const glowPts = { pos: [], col: [] };
+
+const logoFull = new THREE.MeshBasicMaterial({map:logoTexture(true),  transparent:true, depthWrite:false,
+  blending:THREE.AdditiveBlending, side:THREE.DoubleSide, opacity:.95});
+const logoMark = new THREE.MeshBasicMaterial({map:logoTexture(false), transparent:true, depthWrite:false,
+  blending:THREE.AdditiveBlending, side:THREE.DoubleSide, opacity:.9});
+const planeGeo = new THREE.PlaneGeometry(1,1);
+
+function sign(x,y,z,ry,w,tagline=true,tilt=0,op=null){
+  const m = new THREE.Mesh(planeGeo, tagline?logoFull:logoMark);
+  const t = tagline?logoFull.map:logoMark.map;
+  m.scale.set(w, w * (t.image.height/t.image.width), 1);
+  m.position.set(x,y,z); m.rotation.set(tilt, ry, 0);
+  if(op!==null){ m.material = m.material.clone(); m.material.opacity = op; }
+  signs.add(m); return m;
+}
+
+/* --- wall construction with door openings + collision capture ------ */
+function wallRun(x1,z1,x2,z2,h,col,solid=true){
+  const len = Math.hypot(x2-x1, z2-z1);
+  if(len < 0.01) return;
+  // light pools at floor level and falls off toward the ceiling
+  const base = rgb(col);
+  const bot  = mixc(base, [1, 0.92, 1], 0.55);
+  const top  = mixc(base, [0.07, 0.02, 0.16], 0.74);
+  const mid  = mixc(bot, top, 0.62);
+  L.segG(x1,0,z1,x2,0,z2,bot,bot);
+  L.segG(x1,h,z1,x2,h,z2,top,top);
+  L.segG(x1,h*0.55,z1,x2,h*0.55,z2,mid,mid);
+  const n = Math.max(1, Math.round(len/1.6));
+  for(let i=0;i<=n;i++){
+    const t=i/n, x=x1+(x2-x1)*t, z=z1+(z2-z1)*t;
+    L.segG(x,0,z,x,h,z,bot,top);
+  }
+  if(solid){
+    walls.push({x1,z1,x2,z2});
+    // faint film across the same span, dimmed so overlapping walls don't stack out
+    P.quad(x1,z1,x2,z2,h, mixc(bot,[0,0,0],0.62), mixc(top,[0,0,0],0.82));
+  }
+}
+function roomWalls(x1,z1,x2,z2,h,doors,col){
+  const sides = {
+    N:[x1,z1,x2,z1], S:[x1,z2,x2,z2], W:[x1,z1,x1,z2], E:[x2,z1,x2,z2]
+  };
+  for(const s in sides){
+    const [ax,az,bx,bz] = sides[s];
+    const len = Math.hypot(bx-ax, bz-az);
+    const gaps = (doors||[]).filter(d=>d.s===s)
+      .map(d=>[Math.max(0,d.t*len-d.w/2), Math.min(len,d.t*len+d.w/2)])
+      .sort((a,b)=>a[0]-b[0]);
+    let cur = 0;
+    const P = t => [ax+(bx-ax)*(t/len), az+(bz-az)*(t/len)];
+    for(const [g0,g1] of gaps){
+      if(g0>cur){ const a=P(cur), b=P(g0); wallRun(a[0],a[1],b[0],b[1],h,col); }
+      const a=P(g0), b=P(g1);
+      // door head + jambs
+      L.seg(a[0],2.15,a[1],b[0],2.15,b[1],C.trim);
+      L.seg(a[0],h,a[1],b[0],h,b[1],col);
+      L.seg(a[0],2.15,a[1],a[0],h,a[1],C.trim);
+      L.seg(b[0],2.15,b[1],b[0],h,b[1],C.trim);
+      glowPts.pos.push((a[0]+b[0])/2, 2.15, (a[1]+b[1])/2); glowPts.col.push(0.78,0.42,1);
+      cur = g1;
+    }
+    if(cur<len){ const a=P(cur), b=P(len); wallRun(a[0],a[1],b[0],b[1],h,col); }
+  }
+}
+
+/* --- fixtures ------------------------------------------------------ */
+function table(x,z,w,d,h,ry,col){
+  L.box(x,h,z,w,0.08,d,col,ry);
+  const hw=w/2-0.09, hd=d/2-0.09, co=Math.cos(ry), si=Math.sin(ry);
+  [[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].forEach(([a,b])=>{
+    const px=x+a*co-b*si, pz=z+a*si+b*co;
+    L.seg(px,0,pz,px,h,pz,col);
+  });
+}
+function massageTable(x,z,ry,col){
+  L.box(x,0.68,z,0.86,0.16,2.1,col,ry);
+  const co=Math.cos(ry),si=Math.sin(ry);
+  [[-0.33,-0.9],[0.33,-0.9],[0.33,0.9],[-0.33,0.9]].forEach(([a,b])=>{
+    const px=x+a*co-b*si, pz=z+a*si+b*co;
+    L.seg(px,0,pz,px,0.6,pz,col);
+  });
+  const hx=x-Math.sin(ry)*1.18, hz=z+Math.cos(ry)*1.18;
+  L.ring(hx,0.78,hz,0.2,0.2,C.trim,12);
+  glowPts.pos.push(x,0.9,z); glowPts.col.push(0.7,0.45,1);
+}
+function chair(x,z,ry,col){
+  L.box(x,0.45,z,0.46,0.06,0.46,col,ry);
+  L.box(x-Math.sin(ry)*0.2,0.72,z+Math.cos(ry)*0.2,0.46,0.5,0.05,col,ry);
+  const co=Math.cos(ry),si=Math.sin(ry);
+  [[-0.18,-0.18],[0.18,-0.18],[0.18,0.18],[-0.18,0.18]].forEach(([a,b])=>{
+    L.seg(x+a*co-b*si,0,z+a*si+b*co,x+a*co-b*si,0.42,z+a*si+b*co,col);
+  });
+}
+function plant(x,z,scale=1){
+  L.ring(x,0.24,z,0.26*scale,0.26*scale,C.fixture,10);
+  L.ring(x,0.0,z,0.3*scale,0.3*scale,C.fixture,10);
+  L.seg(x,0.24,z,x,0.3*scale,z,C.fixture);
+  for(let i=0;i<7;i++){
+    const a=i/7*Math.PI*2;
+    L.seg(x,0.3*scale,z,
+          x+Math.cos(a)*0.5*scale, 0.95*scale+((i%2)*0.2), z+Math.sin(a)*0.5*scale, C.mat);
+  }
+  glowPts.pos.push(x,0.35*scale,z); glowPts.col.push(0.4,0.9,0.6);
+}
+function shelfUnit(x,z,w,d,ry){
+  L.box(x,1.05,z,w,2.1,d,C.fixture,ry);
+  for(let i=1;i<=3;i++){
+    const y=i*0.5;
+    const co=Math.cos(ry),si=Math.sin(ry),hw=w/2,hd=d/2;
+    const P=[[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].map(([a,b])=>[x+a*co-b*si,z+a*si+b*co]);
+    for(let k=0;k<4;k++){
+      const A=P[k],B=P[(k+1)%4];
+      L.seg(A[0],y,A[1],B[0],y,B[1],C.trim);
+    }
+    for(let j=0;j<3;j++){
+      const t=(j+0.5)/3;
+      const px=x+(-w/2+w*t)*co, pz=z+(-w/2+w*t)*si;
+      L.box(px,y+0.14,pz,0.12,0.26,0.12,C.hot,ry);
+      glowPts.pos.push(px,y+0.16,pz); glowPts.col.push(0.9,0.7,1);
+    }
+  }
+}
+function ceilingFixture(x,z,w,d,y){
+  L.rect(x-w/2,z-d/2,x+w/2,z+d/2,y,C.trim);
+  glowPts.pos.push(x,y-0.05,z); glowPts.col.push(0.85,0.6,1);
+}
+function matPad(x,z,ry){
+  L.box(x,0.03,z,0.66,0.05,1.75,C.mat,ry);
+  L.rect(x-0.33,z-0.87,x+0.33,z+0.87,0.06,C.vein);
+}
+
+/* --- room dressing ------------------------------------------------- */
+function dressRoom(room){
+  const [px1,pz1,px2,pz2] = room.r;
+  const x1=wx(px1),z1=wz(pz1),x2=wx(px2),z2=wz(pz2);
+  const cx=(x1+x2)/2, cz=(z1+z2)/2, w=x2-x1, d=z2-z1;
+
+  L.rect(x1+0.15,z1+0.15,x2-0.15,z2-0.15,0.015,C.floor);
+  L.rect(x1,z1,x2,z2,WALL_H,C.floor);
+
+  switch(room.f){
+    case 'massage': {
+      massageTable(cx,cz+0.1,0,C.fixture);
+      table(cx-w/2+0.75,cz-d/2+0.8,0.6,0.6,0.75,0,C.fixture);
+      L.box(x2-0.5,0.9,cz+d/2-1.2,0.4,1.8,1.0,C.fixture);
+      plant(x1+0.7,z2-0.8,0.9); plant(x2-0.7,z1+0.8,0.9);
+      ceilingFixture(cx,cz,w*0.5,d*0.32,WALL_H-0.1);
+      sign(cx,2.5,z1+0.06,0,2.4);
+      sign(cx,0.03,cz+d/2-0.9,0,1.8,false,-Math.PI/2,0.28);
+      break;
+    }
+    case 'therapy': {
+      massageTable(cx,cz,Math.PI/2,C.fixture);
+      shelfUnit(cx, z1+0.5, Math.min(2.4,w-1.2), 0.5, 0);
+      plant(x2-0.7,z2-0.7,0.9);
+      ceilingFixture(cx,cz,w*0.45,d*0.35,WALL_H-0.1);
+      sign(cx,2.5,z1+0.06,0,2.2);
+      break;
+    }
+    case 'locker': {
+      for(let bank=0;bank<2;bank++){
+        const zz = z1 + 1.0 + bank*1.9;
+        for(let i=0;i<Math.floor((w-1.2)/0.5);i++){
+          const xx = x1+0.7+i*0.5;
+          L.box(xx,0.95,zz,0.46,1.9,0.5,C.fixture);
+          L.seg(xx-0.2,0.95,zz+0.26,xx+0.2,0.95,zz+0.26,C.trim);
+          if(i%3===0){ glowPts.pos.push(xx,1.9,zz); glowPts.col.push(0.7,0.4,1); }
+        }
+        L.box(cx,0.24,zz+1.0,w-1.6,0.1,0.4,C.trim);
+      }
+      // wash counter
+      const cy=z2-0.9;
+      L.box(cx,0.85,cy,w-1.4,0.12,0.6,C.trim);
+      for(let i=-1;i<=1;i++){
+        L.ring(cx+i*1.1,0.86,cy,0.22,0.16,C.hot,14);
+        L.seg(cx+i*1.1,0.86,cy-0.18,cx+i*1.1,1.25,cy-0.18,C.hot);
+        glowPts.pos.push(cx+i*1.1,1.3,cy-0.18); glowPts.col.push(1,0.85,1);
+      }
+      ceilingFixture(cx,cz,w*0.6,0.3,WALL_H-0.1);
+      sign(cx,2.55,z1+0.06,0,2.6);
+      break;
+    }
+    case 'steam': {
+      L.box(cx,0.5,z1+0.5,w-0.4,0.16,0.5,C.trim);
+      L.box(x1+0.35,0.5,cz,0.5,0.16,d-1.4,C.trim);
+      for(let i=0;i<5;i++){
+        const yy=0.6+i*0.55;
+        L.ring(cx,yy,cz+0.4,0.35+i*0.12,0.35+i*0.12,C.vein,14);
+      }
+      glowPts.pos.push(cx,1.2,cz); glowPts.col.push(0.6,0.5,1);
+      sign(cx,2.5,z1+0.06,0,1.5,false);
+      break;
+    }
+    case 'sauna': {
+      L.box(cx,0.45,z1+0.6,w-0.4,0.14,0.55,C.trim);
+      L.box(cx,0.95,z1+1.15,w-0.4,0.14,0.55,C.trim);
+      L.box(x2-0.5,0.6,cz+0.6,0.55,1.2,0.55,C.fixture);
+      for(let i=0;i<6;i++) L.ring(x2-0.5,1.25+i*0.08,cz+0.6,0.18,0.18,C.hot,10);
+      glowPts.pos.push(x2-0.5,1.3,cz+0.6); glowPts.col.push(1,0.6,0.8);
+      sign(cx,2.5,z1+0.06,0,1.5,false);
+      break;
+    }
+    case 'gym': {
+      // rig
+      const rx1=x1+0.9, rx2=x1+5.6, rz=z1+0.9;
+      for(const xx of [rx1,rx1+2.35,rx2]) L.seg(xx,0,rz,xx,3.0,rz,C.fixture);
+      L.seg(rx1,3.0,rz,rx2,3.0,rz,C.fixture);
+      L.seg(rx1,2.3,rz,rx2,2.3,rz,C.trim);
+      for(let i=0;i<4;i++){
+        const xx=rx1+0.6+i*1.2;
+        L.seg(xx,3.0,rz,xx,2.1,rz+0.5,C.trim);
+        L.ring(xx,2.0,rz+0.5,0.14,0.14,C.hot,8,'x');
+      }
+      // lifting platforms
+      for(let i=0;i<2;i++){
+        const px=x1+1.6+i*2.6, pz=z1+2.6;
+        L.box(px,0.06,pz,2.2,0.12,2.2,C.mat);
+        L.rect(px-1.1,pz-1.1,px+1.1,pz+1.1,0.14,C.vein);
+      }
+      // dumbbell racks
+      for(let r=0;r<2;r++){
+        const rzz=z2-1.2-r*1.3;
+        L.box(cx+1.2,0.5,rzz,4.2,0.9,0.5,C.fixture);
+        for(let i=0;i<8;i++){
+          const dx=cx-0.7+i*0.52;
+          L.ring(dx,0.95,rzz,0.13,0.13,C.hot,8,'x');
+          L.seg(dx-0.13,0.95,rzz,dx+0.13,0.95,rzz,C.hot);
+        }
+      }
+      // rower + bikes
+      for(let i=0;i<3;i++){
+        const bz=z1+5.0+i*1.1;
+        L.box(x2-1.4,0.55,bz,0.5,1.1,1.6,C.fixture);
+        L.ring(x2-1.4,0.55,bz-0.6,0.34,0.34,C.trim,12,'x');
+      }
+      // turf strip
+      L.box(x1+0.6,0.02,cz+2.0,1.4,0.04,d*0.5,C.vein);
+      plant(x2-0.8,z1+0.8,1.1); plant(x1+0.8,z2-0.8,1.1);
+      ceilingFixture(cx,cz,w*0.6,d*0.5,WALL_H-0.1);
+      sign(cx+1.0,2.6,z1+0.06,0,4.2);
+      sign(x1+0.06,2.2,cz,Math.PI/2,3.2,false,0,0.55);
+      sign(cx,0.03,cz+1.0,0,3.4,false,-Math.PI/2,0.22);
+      break;
+    }
+    case 'yoga': {
+      for(let r=0;r<2;r++) for(let i=0;i<5;i++){
+        matPad(x1+1.6+i*2.2, cz-2.0+r*3.4, 0);
+      }
+      // mirror wall
+      L.rect(x1+0.1,z1+0.2,x1+0.1,z2-0.2,0,C.trim);
+      for(let i=0;i<10;i++){
+        const zz=z1+0.4+i*((d-0.8)/9);
+        L.seg(x2-0.08,0.1,zz,x2-0.08,2.6,zz,C.floor);
+      }
+      L.seg(x2-0.08,2.6,z1+0.3,x2-0.08,2.6,z2-0.3,C.trim);
+      // lotus motif
+      for(let i=0;i<8;i++){
+        const a=i/8*Math.PI*2;
+        L.seg(cx,2.9,z1+0.3, cx+Math.cos(a)*0.9, 2.9+Math.sin(a)*0.5, z1+0.3, C.vein);
+      }
+      plant(x1+0.9,z1+0.9,1.2); plant(x1+0.9,z2-0.9,1.2);
+      plant(x2-0.9,z1+0.9,1.2); plant(x2-0.9,z2-0.9,1.2);
+      ceilingFixture(cx,cz,w*0.7,d*0.6,WALL_H-0.1);
+      sign(cx,2.7,z1+0.06,0,5.0);
+      sign(cx,0.03,cz,0,5.0,false,-Math.PI/2,0.2);
+      break;
+    }
+    case 'meeting': {
+      table(cx,cz+0.2,w*0.42,d*0.5,0.74,0,C.fixture);
+      const n=4;
+      for(let i=0;i<n;i++){
+        const t=(i+0.5)/n;
+        chair(cx-w*0.3, cz-d*0.28+d*0.55*t, Math.PI/2, C.fixture);
+        chair(cx+w*0.3, cz-d*0.28+d*0.55*t, -Math.PI/2, C.fixture);
+      }
+      // wall screen with the mark
+      L.box(cx,1.75,z2-0.12,w*0.5,1.1,0.06,C.trim);
+      sign(cx,1.75,z2-0.2,Math.PI,w*0.46);
+      ceilingFixture(cx,cz,w*0.5,d*0.4,WALL_H-0.1);
+      plant(x1+0.7,z2-0.8,0.9);
+      sign(cx,2.55,z1+0.06,0,2.6,false);
+      break;
+    }
+  }
+}
+
+/* --- open zones ---------------------------------------------------- */
+function buildOpenZones(){
+  // ---- juice bar (oval counter) ----
+  const jb = ZONES[2].r;
+  const jx=(wx(jb[0])+wx(jb[2]))/2, jz=(wz(jb[1])+wz(jb[3]))/2;
+  const jrx=(wx(jb[2])-wx(jb[0]))/2-0.2, jrz=(wz(jb[3])-wz(jb[1]))/2-0.2;
+  L.ring(jx,0,jz,jrx,jrz,C.trim,44);
+  L.ring(jx,1.12,jz,jrx,jrz,C.trim,44);
+  L.ring(jx,0.55,jz,jrx*0.99,jrz*0.99,C.floor,44);
+  for(let i=0;i<44;i+=2){
+    const a=i/44*Math.PI*2;
+    L.seg(jx+Math.cos(a)*jrx,0,jz+Math.sin(a)*jrz, jx+Math.cos(a)*jrx,1.12,jz+Math.sin(a)*jrz, C.fixture);
+  }
+  L.ring(jx,1.14,jz,jrx*0.62,jrz*0.86,C.vein,32);
+  for(let i=0;i<9;i++){
+    const a=i/9*Math.PI*2;
+    L.box(jx+Math.cos(a)*jrx*0.55, 1.32, jz+Math.sin(a)*jrz*0.78, 0.16,0.36,0.16, C.hot);
+    glowPts.pos.push(jx+Math.cos(a)*jrx*0.55, 1.36, jz+Math.sin(a)*jrz*0.78); glowPts.col.push(1,0.75,0.55);
+  }
+  for(let i=0;i<10;i++){
+    const a=i/10*Math.PI*2;
+    const sx=jx+Math.cos(a)*(jrx+0.85), sz=jz+Math.sin(a)*(jrz+0.85);
+    L.ring(sx,0.72,sz,0.24,0.24,C.fixture,10);
+    L.seg(sx,0,sz,sx,0.72,sz,C.fixture);
+    L.ring(sx,0.02,sz,0.28,0.28,C.floor,10);
+  }
+  sign(jx,2.4,jz,0,3.6,false,0,0.75);
+  sign(jx,0.03,jz+jrz+1.9,0,2.6,false,-Math.PI/2,0.2);
+
+  // ---- lounge ----
+  const lo = ZONES[3].r;
+  const lx1=wx(lo[0]),lz1=wz(lo[1]),lx2=wx(lo[2]),lz2=wz(lo[3]);
+  const lcx=(lx1+lx2)/2, lcz=(lz1+lz2)/2;
+  L.rect(lx1,lz1,lx2,lz2,0.02,C.floor);
+  for(const side of [-1,1]){
+    const sx = lcx + side*(lx2-lx1)*0.34;
+    L.box(sx,0.4,lcz,1.1,0.5,(lz2-lz1)*0.8,C.fixture);
+    L.box(sx+side*0.5,0.85,lcz,0.12,0.9,(lz2-lz1)*0.8,C.fixture);
+    for(let i=0;i<5;i++){
+      const cz2=lcz-(lz2-lz1)*0.32+i*((lz2-lz1)*0.16);
+      L.box(sx,0.78,cz2,0.5,0.18,0.5,C.trim,0.7);
+    }
+  }
+  L.box(lcx,0.4,lcz,1.0,0.14,(lz2-lz1)*0.55,C.trim);
+  for(let i=0;i<7;i++){
+    const zz=lcz-(lz2-lz1)*0.22+i*((lz2-lz1)*0.073);
+    L.ring(lcx,0.5,zz,0.16,0.16,C.hot,8);
+    glowPts.pos.push(lcx,0.55,zz); glowPts.col.push(1,0.8,0.6);
+  }
+  [[lx1+0.6,lz1+0.6],[lx2-0.6,lz1+0.6],[lx1+0.6,lz2-0.6],[lx2-0.6,lz2-0.6]].forEach(([a,b])=>plant(a,b,1.1));
+  const hover = sign(lcx,3.15,lcz,0,6.2);
+  hover.userData.spin = true;
+
+  // ---- gift shop ----
+  const gs = ZONES[4].r;
+  const gx1=wx(gs[0]),gz1=wz(gs[1]),gx2=wx(gs[2]),gz2=wz(gs[3]);
+  const gcx=(gx1+gx2)/2;
+  for(let i=0;i<3;i++){
+    shelfUnit(gcx, gz1+0.6+i*((gz2-gz1-1.2)/2), (gx2-gx1)-1.0, 0.55, 0);
+  }
+  shelfUnit(gx1+0.4, (gz1+gz2)/2, 0.5, (gz2-gz1)*0.6, Math.PI/2);
+  plant(gx2-0.5,gz1+0.4,0.9); plant(gx2-0.5,gz2-0.4,0.9);
+  sign(gcx,2.7,gz1-0.4,0,3.2,false,0,0.8);
+
+  // ---- front desk ----
+  const fd = ZONES[5].r;
+  const fx=(wx(fd[0])+wx(fd[2]))/2, fz=(wz(fd[1])+wz(fd[3]))/2;
+  const frx=(wx(fd[2])-wx(fd[0]))/2, frz=(wz(fd[3])-wz(fd[1]))/2;
+  L.ring(fx,0,fz,frx,frz,C.trim,40);
+  L.ring(fx,1.18,fz,frx,frz,C.trim,40);
+  L.ring(fx,1.2,fz,frx*0.8,frz*0.6,C.floor,32);
+  for(let i=0;i<40;i+=2){
+    const a=i/40*Math.PI*2;
+    L.seg(fx+Math.cos(a)*frx,0,fz+Math.sin(a)*frz, fx+Math.cos(a)*frx,1.18,fz+Math.sin(a)*frz, C.fixture);
+  }
+  for(let i=-1;i<=1;i+=2){
+    L.box(fx+i*1.5,1.45,fz-frz*0.3,0.6,0.4,0.05,C.hot,0.2*i);
+    glowPts.pos.push(fx+i*1.5,1.45,fz-frz*0.3); glowPts.col.push(0.8,0.9,1);
+  }
+  sign(fx,0.7,fz+frz+0.02,0,3.4);
+  for(let i=0;i<8;i++){
+    const a=i/8*Math.PI*2;
+    plant(fx+Math.cos(a)*(frx-0.5), fz+Math.sin(a)*(frz+0.05), 0.5);
+  }
+
+  // ---- hallway wayfinding strips ----
+  ZONES.slice(0,2).forEach(z=>{
+    const a=wx(z.r[0]),b=wz(z.r[1]),c=wx(z.r[2]),e=wz(z.r[3]);
+    L.rect(a,b,c,e,0.02,C.vein);
+    const mz=(b+e)/2;
+    for(let x=a+1;x<c;x+=2.2){
+      L.seg(x,0.03,mz-0.1,x+1.2,0.03,mz-0.1,C.trim);
+      glowPts.pos.push(x+0.6,0.06,mz); glowPts.col.push(0.75,0.45,1);
+    }
+    sign((a+c)/2,0.04,mz+0.6,0,2.4,false,-Math.PI/2,0.24);
+  });
+}
+
+/* --- shell, ground, entrance -------------------------------------- */
+function buildShell(){
+  const x1=wx(SHELL[0]),z1=wz(SHELL[1]),x2=wx(SHELL[2]),z2=wz(SHELL[3]);
+  const entryT = ((wx(760)-x1)/(x2-x1));
+  roomWalls(x1,z1,x2,z2,SHELL_H,[{s:'S',t:entryT,w:5.6}],C.shell);
+
+  // interior + exterior ground
+  L.grid(x1,z1,x2,z2,0,2.0,C.floor);
+  L.grid(x1-16,z1-14,x2+16,z2+16,-0.02,4.0,0x1a0a33);
+  L.rect(x1,z1,x2,z2,SHELL_H,C.shell);
+  L.grid(x1,z1,x2,z2,SHELL_H,6.0,0x180a30);
+
+  // entrance porch + exterior monolith sign (image 1)
+  const ez=z2, ex=wx(760);
+  L.rect(ex-3.2,ez,ex+3.2,ez+4.0,0.02,C.vein);
+  for(let i=0;i<5;i++) L.rect(ex-3.2+i*0.1,ez,ex+3.2-i*0.1,ez+4.0-i*0.1,0.03+i*0.002,C.floor);
+  L.box(ex,1.9,ez+5.4,7.2,3.4,0.35,C.shell);
+  L.box(ex,1.9,ez+5.4,6.8,3.0,0.5,C.trim);
+  sign(ex,2.1,ez+5.15,Math.PI,6.0);
+  glowPts.pos.push(ex,0.4,ez+5.2); glowPts.col.push(0.6,0.3,1);
+  for(let i=-1;i<=1;i+=2){
+    L.seg(ex+i*3.6,0,ez+5.4,ex+i*3.6,3.6,ez+5.4,C.trim);
+    glowPts.pos.push(ex+i*3.6,3.6,ez+5.4); glowPts.col.push(0.85,0.55,1);
+  }
+  // entry canopy
+  L.box(ex,3.9,ez+1.6,7.0,0.12,3.4,C.trim);
+  sign(ex,0.04,ez+2.0,0,4.6,true,-Math.PI/2,0.35);
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. BUILD PIPELINE (staged, so the preloader means something)        */
+/* ------------------------------------------------------------------ */
+const L = new LineBuilder();
+const P = new PanelBuilder();
+const pool = new Pool();
+let structureMesh, reflectionMesh, panelMesh, veinMesh, particles, particlePos, particleGeo;
+let PARTICLES = 6000, PARTICLE_CEILING = 9000;
+const BOUNDS = { x0:wx(SHELL[0])+0.5, x1:wx(SHELL[2])-0.5, z0:wz(SHELL[1])+0.5, z1:wz(SHELL[3])-0.5 };
+
+const fill = document.getElementById('fill');
+const stageEl = document.getElementById('stage');
+const nextFrame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 16)));
+async function stage(pct, label, fn){
+  stageEl.textContent = label; fill.style.width = pct + '%';
+  await nextFrame();
+  try { await fn(); }
+  catch(err){
+    console.error('stage failed:', label, err);
+    stageEl.textContent = label + ' — SKIPPED';
+  }
+  await nextFrame();
+}
+// last-resort escape hatch: never strand the visitor on the loader
+setTimeout(() => enterSpace(), 20000);
+
+async function boot(){
+  await stage(8,'STARTING RENDER CORE', async () => {
+    resize();
+    loader3d = buildLoaderScene();
+  });
+
+  await stage(20,'SPAWNING PARALLEL WORKERS', async () => {
+    const mode = await pool.probe();
+    if(mode === 'inline'){
+      // no real threads available (sandboxed frame / blocked blob URL)
+      pool.max = 2; pool.min = 1;
+      PARTICLES = 1400; PARTICLE_CEILING = 2400;
+      stageEl.textContent = 'THREADS BLOCKED — RUNNING INLINE';
+    }
+    // phones: cap the fleet BEFORE sizing it, or the pool spawns `hw*1.5` workers
+    // and the later pool.max cap can never shrink them back down.
+    if(isTouch) pool.max = Math.max(2, Math.min(pool.max, pool.hw));
+    const n = mode === 'inline' ? 2 : Math.max(4, Math.min(pool.max, Math.round(pool.hw * 1.5)));
+    pool.resize(n);
+    if(isTouch){
+      // phones: smaller field, start below full res and let the tuner climb
+      PARTICLES = Math.min(PARTICLES, 3000);
+      PARTICLE_CEILING = Math.min(PARTICLE_CEILING, 5000);
+      perf.scale = 0.8;
+      resize();
+    }
+    const t = await Promise.all(pool.workers.map((_,i) =>
+      pool.request(i, {job:'bench', n: mode === 'inline' ? 20000 : 400000}, 3000)));
+    console.log('pool mode:', mode, '| warm-up ms:', t.map(x => x ? x.ms : 'timeout').join(', '));
+  });
+
+  await stage(36,'RAISING STRUCTURE', async () => {
+    buildShell();
+    ROOMS.forEach(r => roomWalls(wx(r.r[0]),wz(r.r[1]),wx(r.r[2]),wz(r.r[3]),WALL_H,r.d,C.wall));
+  });
+
+  await stage(52,'PLACING FIXTURES', async () => {
+    ROOMS.forEach(dressRoom);
+    buildOpenZones();
+  });
+
+  await stage(68,'ETCHING ENERGY VEINS', async () => {
+    // genuinely parallel: each worker etches its own band of the floor
+    const n = pool.size, span = (BOUNDS.x1 - BOUNDS.x0) / n;
+    const results = await Promise.all(pool.workers.map((_,i) => pool.request(i, {
+      job:'veins', seed: 1013 + i*7919, seeds: 4,
+      region: { x0: BOUNDS.x0 + i*span, x1: BOUNDS.x0 + (i+1)*span, z0: BOUNDS.z0, z1: BOUNDS.z1 },
+      bounds: BOUNDS
+    }, 6000))).then(r => r.filter(Boolean));
+    if(!results.length) return;
+    let total = 0; results.forEach(r => total += r.buf.byteLength/4);
+    const arr = new Float32Array(total); let o = 0;
+    results.forEach(r => { const f = new Float32Array(r.buf); arr.set(f, o); o += f.length; });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(arr,3));
+    veinMesh = new THREE.LineSegments(g, new THREE.LineBasicMaterial({
+      color:0x8f45ff, transparent:true, opacity:0.55, blending:THREE.AdditiveBlending, depthWrite:false }));
+    scene.add(veinMesh);
+  });
+
+  await stage(82,'BRANDING THE ENVIRONMENT', async () => {
+    const geo = L.build();
+    const mat = new THREE.LineBasicMaterial({ vertexColors:true, transparent:true, opacity:0.92,
+      blending:THREE.AdditiveBlending, depthWrite:false });
+    structureMesh = new THREE.LineSegments(geo, mat);
+    scene.add(structureMesh);
+
+    reflectionMesh = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({
+      vertexColors:true, transparent:true, opacity:0.13, blending:THREE.AdditiveBlending, depthWrite:false }));
+    reflectionMesh.scale.y = -1; reflectionMesh.position.y = -0.02;
+    scene.add(reflectionMesh);
+
+    panelMesh = new THREE.Mesh(P.build(), new THREE.MeshBasicMaterial({
+      vertexColors:true, transparent:true, opacity:0.5, side:THREE.DoubleSide,
+      blending:THREE.AdditiveBlending, depthWrite:false }));
+    panelMesh.renderOrder = -1;
+    scene.add(panelMesh);
+
+    const gg = new THREE.BufferGeometry();
+    gg.setAttribute('position', new THREE.Float32BufferAttribute(glowPts.pos,3));
+    gg.setAttribute('color', new THREE.Float32BufferAttribute(glowPts.col,3));
+    scene.add(new THREE.Points(gg, new THREE.PointsMaterial({
+      size:0.55, map:glowTexture(), vertexColors:true, transparent:true, opacity:0.85,
+      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true })));
+  });
+
+  await stage(94,'CALIBRATING PARTICLE FIELD', async () => {
+    particlePos = new Float32Array(PARTICLES*3);
+    particleGeo = new THREE.BufferGeometry();
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos,3));
+    particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({
+      size:0.11, map:glowTexture(), color:0xb277ff, transparent:true, opacity:0.7,
+      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true }));
+    scene.add(particles);
+    partitionParticles();
+    pool.on('step', m => {
+      const f = new Float32Array(m.buf);
+      // a resize may have landed while this payload was in flight — drop stale chunks
+      if(m.offset*3 + f.length > particlePos.length) return;
+      particlePos.set(f, m.offset*3);
+      particleGeo.attributes.position.needsUpdate = true;
+    });
+    buildMinimap();
+  });
+
+  stageEl.textContent = `${L.count.toLocaleString()} WIRES · ${pool.size}× PARALLEL · ENTERING`;
+  fill.style.width = '100%';
+  setTimeout(enterSpace, 1000);
+}
+
+let entered = false;
+function enterSpace(){
+  if(entered) return;
+  entered = true;
+  document.getElementById('boot').classList.add('gone');
+  document.getElementById('hud').classList.add('on');
+  grabFocus();
+  // The main context is created here — AFTER buildLoaderScene created the loader
+  // context during boot — so it is the newest context and any iOS eviction takes
+  // the transient loader instead of the main scene. It is also created before the
+  // first visible render and after resize(), so the drawing buffer is never 0×0.
+  ensureMainRenderer();
+  resize();
+  running = true;
+  prev = performance.now();
+  // On touch devices the loader freezes (frame() stops calling its tick once running)
+  // and its last frame fades out with the overlay; either way its context is torn down
+  // after the fade, leaving the main renderer as the only live WebGL context on the page.
+  setTimeout(() => { if(loader3d){ loader3d.dispose(); loader3d = null; } }, 950);
+}
+
+function partitionParticles(){
+  const n = pool.size, per = Math.floor(PARTICLES/n);
+  pool.each(i => ({
+    job:'init', id:i, offset: i*per,
+    count: i === n-1 ? PARTICLES - per*(n-1) : per,
+    bounds: BOUNDS, seed: 7919 + i*104729
+  }));
+  pool.busy = pool.busy.map(() => false);
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. CONTROLS                                                         */
+/* ------------------------------------------------------------------ */
+const key = {};
+let yaw = 0, pitch = 0, sprint = false;
+const vel = new THREE.Vector3();
+const EYE = 1.65, RADIUS = 0.42;
+let bob = 0;
+
+/* Keys are read by physical code AND by layout key, so AZERTY/QWERTZ still work.
+   Focus is claimed explicitly: inside an iframe the window gets no keydown until it has it. */
+function grabFocus(){
+  try { window.focus(); canvas.focus({preventScroll:true}); } catch(e){}
+}
+const setKey = (e, v) => {
+  if(e.code) key[e.code] = v;
+  if(e.key && e.key.length === 1) key[e.key.toLowerCase()] = v;
+  else if(e.key) key[e.key] = v;
+};
+const held = (...names) => names.some(n => key[n]);
+
+for(const target of [window, document]){
+  target.addEventListener('keydown', e => {
+    if(e.__it) return;          // the same event bubbles document -> window
+    e.__it = true;
+    setKey(e, true);
+    if(e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.key === 'Shift') sprint = true;
+    if(!e.repeat && (e.code === 'KeyT' || e.key === 't') && panelMesh) panelMesh.visible = !panelMesh.visible;
+    if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Space'].includes(e.key) ||
+       ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) e.preventDefault();
+  });
+  target.addEventListener('keyup', e => {
+    setKey(e, false);
+    if(e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.key === 'Shift') sprint = false;
+  });
+}
+addEventListener('blur', () => { for(const k in key) key[k] = false; sprint = false; });
+addEventListener('pointerdown', grabFocus);
+function lockPointer(){
+  if(isTouch || document.pointerLockElement === canvas) return;
+  try { const p = canvas.requestPointerLock(); if(p && p.catch) p.catch(()=>{}); } catch(e){}
+}
+let dragging = false;
+canvas.addEventListener('mousedown', e => { dragging = true; lockPointer(); e.preventDefault(); });
+addEventListener('mouseup', () => { dragging = false; });
+document.addEventListener('mousemove', e => {
+  const locked = document.pointerLockElement === canvas;
+  if(!locked && !dragging) return;             // drag-to-look when pointer lock is unavailable
+  if(!locked) e.preventDefault();
+  const dx = e.movementX || 0, dy = e.movementY || 0;
+  yaw -= dx * (locked ? 0.0024 : 0.004);
+  pitch = Math.max(-1.2, Math.min(1.2, pitch - dy * (locked ? 0.0022 : 0.0035)));
+});
+addEventListener('dragstart', e => e.preventDefault());
+addEventListener('selectstart', e => e.preventDefault());
+addEventListener('contextmenu', e => { if(running) e.preventDefault(); });
+
+const isTouch = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+const stickEl = document.getElementById('stick'), knob = document.getElementById('knob');
+const runBtn = document.getElementById('run');
+let stickId = null, lookId = null, lastLook = {x:0,y:0}, move = {x:0,y:0}, touchUI = false;
+
+/* The touch layer is always live — detection only decides whether the controls are
+   visible up front. A first touch on any device turns them on. */
+function enableTouchUI(){
+  if(touchUI) return;
+  touchUI = true;
+  document.getElementById('touch').classList.add('on');
+  const k = document.getElementById('keys'); if(k) k.style.display = 'none';
+  resize();
+}
+if(isTouch) enableTouchUI();
+
+const stickRect = () => stickEl.getBoundingClientRect();
+addEventListener('touchstart', e => {
+  enableTouchUI();
+  grabFocus();
+  for(const t of e.changedTouches){
+    const r = stickRect();
+    const pad = 36;
+    const inStick = t.clientX > r.left-pad && t.clientX < r.right+pad &&
+                    t.clientY > r.top-pad  && t.clientY < r.bottom+pad;
+    const onRun = runBtn.contains(document.elementFromPoint(t.clientX, t.clientY));
+    if(onRun){ sprint = !sprint; runBtn.classList.toggle('hot', sprint); continue; }
+    if(inStick && stickId === null){ stickId = t.identifier; updateStick(t); }
+    else if(lookId === null){ lookId = t.identifier; lastLook = {x:t.clientX, y:t.clientY}; }
+  }
+}, {passive:true});
+addEventListener('touchmove', e => {
+  // scale to the short edge so a tablet and a phone feel the same
+  const s = 2.2 / Math.min(innerWidth, innerHeight);
+  for(const t of e.changedTouches){
+    if(t.identifier === stickId) updateStick(t);
+    else if(t.identifier === lookId){
+      yaw   -= (t.clientX - lastLook.x) * s;
+      pitch = Math.max(-1.1, Math.min(1.1, pitch - (t.clientY - lastLook.y) * s * 0.8));
+      lastLook = {x:t.clientX, y:t.clientY};
+    }
+  }
+}, {passive:true});
+const endTouch = e => {
+  for(const t of e.changedTouches){
+    if(t.identifier === stickId){
+      stickId = null; move = {x:0,y:0};
+      knob.style.transform = 'translate(-50%,-50%)';
+    }
+    if(t.identifier === lookId) lookId = null;
+  }
+};
+addEventListener('touchend', endTouch, {passive:true});
+addEventListener('touchcancel', endTouch, {passive:true});
+function updateStick(t){
+  const r = stickEl.getBoundingClientRect();
+  let dx = t.clientX - (r.left + r.width/2), dy = t.clientY - (r.top + r.height/2);
+  const max = r.width/2, d = Math.hypot(dx,dy);
+  if(d > max){ dx = dx/d*max; dy = dy/d*max; }
+  knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  move = { x: dx/max, y: -dy/max };
+}
+
+/* --- collision ----------------------------------------------------- */
+const T = 0.14;
+function collide(p){
+  for(const w of walls){
+    const minx = Math.min(w.x1,w.x2)-1, maxx = Math.max(w.x1,w.x2)+1;
+    const minz = Math.min(w.z1,w.z2)-1, maxz = Math.max(w.z1,w.z2)+1;
+    if(p.x < minx || p.x > maxx || p.z < minz || p.z > maxz) continue;
+    const dx = w.x2-w.x1, dz = w.z2-w.z1;
+    const len2 = dx*dx+dz*dz; if(len2 < 1e-6) continue;
+    let t = ((p.x-w.x1)*dx + (p.z-w.z1)*dz)/len2;
+    t = Math.max(0, Math.min(1, t));
+    const cx = w.x1+dx*t, cz = w.z1+dz*t;
+    let nx = p.x-cx, nz = p.z-cz;
+    const d = Math.hypot(nx,nz), min = RADIUS + T;
+    if(d < min){
+      if(d < 1e-5){ nx = 1; nz = 0; }
+      else { nx /= d; nz /= d; }
+      p.x = cx + nx*min; p.z = cz + nz*min;
+    }
+  }
+  const pad = 22;
+  p.x = Math.max(wx(SHELL[0])-pad, Math.min(wx(SHELL[2])+pad, p.x));
+  p.z = Math.max(wz(SHELL[1])-pad, Math.min(wz(SHELL[3])+pad, p.z));
+}
+
+/* ------------------------------------------------------------------ */
+/* 9. MINIMAP + LOCATION                                               */
+/* ------------------------------------------------------------------ */
+const mapCv = document.getElementById('map'), mctx = mapCv.getContext('2d');
+let mapBase = null;
+function buildMinimap(){
+  const w = mapCv.width, h = mapCv.height;
+  const sx = w/(SHELL[2]-SHELL[0]), sy = h/(SHELL[3]-SHELL[1]);
+  const px = x => (x-SHELL[0])*sx, py = y => (y-SHELL[1])*sy;
+  mapBase = document.createElement('canvas'); mapBase.width = w; mapBase.height = h;
+  const b = mapBase.getContext('2d');
+  b.fillStyle = 'rgba(8,3,20,.9)'; b.fillRect(0,0,w,h);
+  b.strokeStyle = 'rgba(150,90,255,.7)'; b.lineWidth = 2;
+  b.strokeRect(px(SHELL[0])+1, py(SHELL[1])+1, w-2, h-2);
+  b.lineWidth = 1.5; b.strokeStyle = 'rgba(190,130,255,.55)';
+  ROOMS.forEach(r => b.strokeRect(px(r.r[0]), py(r.r[1]), (r.r[2]-r.r[0])*sx, (r.r[3]-r.r[1])*sy));
+  b.strokeStyle = 'rgba(120,70,220,.5)'; b.setLineDash([4,4]);
+  ZONES.forEach(z => b.strokeRect(px(z.r[0]), py(z.r[1]), (z.r[2]-z.r[0])*sx, (z.r[3]-z.r[1])*sy));
+  b.setLineDash([]);
+}
+function drawMinimap(){
+  if(!mapBase) return;
+  const w = mapCv.width, h = mapCv.height;
+  mctx.clearRect(0,0,w,h); mctx.drawImage(mapBase,0,0);
+  const gx = (camera.position.x/S + OX - SHELL[0]) * (w/(SHELL[2]-SHELL[0]));
+  const gy = (camera.position.z/S + OZ - SHELL[1]) * (h/(SHELL[3]-SHELL[1]));
+  mctx.save(); mctx.translate(gx,gy); mctx.rotate(-yaw);
+  mctx.fillStyle = '#f0e2ff'; mctx.shadowColor = '#c07bff'; mctx.shadowBlur = 12;
+  mctx.beginPath(); mctx.moveTo(0,-11); mctx.lineTo(7,9); mctx.lineTo(0,4); mctx.lineTo(-7,9);
+  mctx.closePath(); mctx.fill(); mctx.restore();
+}
+function locate(){
+  const gx = camera.position.x/S + OX, gy = camera.position.z/S + OZ;
+  for(const r of ROOMS) if(gx>r.r[0]&&gx<r.r[2]&&gy>r.r[1]&&gy<r.r[3]) return r.n;
+  for(const z of ZONES) if(gx>z.r[0]&&gx<z.r[2]&&gy>z.r[1]&&gy<z.r[3]) return z.n;
+  const inside = gx>SHELL[0]&&gx<SHELL[2]&&gy>SHELL[1]&&gy<SHELL[3];
+  return inside ? 'MAIN FLOOR' : 'EXTERIOR — ONE SPACE. EVERY SOLUTION.';
+}
+
+/* ------------------------------------------------------------------ */
+/* 10. ADAPTIVE QUALITY — hold 70 fps                                  */
+/* ------------------------------------------------------------------ */
+const perf = { fps:70, scale:1.0, samples:0, lastAdjust:0, target:70, ceiling:82 };
+const statsEl = document.getElementById('stats'), whereEl = document.getElementById('where');
+
+const DEG = Math.PI/180;
+function viewportSize(){
+  const vv = window.visualViewport;
+  let w = vv ? vv.width : innerWidth;
+  let h = vv ? vv.height : innerHeight;
+  // Mid-orientation-change the visual viewport can report 0 — falling back to the
+  // layout viewport keeps the canvas pinned instead of collapsing to nothing.
+  if(!(w > 0) || !(h > 0)){ w = innerWidth; h = innerHeight; }
+  // Ceil so a fractional visual viewport (e.g. 390.4) never leaves a 1px seam
+  // of page background at the right/bottom edge; the surplus is clipped.
+  return { w: Math.ceil(w), h: Math.ceil(h) };
+}
+function resize(){
+  if(!renderer) return;   // GL not up yet (pre-enter / script-eval touch-UI call):
+                         // touching DEG/perf/camera here would throw in the TDZ.
+  const { w, h } = viewportSize();
+  if(w < 2 || h < 2) return;
+  const aspect = w/h;
+  // Hor+ framing: hold the horizontal field steady so a portrait phone doesn't
+  // end up staring down a drinking straw.
+  camera.aspect = aspect;
+  camera.fov = Math.max(62, Math.min(96, 2*Math.atan(Math.tan(50*DEG)/aspect)/DEG));
+  camera.updateProjectionMatrix();
+  // setSize's own style update is skipped, then the CSS box is pinned explicitly —
+  // otherwise lowering the pixel ratio visibly shrinks and shifts the canvas.
+  const cap = isTouch ? 1.6 : 2;
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, cap) * perf.scale);
+  renderer.setSize(w, h, false);
+  canvas.style.width  = w + 'px';
+  canvas.style.height = h + 'px';
+}
+addEventListener('resize', resize);
+addEventListener('orientationchange', () => {
+  // Orientation transitions resize in stages and the URL bar / home indicator
+  // settle well after the first event — re-measure a few times.
+  setTimeout(resize, 150); setTimeout(resize, 450); setTimeout(resize, 900);
+});
+addEventListener('pageshow', () => setTimeout(resize, 200));   // bfcache restores at a stale viewport
+if(window.visualViewport){
+  visualViewport.addEventListener('resize', resize);
+  visualViewport.addEventListener('scroll', resize);
+}
+
+function tune(now){
+  if(now - perf.lastAdjust < 900) return;
+  perf.lastAdjust = now;
+  if(perf.fps < perf.target){
+    // 1) push more work off the main thread
+    if(pool.size < pool.max){
+      pool.resize(pool.size + 2); partitionParticles();
+    }
+    // 2) then trim resolution
+    else if(perf.scale > 0.55){ perf.scale = Math.max(0.55, perf.scale - 0.1); resize(); }
+    // 3) then thin the particle field and drop the reflection
+    else if(PARTICLES > 1200){
+      PARTICLES = Math.max(1200, Math.floor(PARTICLES * 0.7));
+      rebuildParticles();
+    } else if(reflectionMesh.visible){ reflectionMesh.visible = false; }
+  } else if(perf.fps > perf.ceiling){
+    if(perf.scale < 1.0){ perf.scale = Math.min(1.0, perf.scale + 0.05); resize(); }
+    else if(!reflectionMesh.visible){ reflectionMesh.visible = true; }
+    else if(PARTICLES < PARTICLE_CEILING){
+      PARTICLES = Math.min(PARTICLE_CEILING, Math.floor(PARTICLES * 1.15)); rebuildParticles();
+    }
+  }
+}
+function rebuildParticles(){
+  particlePos = new Float32Array(PARTICLES*3);
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos,3));
+  partitionParticles();
+}
+
+/* ------------------------------------------------------------------ */
+/* 11. LOOP                                                            */
+/* ------------------------------------------------------------------ */
+let prev = performance.now(), clock = 0, running = false;
+const fwd = new THREE.Vector3(), right = new THREE.Vector3();
+
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt = Math.min((now - prev)/1000, 0.05); prev = now; clock += dt;
+  const inst = 1/Math.max(dt, 0.0001);
+  perf.fps = perf.fps * 0.92 + inst * 0.08;
+
+  // On touch devices the loader freezes at enterSpace (running === true): its last
+  // frame stays on screen through the boot fade while the main renderer is the only
+  // context drawing — two live renderers on the same frame is the mobile-Safari
+  // black-screen trigger this file guards against. On desktop that risk doesn't exist,
+  // so the loader keeps animating through the fade exactly as before.
+  if(loader3d && (!running || !isTouch)){
+    try { loader3d.tick(now/1000); }
+    catch(err){
+      // A loader failure must never take the main loop down (a throw here would
+      // silently skip the main scene's render below).
+      console.error('[loader] tick failed:', err);
+      if(loader3d){ try { loader3d.dispose(); } catch(e){} loader3d = null; }
+      document.querySelector('.mark').classList.add('on');
+    }
+  }
+
+  if(running){
+    // --- input ---
+    let mx = 0, mz = 0;
+    if(held('KeyW','ArrowUp','w'))    mz += 1;
+    if(held('KeyS','ArrowDown','s'))  mz -= 1;
+    if(held('KeyA','ArrowLeft','a'))  mx -= 1;
+    if(held('KeyD','ArrowRight','d')) mx += 1;
+    mx += move.x; mz += move.y;
+    const mag = Math.hypot(mx,mz);
+    if(mag > 1){ mx /= mag; mz /= mag; }
+
+    fwd.set(-Math.sin(yaw), 0, -Math.cos(yaw));
+    right.set(Math.cos(yaw), 0, -Math.sin(yaw));
+    const speed = sprint ? 7.4 : 3.3;
+    vel.x += (fwd.x*mz + right.x*mx) * speed * dt * 9;
+    vel.z += (fwd.z*mz + right.z*mx) * speed * dt * 9;
+    vel.multiplyScalar(Math.pow(0.0016, dt));
+
+    camera.position.x += vel.x*dt; camera.position.z += vel.z*dt;
+    collide(camera.position);
+
+    const walking = Math.hypot(vel.x,vel.z);
+    bob += dt * walking * 1.5;
+    camera.position.y = EYE + Math.sin(bob*2)*0.028 * Math.min(1, walking/3);
+    camera.rotation.set(pitch, yaw, 0, 'YXZ');
+
+    // --- dispatch particle work across idle workers ---
+    for(let i=0;i<pool.size;i++){
+      if(!pool.busy[i]){ pool.busy[i] = true; pool.workers[i].postMessage({job:'step', dt, t:clock}); }
+    }
+
+    // --- ambience ---
+    if(veinMesh) veinMesh.material.opacity = 0.4 + Math.sin(clock*1.6)*0.18;
+    signs.children.forEach(s => { if(s.userData.spin) s.rotation.y = Math.sin(clock*0.35)*0.6; });
+    if(structureMesh) structureMesh.material.opacity = 0.88 + Math.sin(clock*2.4)*0.05;
+
+    tune(now);
+
+    if(perf.samples++ % 12 === 0){
+      const cls = perf.fps >= 70 ? 'good' : 'warn';
+      statsEl.innerHTML =
+        `<b class="${cls}">${perf.fps.toFixed(0)} FPS</b> &nbsp;target 70<br>` +
+        `PARALLELISM <b>${pool.size}×</b> / ${pool.max} max ${pool.mode === 'inline' ? '(inline)' : ''}<br>` +
+        `MOTES <b>${PARTICLES.toLocaleString()}</b><br>` +
+        `RES <b>${(perf.scale*100).toFixed(0)}%</b>`;
+      whereEl.textContent = locate();
+      drawMinimap();
+    }
+  }
+  if(renderer && !ctxLost) renderer.render(scene, camera);
+}
+requestAnimationFrame(frame);
+
+/* ------------------------------------------------------------------ */
+/* 12. GO                                                              */
+/* ------------------------------------------------------------------ */
+document.getElementById('enter').addEventListener('click', enterSpace);
+if(!isTouch) document.getElementById('keys').innerHTML =
+  'W A S D / ARROWS &nbsp;move<br>CLICK&nbsp;to capture mouse<br>DRAG&nbsp;to look &nbsp;·&nbsp; SHIFT&nbsp;run<br>T&nbsp;wall surfaces';
+addEventListener('error', e => console.error('runtime:', e.message));
+addEventListener('unhandledrejection', e => { console.error('unhandled:', e.reason); enterSpace(); });
+boot();
+</script>
+</body>
+</html>
