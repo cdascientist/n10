@@ -42,6 +42,34 @@ rate pinned to a 70 FPS target on weak hardware.
 - **Adaptive renderer** — auto-scales resolution to hold 70 FPS
 - **Boot sequence** — animated 3D preloader with graceful fallback wordmark
 - **Zero setup** — one file, open it and go
+- **⚛️ React overlay deck** — a transparent control panel (bottom-left) mounted
+  on top of the scene, with live status, uptime, and an expandable log
+
+---
+
+## ⚛️ React Overlay
+
+The scene page is still a **single `index.html`** — the React app is bundled
+(esbuild) and *inlined* into the page, then mounts into a labeled, transparent
+section that hovers above the 3D scene in the bottom-left corner:
+
+```
+<section id="react-root" aria-label="React overlay">   ← fixed, bottom-left, z-index 200
+  <div id="react-label">⚛️ REACT</div>
+  <div id="react-app"></div>                            ← React root (transparent glass panel)
+</section>
+```
+
+The overlay is deliberately non-intrusive: it sits in its own corner box, so the
+wireframe walkthrough (mouse capture, WASD) keeps working everywhere else.
+
+### Rebuilding the React bundle
+
+```bash
+npm install        # react, react-dom, esbuild (jsdom for the smoke test)
+npm run build      # bundles react/ → inlines into index.html (byte-verified)
+npm run smoke      # headless DOM test: confirms the overlay mounts & renders
+```
 
 ---
 
@@ -79,7 +107,12 @@ Then open `http://<your-host>:8080`.
 
 ```
 n10/
-├── index.html   # the entire experience (scene, HUD, boot, styling)
+├── index.html          # the entire experience + inlined React overlay
+├── package.json        # build & smoke tooling (esbuild)
+├── react/              # React app source (main.jsx, App.jsx)
+├── scripts/
+│   ├── build.mjs       # bundle + inline into index.html (with verification)
+│   └── smoke.mjs       # jsdom headless test of the overlay
 └── README.md
 ```
 
