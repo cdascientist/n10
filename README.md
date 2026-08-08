@@ -89,13 +89,29 @@ npm run smoke      # headless DOM test: confirms the overlay mounts & renders
 
 ## 🚀 Run it
 
-No build step. Serve the folder with any static server:
+### From VS Code (recommended)
+
+1. Open the repo folder in VS Code
+2. Press **F5** (Run → Start Debugging) — the included `.vscode/launch.json`
+   runs `app.js`, a zero-dependency static server
+3. Open **http://localhost:3000** — the scene + ⚛️ React overlay load exactly
+   like production
+
+Breakpoints in `app.js` work normally; `Ctrl+C` stops the server.
+
+### Or from a terminal
 
 ```bash
-# with nginx — copy to a web root, e.g. /var/www/intension
-cp index.html /var/www/intension/index.html
+npm start          # node app.js → http://localhost:3000
+```
 
-# or just serve the directory:
+The dev server mirrors production nginx behavior: serves the repo root,
+blocks dotfiles and `node_modules` (403), and refuses path traversal.
+
+### No build step
+
+```bash
+# just serve the folder with any static server:
 python3 -m http.server 8080
 ```
 
@@ -108,7 +124,10 @@ Then open `http://<your-host>:8080`.
 ```
 n10/
 ├── index.html          # the entire experience + inlined React overlay
-├── package.json        # build & smoke tooling (esbuild)
+├── app.js              # zero-dep dev server (npm start / VS Code F5)
+├── package.json        # start, build & smoke tooling (esbuild)
+├── .vscode/
+│   └── launch.json     # F5 → node app.js under the debugger
 ├── react/              # React app source (main.jsx, App.jsx)
 ├── scripts/
 │   ├── build.mjs       # bundle + inline into index.html (with verification)

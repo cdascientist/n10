@@ -5,6 +5,7 @@
   "type": "module",
   "description": "InTension — single-page WebGL experience with a React overlay deck",
   "scripts": {
+    "start": "node app.js",
     "build": "node scripts/build.mjs",
     "smoke": "node scripts/smoke.mjs"
   },

@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch InTension",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/app.js",
+      "console": "integratedTerminal",
+      "env": {
+        "PORT": "3000"
+      }
+    }
+  ]
+}
