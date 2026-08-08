@@ -47,11 +47,43 @@ rate pinned to a 70 FPS target on weak hardware.
 
 ---
 
-## ⚛️ React Overlay
+## ⚛️ React Overlay & Component Architecture
 
-The scene page is still a **single `index.html`** — the React app is bundled
-(esbuild) and *inlined* into the page, then mounts into a labeled, transparent
-section that hovers above the 3D scene in the bottom-left corner:
+The scene page is still a **single `index.html`**, but it is now built from a
+real React component tree — the entire interface (boot, HUD, minimap, touch
+controls, and the overlay deck) is split into individual, heavily-commented
+components, each with its own stylesheet:
+
+```
+react/
+├── App.jsx                    # composition root (layers + "entered" state)
+├── main.jsx                   # React 18 mount point
+├── engine/                    # imperative 3D layer (no React re-renders at 60fps)
+│   ├── registry.js            # shared DOM ref bus between components & engine
+│   ├── palette.js             # design tokens + floor-plan data
+│   ├── geometry.js            # wire & panel builders
+│   ├── pool.js                # parallel.js-style worker pool
+│   ├── textures.js            # canvas-painted logo/glow/chrome textures
+│   ├── loader.js              # 3D preloader scene (chrome wordmark)
+│   ├── minimap.js             # minimap base + player arrow + locate()
+│   ├── controls.js            # keyboard / pointer lock / touch / collision
+│   └── engine.js              # scene, staged build pipeline, adaptive loop
+├── components/                # one file per UI piece, numbered comments
+│   ├── Scene.jsx              # full-screen WebGL canvas + engine host
+│   ├── Boot.jsx               # preloader + ENTER gate
+│   ├── Hud.jsx                # HUD container (fades in after enter)
+│   ├── Stats.jsx              # FPS/parallelism/motes/res panel
+│   ├── Where.jsx              # "you are here" readout
+│   ├── Keys.jsx               # control legend
+│   ├── Minimap.jsx            # floor-plan minimap + brand dot
+│   ├── TouchControls.jsx      # joystick + RUN button
+│   └── OverlayDeck.jsx        # the React control deck (bottom-left)
+└── styles/                    # one stylesheet per component
+    ├── global.css  boot.css  hud.css  touch.css  overlay.css
+```
+
+The overlay deck mounts into a labelled section that hovers above the entire
+page in the bottom-left corner:
 
 ```
 <section id="react-root" aria-label="React overlay">   ← fixed, bottom-left, z-index 200
@@ -60,15 +92,12 @@ section that hovers above the 3D scene in the bottom-left corner:
 </section>
 ```
 
-The overlay is deliberately non-intrusive: it sits in its own corner box, so the
-wireframe walkthrough (mouse capture, WASD) keeps working everywhere else.
-
 ### Rebuilding the React bundle
 
 ```bash
 npm install        # react, react-dom, esbuild (jsdom for the smoke test)
-npm run build      # bundles react/ → inlines into index.html (byte-verified)
-npm run smoke      # headless DOM test: confirms the overlay mounts & renders
+npm run build      # bundles react/ + styles/ → inlines into index.html (verified)
+npm run smoke      # headless DOM test: every layer mounts, enter flow works
 ```
 
 ---
@@ -123,17 +152,21 @@ Then open `http://<your-host>:8080`.
 
 ```
 n10/
-├── index.html          # the entire experience + inlined React overlay
+├── index.html          # BUILT single-file artifact (nginx + app.js serve this)
+├── index.template.html # the shell the build inlines JS/CSS into
 ├── app.js              # zero-dep dev server (npm start / VS Code F5)
 ├── package.json        # start, build & smoke tooling (esbuild)
 ├── .vscode/
 │   └── launch.json     # F5 → node app.js under the debugger
-├── react/              # React app source (main.jsx, App.jsx)
+├── react/              # source of truth (components + engine + styles)
 ├── scripts/
-│   ├── build.mjs       # bundle + inline into index.html (with verification)
-│   └── smoke.mjs       # jsdom headless test of the overlay
+│   ├── build.mjs       # bundle JS+CSS → inline into index.html (verified)
+│   └── smoke.mjs       # jsdom headless test of the full component stack
 └── README.md
 ```
+
+> `index.html` is generated — edit `react/` + `index.template.html`, then
+> `npm run build`. The live site and dev server both serve the built file.
 
 ---
 

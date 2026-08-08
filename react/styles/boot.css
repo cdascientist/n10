@@ -1,0 +1,105 @@
+/* =====================================================================
+   boot.css — the preloader overlay (Boot.jsx)
+   ---------------------------------------------------------------------
+   A black full-screen stage with the animated 3D wordmark, a progress
+   bar driven by the build pipeline, the stage label, and the ENTER
+   button. `.gone` fades the whole thing out once the walkthrough
+   begins; `.mark.on` reveals the static wordmark if WebGL can't start.
+   ===================================================================== */
+
+/* ── 01 ── the overlay ─────────────────────────────────────────────── */
+#boot {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  touch-action: none;
+  transition: opacity .9s ease, visibility .9s;
+}
+#boot.gone {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.bootwrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90vw;
+  width: min(90vw, 780px);
+}
+
+/* ── 02 ── the animated 3D wordmark canvas ─────────────────────────── */
+#logo3d {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 30px 70px rgba(88, 18, 196, .5));
+}
+
+/* ── 03 ── static wordmark fallback (revealed if the loader fails) ─── */
+.mark {
+  display: none;
+  font-weight: 800;
+  font-style: italic;
+  font-size: clamp(34px, 7.4vw, 72px);
+  background: linear-gradient(180deg, #fff 0%, #d9bfff 38%, #8d4dff 72%, #f0e2ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 40px rgba(150, 70, 255, .55);
+  padding: 1.4em 0;
+}
+.mark.on { display: block; }
+.mark span { font-style: normal; }
+
+/* ── 04 ── progress bar + stage label ──────────────────────────────── */
+.bar {
+  position: relative;
+  margin-top: 1.9em;
+  width: 54%;
+  height: 2px;
+  background: rgba(160, 110, 255, .16);
+  overflow: hidden;
+}
+.bar i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #5a1fd6, #c98bff, #fff);
+  box-shadow: 0 0 14px #b06bff;
+  transition: width .35s ease;
+}
+
+.stage {
+  position: relative;
+  margin-top: 1.15em;
+  font-size: 10px;
+  letter-spacing: .3em;
+  color: #9e86c4;
+  min-height: 1em;
+  text-align: center;
+}
+
+/* ── 05 ── the ENTER button (engine adds .on when boot completes) ──── */
+#enter {
+  position: relative;
+  margin-top: 1.4em;
+  padding: .85em 2.4em;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: .34em;
+  touch-action: none;
+  color: #f0e4ff;
+  background: transparent;
+  border: 1px solid rgba(180, 120, 255, .55);
+  border-radius: 999px;
+  cursor: pointer;
+  display: none;
+}
+#enter.on { display: block; }
