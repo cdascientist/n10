@@ -43,7 +43,8 @@ rate pinned to a 70 FPS target on weak hardware.
 - **Boot sequence** — animated 3D preloader with graceful fallback wordmark
 - **Zero setup** — one file, open it and go
 - **⚛️ React overlay deck** — a transparent control panel (bottom-left) mounted
-  on top of the scene, with live status, uptime, and an expandable log
+  on top of the scene, with live status, uptime, an expandable log, and a
+  minimise mode that collapses it completely to a chip
 
 ---
 

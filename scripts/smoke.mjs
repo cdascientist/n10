@@ -51,7 +51,7 @@ setTimeout(() => {
   record('renders CONNECTED status', txt.includes('CONNECTED'));
   record('renders Uptime row', txt.includes('Uptime'));
 
-  /* ── phase 3: expand interaction ─────────────────────────────────── */
+  /* ── phase 3: expand + minimise interactions ────────────────────── */
   const btn = [...(app ? app.querySelectorAll('button') : [])].find((b) => b.textContent.includes('Expand'));
   if (!btn) { record('expand button present', false); }
   else {
@@ -60,16 +60,38 @@ setTimeout(() => {
       record('expand button present', true);
       record('expand shows live log', app.textContent.includes('react deck mounted'));
 
-      /* ── phase 2: auto-enter flow (stages skipped → enter fires) ─── */
-      setTimeout(() => {
-        const boot = win.document.getElementById('boot');
-        const hud = win.document.getElementById('hud');
-        record('boot fades after auto-enter', !!(boot && boot.classList.contains('gone')));
-        record('hud turns on after auto-enter', !!(hud && hud.classList.contains('on')));
-        record('overlay survives enter flow', !!win.document.getElementById('react-app')?.children.length);
-        win.close();
-        process.exit(allOk() ? 0 : 1);
-      }, 1500);
+      /* minimise the deck completely → only the chip remains */
+      const minBtn = [...app.querySelectorAll('button')].find((b) => b.textContent.includes('Minimise'));
+      if (!minBtn) { record('minimise button present', false); }
+      else {
+        minBtn.click();
+        setTimeout(() => {
+          const rootEl = win.document.getElementById('react-root');
+          record('minimise button present', true);
+          record('deck minimises to chip (.min)', !!(rootEl && rootEl.classList.contains('min')));
+          record('deck body unmounted when minimised', !win.document.getElementById('react-app'));
+
+          /* click the chip to restore */
+          const label = win.document.getElementById('react-label');
+          if (label) label.click();
+          setTimeout(() => {
+            record('chip click restores deck',
+              !!win.document.getElementById('react-app') &&
+              !win.document.getElementById('react-root').classList.contains('min'));
+
+            /* ── phase 2: auto-enter flow (stages skipped → enter fires) ─── */
+            setTimeout(() => {
+              const boot = win.document.getElementById('boot');
+              const hud = win.document.getElementById('hud');
+              record('boot fades after auto-enter', !!(boot && boot.classList.contains('gone')));
+              record('hud turns on after auto-enter', !!(hud && hud.classList.contains('on')));
+              record('overlay survives enter flow', !!win.document.getElementById('react-app')?.children.length);
+              win.close();
+              process.exit(allOk() ? 0 : 1);
+            }, 1500);
+          }, 150);
+        }, 150);
+      }
     }, 200);
   }
 }, 900);

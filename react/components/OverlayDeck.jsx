@@ -9,6 +9,9 @@
      • mode / anchor / uptime / build rows
      • Expand ⇄ Collapse toggle revealing a live event log
      • Ping button that appends an entry to the log
+     • Minimise button — collapses the deck COMPLETELY down to the
+       bare ⚛️ REACT chip (just the label strip); clicking the chip
+       restores the full deck
 
    Styles live in styles/overlay.css (the .deck-* classes); only the
    dynamic bits (hover states) stay inline.
@@ -48,6 +51,7 @@ function fmtUptime(s) {
 /* ── 04 ── the deck component ──────────────────────────────────────── */
 export default function OverlayDeck() {
   const [open, setOpen] = useState(false);
+  const [minimised, setMinimised] = useState(false);
   const [uptime, setUptime] = useState(0);
   const [log, setLog] = useState([]);
   const logRef = useRef(null);
@@ -71,43 +75,73 @@ export default function OverlayDeck() {
   }, [log, open]);
 
   /* ── 07 ── render ────────────────────────────────────────────────── */
+  /* When minimised, ONLY the label strip survives — the entire deck
+     body (rows, buttons, log) is unmounted. The section gets the .min
+     class so CSS can shrink it to a chip; the label becomes the
+     restore affordance. */
   return (
-    <section id="react-root" aria-label="React overlay">
-      <div id="react-label">⚛️ REACT</div>
-      <div id="react-app">
-        <Row k="Status">
-          <span className="deck-val"><StatusDot ok />CONNECTED</span>
-        </Row>
-        <Row k="Mode">Transparent overlay</Row>
-        <Row k="Anchor">Bottom-left · z 200</Row>
-        <Row k="Uptime">{fmtUptime(uptime)}</Row>
-        <Row k="Build">0.2.0 · react 18</Row>
-
-        <div className="deck-btns">
-          <button
-            className="deck-btn"
-            onMouseEnter={(e) => e.currentTarget.classList.add('hover')}
-            onMouseLeave={(e) => e.currentTarget.classList.remove('hover')}
-            onClick={() => setOpen((o) => !o)}
-          >
-            {open ? 'Collapse' : 'Expand'}
-          </button>
-          <button
-            className="deck-btn"
-            onMouseEnter={(e) => e.currentTarget.classList.add('hover')}
-            onMouseLeave={(e) => e.currentTarget.classList.remove('hover')}
-            onClick={() => push('ping · scene alive')}
-          >
-            Ping
-          </button>
-        </div>
-
-        {open && (
-          <div ref={logRef} className="deck-log">
-            {log.map((line, i) => <div key={i}>{line}</div>)}
-          </div>
-        )}
+    <section
+      id="react-root"
+      className={minimised ? 'min' : ''}
+      aria-label="React overlay"
+    >
+      <div
+        id="react-label"
+        role={minimised ? 'button' : undefined}
+        tabIndex={minimised ? 0 : undefined}
+        aria-expanded={minimised ? false : undefined}
+        onClick={() => { if (minimised) setMinimised(false); }}
+        onKeyDown={minimised ? (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMinimised(false); }
+        } : undefined}
+      >
+        ⚛️ REACT
       </div>
+
+      {!minimised && (
+        <div id="react-app">
+          <Row k="Status">
+            <span className="deck-val"><StatusDot ok />CONNECTED</span>
+          </Row>
+          <Row k="Mode">Transparent overlay</Row>
+          <Row k="Anchor">Bottom-left · z 200</Row>
+          <Row k="Uptime">{fmtUptime(uptime)}</Row>
+          <Row k="Build">0.3.0 · react 18</Row>
+
+          <div className="deck-btns">
+            <button
+              className="deck-btn"
+              onMouseEnter={(e) => e.currentTarget.classList.add('hover')}
+              onMouseLeave={(e) => e.currentTarget.classList.remove('hover')}
+              onClick={() => setOpen((o) => !o)}
+            >
+              {open ? 'Collapse' : 'Expand'}
+            </button>
+            <button
+              className="deck-btn"
+              onMouseEnter={(e) => e.currentTarget.classList.add('hover')}
+              onMouseLeave={(e) => e.currentTarget.classList.remove('hover')}
+              onClick={() => push('ping · scene alive')}
+            >
+              Ping
+            </button>
+            <button
+              className="deck-btn"
+              onMouseEnter={(e) => e.currentTarget.classList.add('hover')}
+              onMouseLeave={(e) => e.currentTarget.classList.remove('hover')}
+              onClick={() => setMinimised(true)}
+            >
+              Minimise
+            </button>
+          </div>
+
+          {open && (
+            <div ref={logRef} className="deck-log">
+              {log.map((line, i) => <div key={i}>{line}</div>)}
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 }
