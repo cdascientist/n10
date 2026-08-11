@@ -654,16 +654,61 @@ p{color:var(--label-2);text-wrap:pretty}
 @media (hover:none){
   .art .tag,.tile .cap{opacity:1;transform:none}
 }
+
+/* ══ PRELOADER — full-load gate, fades into the page ═══════════════ */
+#preloader{
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  background:radial-gradient(1100px 640px at 50% 30%,#FBF7FF 0%,#fff 58%);
+  transition:opacity .75s var(--e-out),visibility .75s;
+}
+#preloader.gone{opacity:0;visibility:hidden;pointer-events:none}
+.pl-mark{
+  width:76px;height:76px;
+  filter:drop-shadow(0 16px 34px rgba(139,43,255,.38));
+  animation:pl-float 3.2s var(--e-inout) infinite;
+}
+@keyframes pl-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.pl-type{
+  display:inline-flex;align-items:baseline;
+  font-weight:700;font-size:22px;letter-spacing:.02em;color:var(--label);
+}
+.pl-type .sl{color:var(--brand);font-weight:400;padding-inline:2px}
+.pl-bar{
+  width:136px;height:3px;border-radius:999px;background:var(--bg-3);overflow:hidden;
+  margin-top:6px;
+}
+.pl-bar i{
+  display:block;height:100%;width:44%;border-radius:inherit;
+  background:linear-gradient(90deg,var(--brand-2),var(--brand),#C77DFF);
+  animation:pl-sweep 1.15s var(--e-inout) infinite;
+}
+@keyframes pl-sweep{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
+.pl-txt{
+  font-size:11px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--label-2);margin-top:2px;
+}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
                        transition-duration:.001ms!important}
   .rv,.fade-up,.ln i,.mrow{opacity:1;transform:none}
   .bloom,.stage-bg .beam{display:none}
   .stage{transform:none!important}
+  #preloader .pl-bar i{animation:none;width:42%}
 }
 </style>
 </head>
 <body>
+
+<!-- ═══ PRELOADER — waits for the full load, then fades into the page ═══ -->
+<div id="preloader" role="status" aria-label="Loading IN/TENSION">
+  <svg class="pl-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg>
+  <span class="pl-type">IN<span class="sl">/</span>TENSION</span>
+  <div class="pl-bar" aria-hidden="true"><i></i></div>
+  <p class="pl-txt">Preparing your visit</p>
+</div>
+<noscript><style>#preloader{display:none}</style></noscript>
 
 <div id="progress"></div>
 <div id="warp"><i></i><i></i><i></i><i></i><i></i></div>
@@ -1169,7 +1214,25 @@ var fine = matchMedia("(hover:hover) and (pointer:fine)").matches;
 var lerp = function(a,b,t){ return a+(b-a)*t; };
 var clamp = function(v,a,b){ return Math.min(b,Math.max(a,v)); };
 
-requestAnimationFrame(function(){ document.getElementById("hero").classList.add("go"); });
+/* ── preloader: hold the themed gate until EVERYTHING has loaded,
+      then fade into the page (the hero entrance starts with the fade) ── */
+var plEl = document.getElementById("preloader");
+var plStart = Date.now(), plMin = 500, plShown = false;
+function reveal(){
+  if(plShown || !plEl) return;
+  plShown = true;
+  var hero = document.getElementById("hero");
+  if(hero) hero.classList.add("go");
+  plEl.classList.add("gone");
+  setTimeout(function(){ plEl.style.display = "none"; }, 850);
+}
+function plReady(){
+  if(Date.now()-plStart < plMin){ setTimeout(plReady, Math.max(40, plMin-(Date.now()-plStart))); return; }
+  reveal();
+}
+if(document.readyState === "complete") plReady();
+else addEventListener("load", plReady);
+setTimeout(reveal, 8000);   /* safety net: never strand the visitor on the loader */
 
 var bar = document.getElementById("bar");
 document.getElementById("barX").addEventListener("click", function(){
