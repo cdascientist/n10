@@ -134,3 +134,13 @@ Client: "organize the entire file structure in a clean react simple format with 
 3. **Logo** — moved **down 15%** (centred at ~35vh) and **+8% bigger** (mark `clamp(97px,15.1vw,130px)`, wordmark `clamp(45px,7.1vw,62px)`).
 4. **Floating item** (`#hero-object`) — hidden at the top; scrubbed fade-in as the Tension in/out section slides into place, fades back out on scroll-up. Fixed a real bug: the side-swap tween's `overwrite:true` was killing the opacity tween — now scoped to `x` only.
 5. Tests: `preloader-test.mjs` retired (jsdom can't run the SPA); `verify.mjs` updated for the React build — **50/50 on dev and live**. Screenshots: `screenshots/after-v10/`.
+
+# Changelog v13 — de-jitter + floating-item timing (2026-08-15, commit `8c521e4`)
+
+Client: "keep everything as is, however the tweens are jittery, and remember that floating logo should only appear until after you swipe up the transparent purple page."
+
+1. **Floating item timing fixed**: the pinned mark now stays hidden at the top AND at the half-hold, and only scrubs in as the transparent purple page (`#trust`) is swiped up — visible once the purple page has arrived (fades back out on scroll-up).
+2. **Jitter removed** from the scroll-linked tweens:
+   - Dropped the hold panel's `backdrop-filter: blur(6px)` — backdrop-filter forces a per-frame repaint of everything behind it while scrolling (the classic jitter source); the glass look is kept with a slightly denser translucent white (`rgba(255,255,255,.78)`).
+   - The veil and the hold glass no longer scrub `background-color` (full-screen paint every frame) — replaced with compositor-friendly **opacity layers**: the veil is a static purple base + a white crossfade layer (`#heroVeilW`, opacity-scrubbed), and the hold gets a purple tint layer (`#holdTint`, opacity-scrubbed). Only `#bg-canvas` keeps its `background-color` scrub — that's the signature mechanic.
+3. `verify.mjs` 53/53 on dev and live (floating item hidden at hold → visible after trust lands; veil white layer at hold; hold tint at trust). Screenshots: `screenshots/after-v11/`.
