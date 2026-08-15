@@ -92,3 +92,13 @@ Client: "the second page swiping up is not smooth … only keep the logo on page
 4. **Snap** now includes the half-hold resting point (`hold layout top − 50vh`): first and second swipes resolve to logo-full / half-hold / trust-land — never parked mid-slide.
 5. **Header +15%**: `--navh` 56→64px; nav logo mark 32→37px, wordmark 19→22px (scoped to `.nav` so the footer logo is unchanged).
 6. `verify.mjs` 52/52 (half-hold geometry, logo visibility, hold snap, opaque page 2, header sizes, page-1-logo-only); `preloader-test.mjs` 18/18. Screenshots: `screenshots/after-v4/`.
+
+# Changelog v8 — logo glow + glass half-hold (2026-08-15, commit `38d23af`)
+
+Client: "remove the gradient behind the logo on the first page, make the logo 30% bigger and glow via CSS (logo only), always centred vertically + horizontally; move the Book a session button right under the Tension in/out headline; make the sliding page semi-transparent and place like a calendar selection menu."
+
+1. **Halo removed from page 1** — the white radial gradient behind the logo is gone; the logo itself now glows via CSS `drop-shadow` (two white shadows, same fashion as the old gradient), applied to the logo only.
+2. **Logo centred** vertically + horizontally in the full first page (was top-half). It stays at +30% (83px mark / 39px wordmark).
+3. **Sliding page = semi-transparent glass**: `rgba(255,255,255,.6)` + `backdrop-filter: blur(6px)` — the centred logo stays visible through it at the half-hold. Its white→purple transition now scrubs the translucent pair (`rgba(255,255,255,.6)` → `rgba(139,43,255,.6)`).
+4. **Page-2 content** restored into a `.wrap.scene-in`, arranged menu-style ("calendar selection menu"): headline → **Book a session directly under it** (filled purple selection row, min-width 280px) → sub note below.
+5. `verify.mjs` 54/54 (glow filter, no halo on page 1, translucent glass, logo visible through glass, button order, filled button); `preloader-test.mjs` 18/18. Screenshots: `screenshots/after-v8/`.
