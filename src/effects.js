@@ -292,6 +292,9 @@ pio.observe(document.getElementById("proto"));
   document.documentElement.classList.add("js");
   if (!hasLibs) return; // no GSAP/Lenis: content stays fully visible
   var bg = document.getElementById("bg-canvas");
+  var bgPurple = document.getElementById("bgPurple");
+  var isWhite = function (s) { return s.dataset.bg === "#FFFFFF"; };
+  var setBg = function (s) { if (bgPurple) bgPurple.style.opacity = isWhite(s) ? "0" : "1"; };
   var obj = document.getElementById("hero-object");
   var sceneRun = document.querySelector(".scene-run");
   var skip = document.getElementById("skipIntro");
@@ -302,12 +305,12 @@ pio.observe(document.getElementById("proto"));
   var introSeen = false;
   try { introSeen = sessionStorage.getItem(SESSION_KEY) === "1"; } catch (e) {}
   /* initial paint: scene 1 owns the canvas and the ink */
-  if (bg) bg.style.backgroundColor = first.dataset.bg;
+  setBg(first);
   root.dataset.ink = first.dataset.ink;
   /* ── Reduced motion: no lenis, no snap, no pin, no scrubbed transforms ────
      Background simply follows the active scene through the CSS transition. */
   if (RM) {
-    if (bg) bg.style.transition = "background-color .45s ease";
+    if (bgPurple) bgPurple.style.transition = "opacity .45s ease";
     Array.prototype.forEach.call(scenes, function (scene) {
       ScrollTrigger.create({
         trigger: scene,
@@ -315,7 +318,7 @@ pio.observe(document.getElementById("proto"));
         end: "bottom 50%",
         onToggle: function (self) {
           if (!self.isActive) return;
-          if (bg) bg.style.backgroundColor = scene.dataset.bg;
+          setBg(scene);
           root.dataset.ink = scene.dataset.ink;
         }
       });
@@ -328,15 +331,17 @@ pio.observe(document.getElementById("proto"));
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
   gsap.ticker.lagSmoothing(0);
-  /* ── Mechanic 1 — continuous background interpolation ──────────────────── */
+  /* ── Mechanic 1 — continuous background interpolation ────────────────────
+     The whole arc is white ↔ purple, so a single purple layer's opacity is
+     scrubbed (composited, zero repaints — smooth scroll). */
   Array.prototype.forEach.call(scenes, function (scene, i) {
     var next = scenes[i + 1];
     if (!next) return;
     gsap.fromTo(
-      bg,
-      { backgroundColor: scene.dataset.bg },
+      bgPurple,
+      { opacity: isWhite(scene) ? 0 : 1 },
       {
-        backgroundColor: next.dataset.bg,
+        opacity: isWhite(next) ? 0 : 1,
         ease: "none",
         immediateRender: false,
         scrollTrigger: { trigger: next, start: "top bottom", end: "top top", scrub: true }
@@ -434,12 +439,13 @@ pio.observe(document.getElementById("proto"));
      (see below), so the whole opening hands the screen over to page three
      with no hard seam. */
   /* ── floating item (hero object) — hidden until the purple page has been ──
-     swiped up (fades in as #trust rises, fades back out on scroll-up). */
+     swiped up: it fades in only during the final approach of #trust (last
+     15% of its rise), so it never appears before the purple page is up. */
   if (obj && scenes[2]) {
     gsap.set(obj, { opacity: 0 });
     gsap.fromTo(obj, { opacity: 0 }, {
       opacity: 1, ease: "none",
-      scrollTrigger: { trigger: scenes[2], start: "top bottom", end: "top top", scrub: true }
+      scrollTrigger: { trigger: scenes[2], start: "top 15%", end: "top top", scrub: true }
     });
   }
   /* veil: purple base + a white crossfade layer — opacity-only scrubs
@@ -533,6 +539,7 @@ pio.observe(document.getElementById("proto"));
         },
         duration: { min: 0.2, max: 0.5 },
         delay: 0.08,
+        inertia: false,
         ease: "power2.inOut"
       },
       trigger: sceneRun,

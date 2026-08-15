@@ -9,7 +9,7 @@ export default function App() {
     <>
 
 {/* scroll-scene background canvas (Mechanic 1) — colour is driven by JS */}
-<div id="bg-canvas"></div>
+<div id="bg-canvas"><span id="bgPurple"></span></div>
 
 {/* intro skip link (Mechanic 6) — shown while the intro timeline runs */}
 <a className="skip-intro" id="skipIntro" href="#skipIntro">Skip animation</a>
