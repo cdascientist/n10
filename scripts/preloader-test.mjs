@@ -59,7 +59,7 @@ setTimeout(() => {
   record('preloader element present', !!pl);
   record('preloader visible at first paint', !!(pl && !pl.classList.contains('gone') && pl.style.display !== 'none'));
   record('preloader carries the brand mark', !!pl && !!pl.querySelector('.pl-mark use[href="#mark"]'));
-  record('preloader shows wordmark', !!(pl && pl.querySelector('.pl-type') && pl.querySelector('.pl-type').textContent.includes('TENSION')));
+  record('preloader shows wordmark', !!(pl && pl.querySelector('.pl-type') && pl.querySelector('.pl-type').textContent.includes('Tension')));
   record('progress bar present', !!pl && !!pl.querySelector('.pl-bar'));
   record('status label present', !!(pl && pl.querySelector('.pl-txt') && pl.querySelector('.pl-txt').textContent.trim().length));
 

@@ -246,10 +246,9 @@
 
     var intro = gsap.timeline({ paused: true, onComplete: finishIntro });
     intro
-      .from(firstWords, { yPercent: 115, duration: 1.0, ease: "power3.out", stagger: 0.1 }, 0.12)
-      .from(first.querySelectorAll(".scene-in > p, .scene-in > .cta-row"), {
-        y: 26, autoAlpha: 0, duration: 0.8, ease: "power2.out", stagger: 0.12
-      }, 0.45)
+      .from(first.querySelectorAll("#hero .ln, #hero .logo-lg, #hero .hero-sub, #hero .cta-row"), {
+        y: 26, autoAlpha: 0, duration: 0.8, ease: "power2.out", stagger: 0.1
+      }, 0.2)
       .from(objInner, { y: 26, rotate: 3, autoAlpha: 0, duration: 0.8, ease: "power2.out" }, 0.35)
       .add(finishIntro, "+=0.15");
 
