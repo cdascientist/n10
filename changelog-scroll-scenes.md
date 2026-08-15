@@ -38,3 +38,17 @@ Not touched: `package.json`, `app.js`, `react/`, `scripts/build.mjs` (no build �
 ## Screenshots (deliverable 4)
 
 `/root/n10/screenshots/before/` and `/root/n10/screenshots/after/` (1440×900, 375×812, JS-off and reduced-motion variants). Not committed (artifacts, ~3 MB total).
+
+---
+
+# Changelog v2 — client revision (2026-08-15, commit `532f6e5`)
+
+Follow-up request after seeing v1 live:
+
+1. **Hero restored to the previous first-page design**: photo backdrop (Unsplash + brand tone + white melt), `logo-lg`, the full `Tension in. / Tension out.` headline with the gradient `em`, the sub paragraph, and a single Book CTA ("Tour the space" removed — its destination page was deleted). Intro sequence retargeted to the restored hero elements.
+2. **Logo title is now `InTension`** (capital I, lowercase n, capital T, lowercase "ension") in the nav, hero, footer and preloader: `In` set in the purple brand gradient, `Tension` set in a black-metallic gradient (light-to-dark Apple grays). Old slash wordmark removed.
+3. **Background arc is now purple → white → purple**: hero `#FFFFFF` → trust `#8B2BFF` (light ink) → protocol/heat/movement/gallery/membership/cards/board/menu in whites (`#FFFFFF`, `#F2F2F7`, `#F7F2FF`, `#EFE3FF`) → book `#8B2BFF` (light ink). All colours remain existing palette values; ink pairings AA-safe at every snap position.
+4. **Vertical spacing tightened**: scene padding `clamp(48px,8vw,88px)` → `clamp(20px,3vw,36px)`; scene-in gap `clamp(16px,2.5vw,26px)` → `clamp(12px,1.8vw,20px)`.
+5. **Three pages deleted**: `#bodywork` (Long strokes. Real pressure.), `#fuel` (Fuel Lab / "Everything you drink here has a job"), `#space` ("One room, two moods"). All links to them removed from nav, mobile sheet and footer — verified 0 dangling anchors. Remaining: 11 scenes (hero, trust, protocol, heat, movement, gallery, membership, cards, board, menu, book).
+
+Tests updated to match (`verify.mjs` now 41 checks, all green on :3000 and :80; `preloader-test.mjs` assertion now expects the `InTension` wordmark). Screenshots v2: `/root/n10/screenshots/after-v2/`.
