@@ -144,3 +144,12 @@ Client: "keep everything as is, however the tweens are jittery, and remember tha
    - Dropped the hold panel's `backdrop-filter: blur(6px)` — backdrop-filter forces a per-frame repaint of everything behind it while scrolling (the classic jitter source); the glass look is kept with a slightly denser translucent white (`rgba(255,255,255,.78)`).
    - The veil and the hold glass no longer scrub `background-color` (full-screen paint every frame) — replaced with compositor-friendly **opacity layers**: the veil is a static purple base + a white crossfade layer (`#heroVeilW`, opacity-scrubbed), and the hold gets a purple tint layer (`#holdTint`, opacity-scrubbed). Only `#bg-canvas` keeps its `background-color` scrub — that's the signature mechanic.
 3. `verify.mjs` 53/53 on dev and live (floating item hidden at hold → visible after trust lands; veil white layer at hold; hold tint at trust). Screenshots: `screenshots/after-v11/`.
+
+# Changelog v14 — first-render colour, floating-logo timing, composited background (2026-08-15, commit `c021deb`)
+
+Client: "when the page first renders there is no background or color, then the floating logo spawns in before it should (only after the Transparent purple page), the page jitters and scrolling is not smooth at all."
+
+1. **First render has colour**: the preloader is now a brand-violet radial (`#A855FF → #8B2BFF`, existing palette) instead of plain white, and its wordmark is light-styled for the purple field.
+2. **Floating logo timing**: `#hero-object` now has `opacity:0` in CSS — it can never flash in on first frames (previously it rendered at full opacity until JS hid it). Its fade-in was also moved to the **last 15% of the purple page's rise** (`top 15% → top top`), so it only appears once the transparent purple page is essentially fully swiped up.
+3. **Jitter / smoothness**: the background arc only ever goes white ↔ purple, so `#bg-canvas` is now a white base plus a `#bgPurple` layer whose **opacity is scrubbed** — GPU-composited, zero full-screen repaints per frame (the old background-color scrub repainted the whole viewport on every scroll frame). The RM path and interpolation tests were updated for the layer. Snap also gets `inertia:false` so it stops fighting Lenis's smoothed velocity.
+4. `verify.mjs` 53/53 on dev and live. Screenshots: `screenshots/after-v12/`.
