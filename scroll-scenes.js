@@ -76,7 +76,7 @@
   /* ── Mechanic 1 — continuous background interpolation ──────────────────── */
   Array.prototype.forEach.call(scenes, function (scene, i) {
     var next = scenes[i + 1];
-    if (!next || next.dataset.cover === "true") return; // 5a: the cover owns this pair
+    if (!next) return;
     gsap.fromTo(
       bg,
       { backgroundColor: scene.dataset.bg },
@@ -91,7 +91,6 @@
 
   /* ── Mechanic 2 — ink inversion at the luminance midpoint ──────────────── */
   Array.prototype.forEach.call(scenes, function (scene) {
-    if (scene.dataset.cover === "true") return; // 5d: cover uses its own edge trigger
     ScrollTrigger.create({
       trigger: scene,
       start: "top 50%",
@@ -181,72 +180,19 @@
     }, { passive: true });
   }
 
-  /* ── Mechanic 8 — scroll-cover panel transition (reconciliation) ──────── */
-  var coverEl = document.querySelector(".panel--cover");
-  if (coverEl) {
-    var baseBg = scenes[0].dataset.bg;
-    var baseInk = scenes[0].dataset.ink;
-
-    /* 5a: the cover owns its transition — the canvas snaps to its opaque bg
-       on land and back to the base's bg on leave-back. Band ends exactly at
-       the landing point so the snap (which rests precisely on it) has already
-       crossed the enter edge. */
-    ScrollTrigger.create({
-      trigger: coverEl,
-      start: "top 1px",
-      end: "top top",
-      onEnter:     function () { if (bg) gsap.set(bg, { backgroundColor: coverEl.dataset.bg }); },
-      onLeaveBack: function () { if (bg) gsap.set(bg, { backgroundColor: baseBg }); }
-    });
-
-    /* 5d: ink flips when the cover's opaque edge passes the nav zone (--navh),
-       not at the 50% line — see design-audit.md §M8-5 */
-    ScrollTrigger.create({
-      trigger: coverEl,
-      start: "top 56px",
-      end: "top top",
-      onEnter:     function () { root.dataset.ink = coverEl.dataset.ink; },
-      onLeaveBack: function () { root.dataset.ink = baseInk; }
-    });
-
-    /* 5b: the hero object must not float over the cover — fade it out while
-       the cover travels, back in on reverse; it returns once protocol owns
-       the screen so the persistent-object mechanic stays alive for the run */
-    if (obj) {
-      gsap.to(obj, {
-        opacity: 0, ease: "none",
-        scrollTrigger: { trigger: coverEl, start: "top bottom", end: "top top", scrub: true }
-      });
-      if (scenes[2]) {
-        gsap.fromTo(obj, { opacity: 0 }, {
-          opacity: 1, ease: "none",
-          scrollTrigger: { trigger: scenes[2], start: "top bottom", end: "top top", scrub: true }
-        });
+  /* ── HERO VEIL — the changing colour layered over the massage images ─────
+     Purple at the top (the arc's start), scrubbed to white as the next scene
+     arrives, back on reverse — the purple→white→purple arc the client
+     specified, painted on top of the hero photos. */
+  var veilEl = document.getElementById("heroVeil");
+  if (veilEl && scenes[1]) {
+    gsap.fromTo(veilEl,
+      { backgroundColor: "#8B2BFF" },
+      {
+        backgroundColor: "#FFFFFF", ease: "none", immediateRender: false,
+        scrollTrigger: { trigger: scenes[1], start: "top bottom", end: "top top", scrub: true }
       }
-    }
-
-    /* 4a: outgoing panel recedes — inner only, never the sticky element */
-    var baseInner = document.querySelector(".panel--base .scene-in");
-    if (baseInner) {
-      gsap.to(baseInner, {
-        scale: 0.94, y: -48, opacity: 0.4, ease: "none",
-        scrollTrigger: { trigger: coverEl, start: "top bottom", end: "top top", scrub: true }
-      });
-    }
-    /* 4b: leading edge — corners round in transit, square when landed */
-    gsap.fromTo(coverEl,
-      { borderTopLeftRadius: 32, borderTopRightRadius: 32 },
-      { borderTopLeftRadius: 0, borderTopRightRadius: 0, ease: "none",
-        scrollTrigger: { trigger: coverEl, start: "top bottom", end: "top top", scrub: true } }
     );
-    /* 4c: content lag — the cover's contents trail its leading edge */
-    var coverInner = coverEl.querySelector(".scene-in");
-    if (coverInner) {
-      gsap.from(coverInner, {
-        y: 60, ease: "none",
-        scrollTrigger: { trigger: coverEl, start: "top bottom", end: "top top", scrub: true }
-      });
-    }
   }
 
   /* ── Mechanic 5 — snap to scene tops (desktop only) ──────────────────────

@@ -90,7 +90,7 @@ body{
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 img,svg{display:block;max-width:100%}
-::selection{background:var(--brand-soft);color:var(--brand-2)}
+::selection{background:rgba(139,43,255,.18);color:var(--brand-2)}
 :focus-visible{outline:3px solid rgba(175,82,222,.5);outline-offset:3px;border-radius:10px}
 
 /* ══ SCROLL SCENES ═════════════════════════════════════════════════ */
@@ -102,9 +102,9 @@ img,svg{display:block;max-width:100%}
   position:relative;display:grid;place-items:center;
   min-height:100vh;min-height:100svh;
   background-color:transparent;
-  padding:clamp(20px,3vw,36px) 0;
+  padding:clamp(16px,2.4vw,29px) 0;   /* −20% vertical spacing per client */
 }
-.scene-in{display:grid;justify-items:center;gap:clamp(12px,1.8vw,20px);text-align:center}
+.scene-in{display:grid;justify-items:center;gap:clamp(10px,1.4vw,16px);text-align:center}
 .scene-in > p{max-width:46ch;font-size:18px;color:var(--ink-dim);margin-inline:auto}
 .scene > .gal-track{width:100%}
 .scene h1,.scene h2{color:var(--ink);transition:color .45s ease}
@@ -152,14 +152,14 @@ p{color:var(--label-2);text-wrap:pretty}
 .eyebrow{
   display:inline-flex;align-items:center;gap:7px;
   padding:6px 13px;border-radius:999px;
-  background:var(--brand-soft);color:var(--brand-2);
+  background:#FFFFFF;border:1px solid rgba(139,43,255,.3);color:var(--brand-2);
   font-size:12.5px;font-weight:600;letter-spacing:-.005em;
 }
 .eyebrow svg{width:14px;height:14px;flex:none}
 
 /* ══ ATMOSPHERE ══════════════════════════════════════════════ */
 #warp{position:fixed;inset:0;z-index:125;pointer-events:none;perspective:1200px;display:flex}
-#warp i{flex:1;background:linear-gradient(180deg,#fff,var(--bg-2));
+#warp i{flex:1;background:linear-gradient(180deg,#fff,#fff);
         transform:rotateY(90deg);transform-origin:left center;opacity:0}
 #warp.go i{animation:warp 1s var(--e-inout) forwards}
 #warp.go i:nth-child(2){animation-delay:.05s}
@@ -200,8 +200,8 @@ p{color:var(--label-2);text-wrap:pretty}
 .btn:active{transform:scale(.965)}
 .btn-fill{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(139,43,255,.3)}
 .btn-fill:hover{background:var(--brand-2);box-shadow:0 6px 20px rgba(139,43,255,.38)}
-.btn-tint{background:var(--brand-soft);color:var(--brand-2)}
-.btn-tint:hover{background:#E4D2FF}
+.btn-tint{background:#FFFFFF;border:1px solid rgba(139,43,255,.3);color:var(--brand-2)}
+.btn-tint:hover{background:rgba(139,43,255,.1)}
 .btn-plain{background:var(--bg-2);color:var(--label)}
 .btn-plain:hover{background:var(--bg-3)}
 .btn svg{width:18px;height:18px;flex:none}
@@ -223,7 +223,7 @@ p{color:var(--label-2);text-wrap:pretty}
 /* ══ BANNER ══════════════════════════════════════════════════ */
 .bar{
   position:relative;z-index:60;overflow:hidden;
-  background:var(--tint-wash);border-bottom:.5px solid var(--sep);
+  background:#FFFFFF;border-bottom:.5px solid var(--sep);
   max-height:140px;transition:max-height .7s var(--e-inout),opacity .4s var(--e-soft);
 }
 .bar.gone{max-height:0;opacity:0}
@@ -267,9 +267,9 @@ p{color:var(--label-2);text-wrap:pretty}
 .menu-item:hover .drop,.drop.open{opacity:1;visibility:visible;transform:none}
 .drop a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:11px;min-height:0;
         transition:background .26s var(--e-soft)}
-.drop a:hover{background:var(--bg-2)}
+.drop a:hover{background:rgba(139,43,255,.06)}
 .drop .gi{width:28px;height:28px;flex:none;border-radius:8px;display:grid;place-items:center;
-          background:var(--brand-soft);color:var(--brand)}
+          background:rgba(139,43,255,.1);color:var(--brand)}
 .drop .gi svg{width:16px;height:16px}
 .drop b{display:block;font-size:14.5px;font-weight:600;color:var(--label)}
 .drop span{display:block;font-size:12.5px;color:var(--label-3);line-height:1.35;margin-top:1px}
@@ -281,7 +281,7 @@ p{color:var(--label-2);text-wrap:pretty}
   border:1px solid color-mix(in srgb,var(--ink) 40%,transparent);
   box-shadow:none;transition:color .45s ease,background .3s var(--e-soft);
 }
-.burger{display:none;width:44px;height:44px;border-radius:11px;background:var(--bg-2)}
+.burger{display:none;width:44px;height:44px;border-radius:11px;background:#FFFFFF;border:.5px solid rgba(139,43,255,.3)}
 .burger span{display:block;width:17px;height:1.6px;border-radius:2px;background:var(--label);
              margin:4.2px auto;transition:transform .45s var(--e-inout),opacity .25s}
 .burger.on span:nth-child(1){transform:translateY(5.8px) rotate(45deg)}
@@ -298,7 +298,7 @@ p{color:var(--label-2);text-wrap:pretty}
 .sheet.on{opacity:1;visibility:visible;transform:none}
 .sheet h4{font-size:12.5px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;
           color:var(--label-3);margin:24px 0 8px;padding-inline:16px}
-.sheet .grouped{background:var(--bg-2);border-radius:var(--r-m);overflow:hidden}
+.sheet .grouped{background:#FFFFFF;border:.5px solid var(--sep);border-radius:var(--r-m);overflow:hidden}
 .sheet .grouped a{
   display:flex;align-items:center;gap:12px;padding:14px 16px;min-height:52px;
   font-size:17px;font-weight:500;
@@ -307,10 +307,10 @@ p{color:var(--label-2);text-wrap:pretty}
   transition:opacity .45s var(--e-out),transform .45s var(--e-out),background .25s;
 }
 .sheet .grouped a:last-child{box-shadow:none}
-.sheet .grouped a:active{background:var(--bg-3)}
+.sheet .grouped a:active{background:rgba(139,43,255,.08)}
 .sheet.on .grouped a{opacity:1;transform:none}
 .sheet .gi{width:29px;height:29px;flex:none;border-radius:8px;display:grid;place-items:center;
-           background:var(--brand-soft);color:var(--brand)}
+           background:rgba(139,43,255,.1);color:var(--brand)}
 .sheet .gi svg{width:17px;height:17px}
 .sheet .chev{margin-left:auto;color:var(--label-3);width:14px;height:14px}
 .sheet .btn{margin-top:26px;width:100%}
@@ -322,7 +322,7 @@ p{color:var(--label-2);text-wrap:pretty}
 /* ══ WORDMARK — InTension (restyled logo title) ═══════════════════ */
 .lg-in,.lg-ten{font-style:normal}
 .lg-in{
-  background:linear-gradient(96deg,var(--brand),var(--purple) 46%,var(--indigo));
+  background:linear-gradient(96deg,var(--brand),var(--purple) 46%,var(--brand-2));
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .lg-ten{
@@ -330,19 +330,18 @@ p{color:var(--label-2);text-wrap:pretty}
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 
-/* ══ RESTORED HERO — previous first-page look ═════════════════════ */
+/* ══ HERO — classic first page: massage images + changing colour veil ══ */
 .hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .hero-bg .shot{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  filter:saturate(.55) brightness(1.16) contrast(.92);
-  opacity:.34;transform:scale(1.06);
+  filter:saturate(.6) brightness(1.12) contrast(.95);
+  transform:scale(1.05);
 }
-.hero-bg .tone{position:absolute;inset:0;background:var(--brand);mix-blend-mode:color;opacity:.26}
-.hero-bg .melt{position:absolute;inset:0;
-  background:
-    linear-gradient(180deg,var(--bg) 0%,rgba(255,255,255,.55) 24%,
-                    rgba(255,255,255,.6) 66%,var(--bg) 100%),
-    radial-gradient(ellipse 94% 80% at 50% 46%,transparent 30%,rgba(255,255,255,.92) 100%);
+.hero-bg .shot.alt{opacity:0;animation:heroXfade 16s ease-in-out infinite}
+@keyframes heroXfade{0%,42%{opacity:0}58%,100%{opacity:1}}
+.hero-bg .veil{
+  position:absolute;inset:0;
+  background:#8B2BFF;opacity:.5;   /* the changing colour — scrubbed purple→white by JS */
 }
 #hero h1{
   font-size:clamp(38px,7.4vw,76px);line-height:1.04;letter-spacing:-.032em;
@@ -351,25 +350,8 @@ p{color:var(--label-2);text-wrap:pretty}
 #hero h1 .ln{display:block;padding-bottom:.06em}
 #hero h1 em{
   font-style:normal;
-  background:linear-gradient(96deg,var(--brand),var(--purple) 46%,var(--indigo));
+  background:linear-gradient(96deg,var(--brand),var(--purple) 46%,var(--brand-2));
   -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-
-/* ══ MECHANIC 8 — scroll-cover panel transition ══════════════════ */
-/* sticky-blocker audit (design-audit.md §M8-3): only `body{overflow-x:hidden}`
-   was a potential blocker; moved to html as overflow-x:clip above. */
-.cover-stack{position:relative}  /* no overflow / transform / filter on this element */
-.panel--base{
-  position:sticky;top:0;z-index:1;
-  height:100vh;height:100svh;      /* svh, not vh — mobile chrome */
-  overflow:hidden;                 /* safe here: it is the sticky element, not an ancestor */
-}
-.panel--cover{
-  position:relative;z-index:2;
-  min-height:100vh;min-height:100svh;
-  background-color:#8B2BFF;        /* fully opaque — existing --brand */
-  will-change:transform;
-  box-shadow:0 -32px 64px -16px rgba(30,10,60,.24);  /* elevation family (sticker shadow tones) */
 }
 
 .trust{
@@ -377,7 +359,7 @@ p{color:var(--label-2);text-wrap:pretty}
 }
 .trust div{
   display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:999px;
-  background:var(--bg-2);font-size:13.5px;font-weight:500;color:var(--label-2);
+  background:#FFFFFF;font-size:13.5px;font-weight:500;color:var(--label-2);
 }
 .trust svg{width:15px;height:15px;color:var(--brand);flex:none}
 .trust b{color:var(--label);font-weight:600}
@@ -389,8 +371,8 @@ p{color:var(--label-2);text-wrap:pretty}
   background:var(--card);border:.5px solid var(--sep);box-shadow:var(--sh-3);
 }
 .proto-hd{display:flex;align-items:center;gap:9px;padding-bottom:15px;border-bottom:.5px solid var(--sep)}
-.pip{width:9px;height:9px;border-radius:50%;background:var(--mint);
-     box-shadow:0 0 0 0 rgba(52,199,89,.5);animation:ping 2.6s var(--e-soft) infinite}
+.pip{width:9px;height:9px;border-radius:50%;background:var(--brand);
+     box-shadow:0 0 0 0 rgba(139,43,255,.5);animation:ping 2.6s var(--e-soft) infinite}
 @keyframes ping{70%{box-shadow:0 0 0 9px rgba(52,199,89,0)}100%{box-shadow:0 0 0 0 rgba(52,199,89,0)}}
 .proto-hd span{font-size:13px;font-weight:600;color:var(--label-2)}
 .proto-hd .sid{margin-left:auto;font-size:12px;color:var(--label-3)}
@@ -401,9 +383,9 @@ p{color:var(--label-2);text-wrap:pretty}
 .gauge-num b{font-size:clamp(44px,9vw,62px);font-weight:700;line-height:.88;letter-spacing:-.045em;
              font-variant-numeric:tabular-nums;color:var(--label)}
 .gauge-num i{font-style:normal;font-size:13px;font-weight:500;color:var(--label-3);padding-bottom:7px}
-.gauge-track{height:8px;border-radius:999px;background:var(--bg-3);overflow:hidden;margin-top:15px;position:relative}
+.gauge-track{height:8px;border-radius:999px;background:rgba(60,60,67,.12);overflow:hidden;margin-top:15px;position:relative}
 .gauge-track i{position:absolute;inset:0;transform-origin:left;border-radius:999px;
-               background:linear-gradient(90deg,var(--indigo),var(--brand),var(--purple))}
+               background:linear-gradient(90deg,var(--brand-2),var(--brand),var(--purple))}
 .gauge-scale{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;color:var(--label-3)}
 
 .stages{list-style:none;padding:14px 0 0;display:grid}
@@ -425,13 +407,13 @@ p{color:var(--label-2);text-wrap:pretty}
 
 .verdict{
   margin-top:14px;padding:14px 16px;border-radius:var(--r-s);display:flex;align-items:center;gap:10px;
-  background:rgba(52,199,89,.12);
+  background:rgba(139,43,255,.12);
   opacity:0;transform:translateY(10px) scale(.98);
   transition:opacity .6s var(--e-out),transform .7s var(--e-spring);
 }
 .verdict.on{opacity:1;transform:none}
-.verdict svg{width:19px;height:19px;color:var(--mint);flex:none}
-.verdict b{font-size:16px;font-weight:600;color:#1F7A38}
+.verdict svg{width:19px;height:19px;color:var(--brand);flex:none}
+.verdict b{font-size:16px;font-weight:600;color:var(--brand-2)}
 .verdict span{margin-left:auto;font-size:13px;color:var(--label-2)}
 
 /* ══ TICKER ══════════════════════════════════════════════════ */
@@ -452,18 +434,18 @@ p{color:var(--label-2);text-wrap:pretty}
 
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:999px;
-      background:var(--bg-2);font-size:13.5px;font-weight:500;color:var(--label-2);
+      background:#FFFFFF;border:1px solid rgba(139,43,255,.3);font-size:13.5px;font-weight:500;color:var(--brand-2);
       transition:background .3s var(--e-soft),color .3s,transform .4s var(--e-spring)}
-.chip:hover{background:var(--brand-soft);color:var(--brand-2);transform:translateY(-2px)}
+.chip:hover{background:rgba(139,43,255,.08);color:var(--brand-2);transform:translateY(-2px)}
 
 .art{
   position:relative;width:min(100%,700px);margin:0 auto 28px;aspect-ratio:16/10;
-  border-radius:var(--r-l);overflow:hidden;background:var(--bg-2);
+  border-radius:var(--r-l);overflow:hidden;background:#FFFFFF;
   box-shadow:var(--sh-2);will-change:transform;
   transition:box-shadow .6s var(--e-out);
 }
 .art:hover{box-shadow:var(--sh-3)}
-.duo{position:absolute;inset:0;overflow:hidden;background:var(--bg-2)}
+.duo{position:absolute;inset:0;overflow:hidden;background:#FFFFFF}
 .duo .shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   filter:saturate(.72) brightness(1.1) contrast(.96);
   transform:scale(1.03);will-change:transform;
@@ -508,7 +490,7 @@ p{color:var(--label-2);text-wrap:pretty}
 .gal-track:hover .gal-run{animation-play-state:paused}
 @keyframes gal{to{transform:translateX(-50%)}}
 .tile{position:relative;flex:none;width:clamp(178px,42vw,290px);aspect-ratio:4/5;
-  border-radius:var(--r-m);overflow:hidden;background:var(--bg-2);box-shadow:var(--sh-1);
+  border-radius:var(--r-m);overflow:hidden;background:#FFFFFF;box-shadow:var(--sh-1);
   transition:transform .55s var(--e-spring),box-shadow .55s var(--e-out)}
 .tile:nth-child(even){aspect-ratio:4/3}
 .tile:hover{transform:translateY(-6px) scale(1.02);box-shadow:var(--sh-3)}
@@ -564,15 +546,15 @@ p{color:var(--label-2);text-wrap:pretty}
 /* ══ MENU BOARD + segmented control ══════════════════════════ */
 .screen{position:relative;overflow:hidden;border-radius:var(--r-l);background:var(--card);
         border:.5px solid var(--sep);box-shadow:var(--sh-2)}
-.seg{display:flex;gap:2px;margin:0 auto;padding:3px;border-radius:11px;background:var(--bg-2);
-     max-width:min(100%,560px);position:relative}
+.seg{display:flex;gap:2px;margin:0 auto;padding:3px;border-radius:11px;background:#FFFFFF;
+     border:.5px solid rgba(139,43,255,.25);max-width:min(100%,560px);position:relative}
 .seg-wrap{padding:18px 18px 4px}
 .seg button{position:relative;z-index:1;flex:1;min-height:36px;padding:8px 10px;border-radius:9px;
             font-size:13.5px;font-weight:600;color:var(--label-2);white-space:nowrap;
             transition:color .3s var(--e-soft)}
-.seg button[aria-selected="true"]{color:var(--label)}
-#segbar{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:9px;background:var(--card);
-        box-shadow:0 1px 3px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.03);
+.seg button[aria-selected="true"]{color:#FFFFFF}
+#segbar{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:9px;background:var(--brand);
+        box-shadow:0 1px 3px rgba(0,0,0,.15),0 0 0 .5px rgba(0,0,0,.05);
         transition:transform .45s var(--e-spring),width .45s var(--e-spring)}
 .pane{padding:8px 18px 20px}
 .pane[hidden]{display:none}
@@ -583,9 +565,9 @@ p{color:var(--label-2);text-wrap:pretty}
 .pane:not([hidden]) .mrow{animation:fu .7s var(--e-out) forwards}
 .pane:not([hidden]) .mrow:nth-child(2){animation-delay:.07s}
 .pane:not([hidden]) .mrow:nth-child(3){animation-delay:.14s}
-.mrow:hover{background:var(--bg-2)}
+.mrow:hover{background:rgba(139,43,255,.06)}
 .mrow .mi{width:38px;height:38px;flex:none;border-radius:11px;display:grid;place-items:center;
-          background:var(--brand-soft);color:var(--brand)}
+          background:rgba(139,43,255,.1);color:var(--brand)}
 .mrow .mi svg{width:20px;height:20px}
 .mrow .mt{flex:1;min-width:0}
 .mrow .nm{display:block;font-size:16.5px;font-weight:600;letter-spacing:-.015em}
@@ -595,7 +577,7 @@ p{color:var(--label-2);text-wrap:pretty}
 /* ══ CTA ═════════════════════════════════════════════════════ */
 .close-in{position:relative;overflow:hidden;border-radius:var(--r-l);text-align:center;
   padding:clamp(38px,7vw,80px) clamp(22px,5vw,60px);
-  background:linear-gradient(155deg,#F7F1FF,#EEF0FF 55%,#F6F7FA);
+  background:#FFFFFF;
   border:.5px solid var(--sep);box-shadow:var(--sh-2)}
 .close-in > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.2;
   filter:saturate(.5) brightness(1.2)}
@@ -607,21 +589,21 @@ p{color:var(--label-2);text-wrap:pretty}
 .close-in .cta-row{margin-top:26px}
 
 /* ══ FOOTER (grouped list style) ═════════════════════════════ */
-.foot{position:relative;z-index:2;background:var(--bg-2);
+.foot{position:relative;z-index:2;background:#FFFFFF;
       border-top:.5px solid var(--sep);padding:clamp(42px,7vw,72px) 0 30px;text-align:center}
 .foot-brand{max-width:38ch;margin:0 auto 38px}
 .foot-brand p{font-size:15px;margin-top:12px}
 .badge{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:8px 15px;
   border-radius:999px;background:var(--card);border:.5px solid var(--sep);
   font-size:13px;font-weight:500;color:var(--label-2)}
-.badge svg{width:15px;height:15px;color:var(--mint)}
+.badge svg{width:15px;height:15px;color:var(--brand)}
 .foot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;text-align:left}
 .foot h4{font-size:12.5px;font-weight:600;color:var(--label-3);margin:0 0 8px;padding-inline:16px}
 .foot .grouped{background:var(--card);border-radius:var(--r-m);overflow:hidden}
 .foot .grouped a{display:flex;align-items:center;gap:10px;padding:12px 16px;min-height:46px;
                  font-size:15.5px;box-shadow:inset 0 -.5px 0 var(--sep);transition:background .25s}
 .foot .grouped a:last-child{box-shadow:none}
-.foot .grouped a:hover{background:var(--bg-2)}
+.foot .grouped a:hover{background:rgba(139,43,255,.06)}
 .foot .grouped .chev{margin-left:auto;width:13px;height:13px;color:var(--label-3)}
 .hours{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
        background:var(--card);border-radius:var(--r-m);padding:18px;margin-bottom:26px}
@@ -656,7 +638,7 @@ p{color:var(--label-2);text-wrap:pretty}
   .seg{flex-wrap:wrap}
   .seg button{flex:1 1 44%}
   #segbar{display:none}
-  .seg button[aria-selected="true"]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .seg button[aria-selected="true"]{background:var(--brand);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)}
   .tile{width:clamp(160px,56vw,236px)}
 }
 @media (max-width:400px){
@@ -671,7 +653,7 @@ p{color:var(--label-2);text-wrap:pretty}
 #preloader{
   position:fixed;inset:0;z-index:200;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
-  background:radial-gradient(1100px 640px at 50% 30%,#FBF7FF 0%,#fff 58%);
+  background:#fff;
   transition:opacity .75s var(--e-out),visibility .75s;
 }
 #preloader.gone{opacity:0;visibility:hidden;pointer-events:none}
@@ -687,7 +669,7 @@ p{color:var(--label-2);text-wrap:pretty}
 }
 .pl-type .sl{color:var(--brand);font-weight:400;padding-inline:2px}
 .pl-bar{
-  width:136px;height:3px;border-radius:999px;background:var(--bg-3);overflow:hidden;
+  width:136px;height:3px;border-radius:999px;background:rgba(60,60,67,.15);overflow:hidden;
   margin-top:6px;
 }
 .pl-bar i{
@@ -834,7 +816,7 @@ p{color:var(--label-2);text-wrap:pretty}
 <svg style="display:none" aria-hidden="true">
   <defs>
     <linearGradient id="markG" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#C77DFF"/><stop offset=".5" stop-color="#8B2BFF"/><stop offset="1" stop-color="#5856D6"/>
+      <stop offset="0" stop-color="#C77DFF"/><stop offset=".5" stop-color="#8B2BFF"/><stop offset="1" stop-color="#6E1FD1"/>
     </linearGradient>
   </defs>
   <g id="i-hands" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -975,12 +957,12 @@ p{color:var(--label-2);text-wrap:pretty}
   </div>
 </div>
 
-<!-- HERO (panel one — sticky base) -->
-<div class="cover-stack">
-<section class="scene panel panel--base" data-bg="#FFFFFF" data-ink="dark" id="hero">
+<!-- HERO -->
+<section class="scene" data-bg="#FFFFFF" data-ink="dark" id="hero">
   <div class="hero-bg">
-    <img class="shot" src="https://images.unsplash.com/photo-1532764587009-4d6bb8cf62cd?fm=jpg&amp;q=76&amp;w=1800&amp;auto=format&amp;fit=crop" alt="" aria-hidden="true" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">
-    <span class="tone"></span><span class="melt"></span>
+    <img class="shot" src="https://images.unsplash.com/photo-1741522509438-a120c0bb5e88?fm=jpg&amp;q=76&amp;w=1800&amp;auto=format&amp;fit=crop" alt="" aria-hidden="true" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">
+    <img class="shot alt" src="https://images.unsplash.com/photo-1745327883508-b6cd32e5dde5?fm=jpg&amp;q=76&amp;w=1800&amp;auto=format&amp;fit=crop" alt="" aria-hidden="true" decoding="async" referrerpolicy="no-referrer">
+    <span class="veil" id="heroVeil"></span>
   </div>
   <div class="wrap scene-in">
     <a class="logo logo-lg" href="#top" aria-label="InTension home">
@@ -998,8 +980,8 @@ p{color:var(--label-2);text-wrap:pretty}
   </div>
 </section>
 
-<!-- TRUST (panel two — opaque cover) -->
-<section class="scene panel panel--cover" data-bg="#8B2BFF" data-ink="light" data-cover="true" id="trust">
+<!-- TRUST -->
+<section class="scene" data-bg="#8B2BFF" data-ink="light" id="trust">
   <div class="wrap scene-in">
     <div class="trust">
       <div><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg><b>Licensed</b> therapists</div>
@@ -1009,7 +991,6 @@ p{color:var(--label-2);text-wrap:pretty}
     </div>
   </div>
 </section>
-</div><!-- /cover-stack -->
 
 <!-- PROTOCOL -->
 <section class="scene" data-bg="#FFFFFF" data-ink="dark" id="protocol">
@@ -1036,7 +1017,7 @@ p{color:var(--label-2);text-wrap:pretty}
   </div>
 </section>
 <!-- HEAT -->
-<section class="scene" data-bg="#F2F2F7" data-ink="dark" id="heat">
+<section class="scene" data-bg="#FFFFFF" data-ink="dark" id="heat">
   <div class="wrap scene-in">
     <div class="art tilt">
       <div class="duo">
@@ -1084,7 +1065,7 @@ p{color:var(--label-2);text-wrap:pretty}
 </section>
 
 <!-- GALLERY -->
-<section class="scene" data-bg="#F7F2FF" data-ink="dark" id="gallery">
+<section class="scene" data-bg="#FFFFFF" data-ink="dark" id="gallery">
   <div class="wrap scene-in">
     <p class="eyebrow"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Inside a session</p>
     <h2 class="ticker">
@@ -1098,7 +1079,7 @@ p{color:var(--label-2);text-wrap:pretty}
 </section>
 
 <!-- MEMBERSHIP -->
-<section class="scene" data-bg="#EFE3FF" data-ink="dark" id="membership">
+<section class="scene" data-bg="#FFFFFF" data-ink="dark" id="membership">
   <div class="wrap scene-in">
       <p class="eyebrow"><svg viewBox="0 0 24 24"><use href="#i-key"/></svg>Membership</p>
       <h2 class="ticker">
@@ -1154,7 +1135,7 @@ p{color:var(--label-2);text-wrap:pretty}
 </section>
 
 <!-- BOARD -->
-<section class="scene" data-bg="#F2F2F7" data-ink="dark" id="fuel-menu">
+<section class="scene" data-bg="#FFFFFF" data-ink="dark" id="fuel-menu">
   <div class="wrap scene-in">
       <p class="eyebrow"><svg viewBox="0 0 24 24"><use href="#i-leaf"/></svg>Fuel Lab</p>
       <h2 class="ticker">
