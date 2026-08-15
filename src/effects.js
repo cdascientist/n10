@@ -12,10 +12,12 @@ var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 var fine = matchMedia("(hover:hover) and (pointer:fine)").matches;
 var lerp = function(a,b,t){ return a+(b-a)*t; };
 var clamp = function(v,a,b){ return Math.min(b,Math.max(a,v)); };
-/* ── preloader: hold the themed gate until EVERYTHING has loaded,
-      then fade into the page (the hero entrance starts with the fade) ── */
+/* ── preloader: pure gate — no asset logic inside it. The scene images are
+      eager in the DOM, so the browser's load event already means "everything
+      loaded". On load (or a fallback timer if load never fires) we reveal.
+      Hard caps below guarantee the loader can never linger. ── */
 var plEl = document.getElementById("preloader");
-var plStart = Date.now(), plMin = 800, plShown = false;
+var plStart = Date.now(), plMin = 600, plShown = false;
 var plRevealCb = null;   /* intro (or anything else) waiting on the reveal */
 function reveal(){
   if(plShown || !plEl) return;
@@ -27,37 +29,17 @@ function reveal(){
   setTimeout(function(){ plEl.style.display = "none"; }, 850);
   if(plRevealCb){ var cb = plRevealCb; plRevealCb = null; cb(); }
 }
-/* Hold the gate until every first-paint image is loaded AND decoded, so the
-   page is fully rendered the moment it fades. Only EAGER images gate the
-   reveal (the lazy gallery marquee loads natively as you scroll — waiting
-   on 20 more images on iOS's 6-connection limit is what stranded visitors
-   on the loader). decode() is guarded (missing on old iOS), raced against a
-   per-image timeout, and the whole path can never throw — the safety net
-   below is the last backstop. */
 function plReady(){
-  if(Date.now()-plStart < plMin){ setTimeout(plReady, Math.max(40, plMin-(Date.now()-plStart))); return; }
-  var imgs = Array.prototype.slice.call(document.images).filter(function(i){
-    return i.src && i.src.slice(0,5) !== "data:" && i.loading !== "lazy";
-  });
-  function waitOne(i){
-    if (i.complete && i.naturalWidth) return Promise.resolve();
-    if (typeof i.decode !== "function") return Promise.resolve();
-    return Promise.race([
-      i.decode().catch(function(){}),
-      new Promise(function(r){ setTimeout(r, 2500); })
-    ]);
-  }
-  Promise.all(imgs.map(waitOne)).then(reveal, reveal);
+  if(Date.now()-plStart < plMin){ setTimeout(plReady, 40); return; }
+  reveal();
 }
 if(document.readyState === "complete") plReady();
 else addEventListener("load", plReady);
-/* Independent safety rails (defense in depth — the user reported being
-   stuck on iOS, so the reveal must never depend on a single path):
-   1) run the gate even if the load event never fires (flaky networks,
-      hung image requests)
-   2) hard cap: the preloader NEVER lingers past 4s, on any device */
-setTimeout(plReady, 3500);
-setTimeout(reveal, 4000);
+/* Backstops only — the reveal never depends on a single path:
+   1) run the gate even if the load event never fires
+   2) final hard cap: the preloader NEVER lingers past 6s, any device */
+setTimeout(plReady, 5000);
+setTimeout(reveal, 6000);
 /* ── PROMO STICKER — fixed bottom-right badge ─────────────────────────
    EDIT THE PROMO COPY HERE (loud word + supporting sub-line). The badge
    keeps its hidden pre-entrance pose until reveal() fires, then springs
