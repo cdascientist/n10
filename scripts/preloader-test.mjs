@@ -85,7 +85,7 @@ setTimeout(() => {
       const doc = win.document;
       record('nav intact', !!doc.querySelector('header.nav .logo'));
       record('menu intact', doc.querySelectorAll('header.nav .menu .menu-item').length >= 3);
-      record('hero content intact', !!(doc.getElementById('hero') && doc.querySelector('.hero h1')));
+      record('hero content intact', !!(doc.getElementById('hero') && doc.querySelector('#hero h1')));
       record('footer intact', !!doc.querySelector('footer'));
       win.close();
       process.exit(allOk() ? 0 : 1);
