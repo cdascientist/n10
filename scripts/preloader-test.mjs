@@ -63,12 +63,20 @@ setTimeout(() => {
   record('progress bar present', !!pl && !!pl.querySelector('.pl-bar'));
   record('status label present', !!(pl && pl.querySelector('.pl-txt') && pl.querySelector('.pl-txt').textContent.trim().length));
 
+  /* ── promo sticker (present + copy, hidden before reveal) ───────── */
+  const sticker = win.document.getElementById('sticker');
+  record('promo sticker present', !!sticker);
+  record('sticker carries the promo word', !!(sticker && sticker.textContent.includes('NEW')));
+  record('sticker carries the sub-line', !!(sticker && sticker.textContent.includes('FOUNDING MEMBERS')));
+  record('sticker hidden before reveal', !!(sticker && !sticker.classList.contains('in')));
+
   /* ── phase 2: after load + min window, gate fades, hero enters ──── */
   setTimeout(() => {
     const pl = win.document.getElementById('preloader');
     const hero = win.document.getElementById('hero');
     record('preloader fades after full load (.gone)', !!(pl && pl.classList.contains('gone')));
     record('hero entrance starts with the fade', !!(hero && hero.classList.contains('go')));
+    record('sticker springs in after reveal (.in)', !!(sticker && sticker.classList.contains('in')));
 
     /* ── phase 3: fully removed, page intact ──────────────────────── */
     setTimeout(() => {
