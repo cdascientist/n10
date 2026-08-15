@@ -282,3 +282,14 @@ Built with Claude Code agents (headless, prompt-file brief) — 1,130-line self-
 
 **URL: http://209.46.121.242/frmm/ (and http://localhost/frmm/ locally)**
 
+
+# Changelog v18.1 — FRMM v2 (2026-08-15, commit `8fe9495`)
+
+Client: title runs off the first page; prices ×1.56; HELP ME NOW → large promotional green, 3D popping off the screen; opens a smooth Apple liquid-glass dialog with three huge radio options (Find Me GPS / CALL / Request Email), big Next button, multi-page flow, every option saved to a variable.
+
+1. **Title overflow**: hero wordmark wraps (FRMM / Mobile Mechanics) with tightened clamps — verified 0px overflow at 375px.
+2. **Prices ×1.56**: $139 / $201 / $154 / $232 / $295 / $123 (trip fee $0).
+3. **HELP ME NOW = big promotional green 3D button**: `#4ADE80→#16A34A` gradient, 5-layer stacked ledge shadows (real "off the screen" depth), glossy top highlight, breathing float, press-down active state; fixed pill + hero/final CTAs.
+4. **Apple liquid-glass wizard dialog**: `backdrop-filter: blur(30px) saturate(180%)`, 30px radius, springy entrance; 3-step flow — (1) three huge radio cards + big Next (disabled until a choice), (2) details (GPS auto-locates + saves coords with call/maps fallback · Call shows the number · Email takes email + notes), (3) confirm summary → Request help → "Help is on the way" done state. Every choice saved to `window.__hmn` {step, method, coords, email, notes, submitted}.
+5. `verify-frmm.mjs` 18/18 dev + live. Screenshots `screenshots/frmm-v2/`.
+
