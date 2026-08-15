@@ -120,3 +120,7 @@ Client: "push to github with all changes, then remove the components and unused 
 - **package.json tidied**: scripts reduced to `start` (build/smoke dangled); deps trimmed to `jsdom` (preloader-test) — react/react-dom/esbuild were only for the removed walkthrough.
 - **Everything pushed**: screenshots (v2–v9 deliverables) committed; branch `scroll-scenes` fully in sync with origin.
 - Live site unaffected (marketing `index.html` + `scroll-scenes.js` + `app.js` + preloader-test remain; nginx never served react/).
+
+# Changelog v11 — auto-deploy watcher for main (2026-08-15)
+
+Infra: `/root/deploy-n10.sh` + cron (`*/2 * * * *`) watch `refs/heads/main` on GitHub. On change: fetch → checkout the exact SHA into `/var/n10` (nginx root) → run the build step if `package.json` defines one (currently none — static output) → curl-verify → record SHA in `/root/.n10-main-sha`. `main` fast-forwarded to the current site (`5fac4f2 → ab48be4`) so the watcher maintains the live scroll-scene site. Manual deploys no longer needed for main.
