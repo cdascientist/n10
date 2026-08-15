@@ -196,3 +196,14 @@ Client (iOS): "when initially loading the page i am stuck at the loading page."
 3. **CSS backstop**: the static `#boot` layer self-fades after 10s even with fully dead JS — no screen can ever stick.
 4. Verified with an iPhone UA (390×844, touch): preloader gone ≈0.9s, intro done ≈2s. 53/53 dev + live.
 
+
+# Changelog v17.2 — preloader hard cap (2026-08-15, commit `1e24f8e`)
+
+Client (iOS, 2nd report): "stuck at the loading page saying preparing your visit."
+
+The reveal's single 8s safety net could still visibly linger on flaky cellular (hung Unsplash requests delaying the load event). Now the reveal can never depend on one path:
+
+1. `plReady()` also runs on an independent 3.5s timer — even if the `load` event never fires.
+2. `setTimeout(reveal, 4000)` hard cap — the preloader NEVER lingers past 4s on any device; the image-wait fast path still reveals sooner (~0.9s).
+3. Verified worst case (all image requests aborted): preloader gone at 928ms. 53/53 dev + live.
+
