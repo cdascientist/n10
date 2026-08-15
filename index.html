@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IN/TENSION — Bodywork, Heat, Movement &amp; Fuel</title>
 <meta name="description" content="Swedish bodywork, infrared sauna, cold plunge, movement and the Fuel Lab. Ninety minutes to reset a whole week.">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#8B2BFF">
+<!-- Static boot layer: paints the brand purple from the very first byte,
+     before the JS bundle loads. React removes #boot on mount; the app's own
+     purple preloader takes over seamlessly. -->
+<style>
+  html{background:#8B2BFF}
+  #boot{position:fixed;inset:0;z-index:999;pointer-events:none;
+        background:radial-gradient(1100px 640px at 50% 30%,#A855FF 0%,#8B2BFF 58%)}
+</style>
+<div id="boot"></div>
 </head>
 <body>
 <div id="root"></div>
