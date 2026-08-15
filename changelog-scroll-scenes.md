@@ -243,3 +243,15 @@ The hero photos were `decoding="async"` — the browser paints before the decode
 2. `reveal()` nudges the compositor (one-frame `will-change` promote on `.hero-bg`) to defeat the Safari quirk of skipping freshly decoded full-viewport layers until a forced repaint.
 3. Screenshots: `screenshots/after-v18/`. 53/53 dev + live.
 
+
+# Changelog v17.6 — Safari paint kick (2026-08-15, commit `bbd1df2`)
+
+Client: "i still have to scroll up... once the scroll is initialised the page clips vertically, then the background and logo render correctly."
+
+This is Safari's rasterization quirk: it skips painting freshly decoded full-viewport layers until a scroll forces a repaint — so the user's very first scroll does the rasterizing live (the "vertical clip" they saw).
+
+1. `reveal()` performs an invisible **1px scroll + back** (via double rAF, repeated at 120ms) — the compositor is forced to rasterize the hero region at the exact moment the preloader fades, before the user ever touches the scroll. The page is fully painted on first paint.
+2. `.hero-bg` gets persistent `will-change:transform` — a promoted layer that Safari rasterizes eagerly.
+3. `finishIntro()` repeats the kick as a second chance.
+4. 53/53 dev + live.
+
