@@ -32,20 +32,26 @@ function reveal(){
   setTimeout(function(){ el.style.display = "none"; }, 850);
   /* paint kick: Safari skips rasterizing freshly decoded full-viewport
      layers until a scroll repaints them — so at reveal we nudge the
-     compositor with an invisible 1px scroll + back (page is at the hero,
-     so this rasterizes the exact region the user sees). Done twice via rAF
-     so it lands after the fade has begun (any artifact hides behind it). */
+     compositor with an invisible 1px scroll + back (Lenis-aware; the page
+     is at the hero, so this rasterizes the exact region the user sees),
+     then a ScrollTrigger.refresh() forces a full relayout+repaint. */
   var kick = function () {
-    if (window.scrollY <= 1) {
-      window.scrollBy(0, 1);
-      window.scrollBy(0, -1);
-    } else {
-      window.scrollBy(0, -1);
-      window.scrollBy(0, 1);
-    }
+    var y = window.scrollY;
+    var target = y <= 1 ? 1 : y - 1;
+    try {
+      if (window.lenis && window.lenis.scrollTo) {
+        window.lenis.scrollTo(target, { duration: 0 });
+        window.lenis.scrollTo(y, { duration: 0 });
+      } else {
+        window.scrollTo(0, target);
+        window.scrollTo(0, y);
+      }
+    } catch (e) {}
+    if (window.__ST) window.__ST.refresh();
   };
   requestAnimationFrame(kick);
   setTimeout(kick, 120);
+  setTimeout(kick, 500);
   if(plRevealCb){ var cb = plRevealCb; plRevealCb = null; cb(); }
 }
 function plReady(){
@@ -537,7 +543,16 @@ pio.observe(document.getElementById("proto"));
     clearWill();
     ScrollTrigger.refresh();
     /* second paint kick — Safari needs a scroll nudge to rasterize */
-    window.scrollBy(0, 1); window.scrollBy(0, -1);
+    var y = window.scrollY;
+    try {
+      if (window.lenis && window.lenis.scrollTo) {
+        window.lenis.scrollTo(y <= 1 ? 1 : y - 1, { duration: 0 });
+        window.lenis.scrollTo(y, { duration: 0 });
+      } else {
+        window.scrollTo(0, y <= 1 ? 1 : y - 1);
+        window.scrollTo(0, y);
+      }
+    } catch (e) {}
   };
   if (!introSeen) {
     try { sessionStorage.setItem(SESSION_KEY, "1"); } catch (e) {}
