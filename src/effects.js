@@ -30,6 +30,16 @@ function reveal(){
   el.classList.add("gone");
   if(stickerEl) stickerEl.classList.add("in");   /* sticker springs in with the reveal */
   setTimeout(function(){ el.style.display = "none"; }, 850);
+  /* paint nudge: some browsers (Safari) skip painting freshly decoded
+     full-viewport layers until a repaint is forced — promote the hero for
+     one frame so the background is there on the very first paint */
+  var hbg = document.getElementById("hero-bg") || (hero && hero.querySelector(".hero-bg"));
+  if(hbg){
+    requestAnimationFrame(function(){
+      hbg.style.willChange = "transform";
+      requestAnimationFrame(function(){ hbg.style.willChange = ""; });
+    });
+  }
   if(plRevealCb){ var cb = plRevealCb; plRevealCb = null; cb(); }
 }
 function plReady(){
