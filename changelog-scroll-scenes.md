@@ -232,3 +232,14 @@ Client: "the page can scroll, but the preloader is still overlaying it... you mu
 5. Bonus fix found by the suite: the v16 snap removal left dead `createSnap()/calcSnapPts()/killSnap()` calls in the resize handler — ReferenceError on every resize (iOS URL-bar show/hide fires constantly), breaking `ScrollTrigger.refresh()` and stale-ing pins. Handlers now just refresh.
 6. 53/53 dev + live.
 
+
+# Changelog v17.5 — first page fully rendered at reveal (2026-08-15, commit `daa747f`)
+
+Client: "on initial render of the very first page i see the logo, but i have to scroll up, then and only then the background clips in... after the preload the first page should render."
+
+The hero photos were `decoding="async"` — the browser paints before the decode finishes, so the background (and the logo layer over it) popped in only after a repaint nudge like scrolling.
+
+1. All 7 eager scene shots are now `decoding="sync"`: the browser completes their decode before first paint. The preloader covers the viewport until load, so the extra decode time is invisible — the page is fully rendered the moment the preloader fades.
+2. `reveal()` nudges the compositor (one-frame `will-change` promote on `.hero-bg`) to defeat the Safari quirk of skipping freshly decoded full-viewport layers until a forced repaint.
+3. Screenshots: `screenshots/after-v18/`. 53/53 dev + live.
+
