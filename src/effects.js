@@ -16,17 +16,20 @@ var clamp = function(v,a,b){ return Math.min(b,Math.max(a,v)); };
       eager in the DOM, so the browser's load event already means "everything
       loaded". On load (or a fallback timer if load never fires) we reveal.
       Hard caps below guarantee the loader can never linger. ── */
-var plEl = document.getElementById("preloader");
 var plStart = Date.now(), plMin = 600, plShown = false;
 var plRevealCb = null;   /* intro (or anything else) waiting on the reveal */
+/* Self-healing: re-query the element every time instead of caching it — if
+   the overlay is ever (re)created after init, reveal still finds it. */
 function reveal(){
-  if(plShown || !plEl) return;
+  if(plShown) return;
+  var el = document.getElementById("preloader");
+  if(!el) return;
   plShown = true;
   var hero = document.getElementById("hero");
   if(hero) hero.classList.add("go");
-  plEl.classList.add("gone");
+  el.classList.add("gone");
   if(stickerEl) stickerEl.classList.add("in");   /* sticker springs in with the reveal */
-  setTimeout(function(){ plEl.style.display = "none"; }, 850);
+  setTimeout(function(){ el.style.display = "none"; }, 850);
   if(plRevealCb){ var cb = plRevealCb; plRevealCb = null; cb(); }
 }
 function plReady(){
@@ -36,8 +39,11 @@ function plReady(){
 if(document.readyState === "complete") plReady();
 else addEventListener("load", plReady);
 /* Backstops only — the reveal never depends on a single path:
-   1) run the gate even if the load event never fires
-   2) final hard cap: the preloader NEVER lingers past 6s, any device */
+   1) watchdog: re-run the gate every 500ms once the document is complete
+      (covers any missed load listener / late element)
+   2) run the gate even if the load event never fires
+   3) final hard cap: the preloader NEVER lingers past 6s, any device */
+setInterval(function(){ if(!plShown && document.readyState === "complete") plReady(); }, 500);
 setTimeout(plReady, 5000);
 setTimeout(reveal, 6000);
 /* ── PROMO STICKER — fixed bottom-right badge ─────────────────────────
