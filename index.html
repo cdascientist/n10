@@ -187,8 +187,9 @@ p{color:var(--label-2);text-wrap:pretty}
 .logo-type{display:inline-flex;align-items:baseline;font-size:19px;font-weight:600;
            letter-spacing:-.024em;color:var(--ink);transition:color .45s ease}
 .logo-type .sl{color:var(--brand);font-weight:400;padding-inline:1px}
-.logo-lg .logo-mark{width:64px;height:64px;border-radius:16px}
-.logo-lg .logo-type{font-size:30px}
+.logo-lg .logo-mark{width:83px;height:83px;border-radius:21px}   /* hero logo +30% */
+.logo-lg .logo-type{font-size:39px}                              /* hero wordmark +30% */
+#hero .logo-lg{position:relative;z-index:2}                       /* always above the halo */
 
 /* ══ CONTROLS (Apple button language) ════════════════════════ */
 .btn{
@@ -322,13 +323,13 @@ p{color:var(--label-2);text-wrap:pretty}
 .hero-sub{font-size:clamp(17px,2.2vw,21px);max-width:42ch;margin:0 auto;color:var(--ink-dim)}
 
 /* ══ WORDMARK — InTension (restyled logo title) ═══════════════════ */
-.lg-in,.lg-ten{font-style:normal}
+.lg-in,.lg-ten{font-style:normal;line-height:1.15;padding-bottom:.06em}
 .lg-in{
   background:linear-gradient(96deg,var(--brand),var(--purple) 46%,var(--brand-2));
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .lg-ten{
-  background:linear-gradient(180deg,#D1D1D6 0%,#8E8E93 35%,#3A3A3C 70%,#1C1C1E 100%);
+  background:linear-gradient(180deg,#D1D1D6 0%,#8E8E93 30%,#3A3A3C 60%,#1C1C1E 85%);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 

@@ -313,6 +313,8 @@
       skip.classList.remove("show");
       skip.setAttribute("aria-hidden", "true");
     }
+    /* render safety: never leave the first-page logo hidden */
+    if (first) gsap.set(first.querySelectorAll("#hero .logo-lg"), { autoAlpha: 1 });
     clearWill();
     ScrollTrigger.refresh();
   };
@@ -340,8 +342,9 @@
     }
     intro.play();
   } else {
-    /* return visit: intro skipped, object starts settled */
+    /* return visit: intro skipped, object starts settled, logo always visible */
     if (objInner) gsap.set(objInner, { y: 0, rotate: 0, opacity: 1 });
+    if (first) gsap.set(first.querySelectorAll("#hero .logo-lg"), { autoAlpha: 1 });
     clearWill();
   }
 
