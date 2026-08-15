@@ -52,3 +52,17 @@ Follow-up request after seeing v1 live:
 5. **Three pages deleted**: `#bodywork` (Long strokes. Real pressure.), `#fuel` (Fuel Lab / "Everything you drink here has a job"), `#space` ("One room, two moods"). All links to them removed from nav, mobile sheet and footer — verified 0 dangling anchors. Remaining: 11 scenes (hero, trust, protocol, heat, movement, gallery, membership, cards, board, menu, book).
 
 Tests updated to match (`verify.mjs` now 41 checks, all green on :3000 and :80; `preloader-test.mjs` assertion now expects the `InTension` wordmark). Screenshots v2: `/root/n10/screenshots/after-v2/`.
+
+---
+
+# Changelog v4 — first-page revision (2026-08-15, commit `8d8134d`)
+
+Client follow-up: "first page like 3 versions ago … background images of massages … the color that changes layered on top … remove all colors not specified … reduce vertical spacing by 20% … background colors exact to the instructions previous."
+
+1. **Mechanic 8 scroll-cover REMOVED** (client rejected the covered first page). Hero + trust are plain scenes again; all cover CSS/JS/`data-cover` gone; M1 background tween, M2 ink and M5 snap restored across hero→trust. The sticky-blocker fix (`overflow-x:clip`) and the sticky-safe snap-point cache stay (general robustness).
+2. **First page**: classic hero (InTension logo, full "Tension in. / Tension out." headline, sub, single Book CTA) on a background of **two massage images** (Unsplash 1741522509438 + 1745327883508) with a slow crossfade, and **the changing colour veiled on top** (`#heroVeil`, purple `#8B2BFF` at 50% opacity at the top, scrubbed to white as the next scene arrives, back on reverse) — the purple→white→purple arc painted over the photos.
+3. **Palette purged to the specified colours only**: every scene background is now either `#8B2BFF` (trust, book — the purple bookends) or `#FFFFFF` (everything else). Indigo `#5856D6` and mint `#34C759` removed everywhere (mark gradient, In wordmark gradient, hero `em`, gauge track, pip, verdict, badge, warp flash → purple family / white). Pills, chips, eyebrows, segmented control, burger → white with a purple hairline; preloader, footer, close-in, bar → plain white. Text remains black/gray (shades of the specified black) + purple accents.
+4. **Vertical spacing −20%**: scene padding `clamp(20px,3vw,36px)` → `clamp(16px,2.4vw,29px)`; scene-in gap `clamp(12px,1.8vw,20px)` → `clamp(10px,1.4vw,16px)`.
+5. `verify.mjs` updated: cover checks removed, hero-veil checks added (purple at top, translucent, white on arrival) — **44/44 green on :3000 and :80**. `preloader-test.mjs` 18/18.
+
+Screenshots v3: `/root/n10/screenshots/after-v3/`.
