@@ -136,3 +136,58 @@ Not touched: `package.json`, `app.js`, `react/`, `scripts/*` (no build; `preload
 ## 11. Verification tooling
 
 Playwright (browsers already installed at `/root/.cache/ms-playwright`, package at `/opt/pwtest/node_modules/playwright`) is available for the acceptance pass: JS-on/off, reduced-motion, 375 px, keyboard-only tab order, and before/after screenshots at 1440 px and 375 px. `preloader-test.mjs` re-run headless. Local smoke via `node app.js` (port 3000).
+
+---
+
+# Mechanic 8 addendum — discovery (scroll-cover panel transition)
+
+Reference: `https://sly.systems/` first-to-second-page transition. Appended 2026-08-15.
+
+## M8-1. Panel assignment
+
+- **Panel one (sticky base): `#hero`** — the restored first page (photo backdrop, InTension logo, "Tension in. / Tension out.", Book CTA). White.
+- **Panel two (opaque cover): `#trust`** — the section immediately after the hero (the Licensed / 190° / 42° / 6a–10p proof pills). This is the brief's default pairing.
+
+## M8-2. Stack continuation
+
+**Recommendation: one cover only.** Panel three (protocol) does not cover panel two. Rationale: the site's remaining transitions are colour tweens (Mechanic 1) and the purple→white→purple arc depends on them; a second cover would eat the arc and balloon scroll distance (the cover pair is already one full extra viewport of scroll). One cover reads as a deliberate opening move; two starts to read as a gimmick.
+
+## M8-3. Sticky-blocker audit (ancestors of `.cover-stack`, up to `<body>`)
+
+| Ancestor | Blocking property | Verdict |
+|---|---|---|
+| `html` | `background:#fff`, `-webkit-text-size-adjust` | no blocker |
+| `body` | **`overflow-x:hidden`** | **BLOCKER (potential)** — an `overflow-x` value other than `visible`/`clip` on an ancestor can turn it into a scroll container and silently break `position:sticky` descendants. **Fix:** remove from `body`, set `html{overflow-x:clip}` (clip creates no scroll container) with an `@supports not (overflow:clip)` fallback to `html,body{overflow-x:hidden}` for older engines. |
+| `main.deck` (`.scene-run`) | `position:relative` only | no blocker (no transform/filter/overflow) |
+| `.cover-stack` (new) | `position:relative` only | no blocker — the addendum's own rule: no overflow/transform/filter here |
+
+No `transform`, `filter`, `perspective`, `backdrop-filter`, `will-change: transform`, or `contain: paint` exists on any ancestor. The only action item is the `body` overflow fix.
+
+## M8-4. Cover background colour
+
+**`#8B2BFF`** (the brand violet, `--brand`, existing `data-bg` of `#trust`) — fully opaque, alpha 1, AA-verified with light ink (5.44:1). No new colour introduced.
+
+## M8-5. Cover-vs-tween ownership per transition (reconciliation)
+
+| Transition | Owner | Notes |
+|---|---|---|
+| hero → trust | **COVER (M8)** | M1 tween suppressed (`next.dataset.cover === 'true'`); `#bg-canvas` set to `#8B2BFF` on land, back to `#FFFFFF` on leave-back |
+| trust → protocol | M1 tween | purple → white |
+| protocol → heat | M1 tween | white → `#F2F2F7` |
+| heat → movement | M1 tween | `#F2F2F7` → white |
+| movement → gallery | M1 tween | white → `#F7F2FF` |
+| gallery → membership | M1 tween | `#F7F2FF` → `#EFE3FF` |
+| membership → cards | M1 tween | `#EFE3FF` → white |
+| cards → board | M1 tween | white → `#F2F2F7` |
+| board → menu | M1 tween | `#F2F2F7` → white |
+| menu → book | M1 tween | white → `#8B2BFF` |
+
+**M4 (hero object):** the object is CSS-fixed (see v1 changelog for why pin was abandoned); per 5b it must not span the cover — a scrubbed fade to `opacity:0` runs across the cover transit (returns on reverse), so it never floats over the opaque panel.
+
+**M5 (snap):** snap targets switch to layout-top computation (`offsetTop` chain) — required anyway because the sticky base keeps its visual top at 0 regardless of scroll, which would corrupt `getBoundingClientRect()`-based points. The cover's landed state is the trust scene top, already a snap point; scrolling to 50% of the transit and releasing resolves to hero-top or trust-top, never in between.
+
+**M2 (ink):** verified — the generic 50%-line flip is wrong for this pair (during transit the nav sits over the still-visible hero's top slice; a 50% flip would strand white nav on white hero for ~44% of the transit). The cover gets an edge trigger instead: ink flips to the cover's `data-ink` when the cover's opaque top edge passes the nav zone (`top 56px`, i.e. `--navh`), and back to the base's ink on leave-back. The cover's own content (the trust pills) is self-coloured, and the hero's text is only ever visible while ink is dark, so no baking is needed.
+
+## M8-6. Reduced motion
+
+Sticky cover kept (it is scroll position, not animation). 4a and 4c dropped. 4b radius not animated (cover rests square). All polish tweens live in the non-RM branch.

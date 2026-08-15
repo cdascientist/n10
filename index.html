@@ -78,13 +78,14 @@
 :root[data-ink="light"]{ --ink:#FFFFFF; --ink-dim:rgba(255,255,255,.82); }
 :root[data-ink="dark"]{ --ink:#1C1C1E; --ink-dim:rgba(60,60,67,.62); }
 *{box-sizing:border-box;margin:0;padding:0}
-html{background:#fff;-webkit-text-size-adjust:100%}
+html{background:#fff;-webkit-text-size-adjust:100%;overflow-x:clip}
+@supports not (overflow: clip){ html,body{overflow-x:hidden} }
 body{
   background:transparent;color:var(--label);
   font-family:var(--f);font-size:17px;line-height:1.55;font-weight:400;
   letter-spacing:-.01em;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
-  overflow-x:hidden;width:100%;
+  width:100%;
 }
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -352,6 +353,23 @@ p{color:var(--label-2);text-wrap:pretty}
   font-style:normal;
   background:linear-gradient(96deg,var(--brand),var(--purple) 46%,var(--indigo));
   -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* ══ MECHANIC 8 — scroll-cover panel transition ══════════════════ */
+/* sticky-blocker audit (design-audit.md §M8-3): only `body{overflow-x:hidden}`
+   was a potential blocker; moved to html as overflow-x:clip above. */
+.cover-stack{position:relative}  /* no overflow / transform / filter on this element */
+.panel--base{
+  position:sticky;top:0;z-index:1;
+  height:100vh;height:100svh;      /* svh, not vh — mobile chrome */
+  overflow:hidden;                 /* safe here: it is the sticky element, not an ancestor */
+}
+.panel--cover{
+  position:relative;z-index:2;
+  min-height:100vh;min-height:100svh;
+  background-color:#8B2BFF;        /* fully opaque — existing --brand */
+  will-change:transform;
+  box-shadow:0 -32px 64px -16px rgba(30,10,60,.24);  /* elevation family (sticker shadow tones) */
 }
 
 .trust{
@@ -957,8 +975,9 @@ p{color:var(--label-2);text-wrap:pretty}
   </div>
 </div>
 
-<!-- HERO -->
-<section class="scene" data-bg="#FFFFFF" data-ink="dark" id="hero">
+<!-- HERO (panel one — sticky base) -->
+<div class="cover-stack">
+<section class="scene panel panel--base" data-bg="#FFFFFF" data-ink="dark" id="hero">
   <div class="hero-bg">
     <img class="shot" src="https://images.unsplash.com/photo-1532764587009-4d6bb8cf62cd?fm=jpg&amp;q=76&amp;w=1800&amp;auto=format&amp;fit=crop" alt="" aria-hidden="true" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">
     <span class="tone"></span><span class="melt"></span>
@@ -979,8 +998,8 @@ p{color:var(--label-2);text-wrap:pretty}
   </div>
 </section>
 
-<!-- TRUST -->
-<section class="scene" data-bg="#8B2BFF" data-ink="light" id="trust">
+<!-- TRUST (panel two — opaque cover) -->
+<section class="scene panel panel--cover" data-bg="#8B2BFF" data-ink="light" data-cover="true" id="trust">
   <div class="wrap scene-in">
     <div class="trust">
       <div><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg><b>Licensed</b> therapists</div>
@@ -990,6 +1009,7 @@ p{color:var(--label-2);text-wrap:pretty}
     </div>
   </div>
 </section>
+</div><!-- /cover-stack -->
 
 <!-- PROTOCOL -->
 <section class="scene" data-bg="#FFFFFF" data-ink="dark" id="protocol">
