@@ -12,7 +12,9 @@
 <style>
   html{background:#8B2BFF}
   #boot{position:fixed;inset:0;z-index:999;pointer-events:none;
-        background:radial-gradient(1100px 640px at 50% 30%,#A855FF 0%,#8B2BFF 58%)}
+        background:radial-gradient(1100px 640px at 50% 30%,#A855FF 0%,#8B2BFF 58%);
+        animation:bootFade .9s ease 10s forwards}
+  @keyframes bootFade{to{opacity:0;visibility:hidden}}
 </style>
 <div id="boot"></div>
 <!-- Eagerly fetch the hero shots (above the preloader) so the page is fully

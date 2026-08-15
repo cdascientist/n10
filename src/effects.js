@@ -27,22 +27,33 @@ function reveal(){
   setTimeout(function(){ plEl.style.display = "none"; }, 850);
   if(plRevealCb){ var cb = plRevealCb; plRevealCb = null; cb(); }
 }
-/* Hold the gate until every network image is loaded AND decoded, so the page
-   is fully rendered the moment it fades — no blank hero, no mid-scroll
-   fetch/decode jank. (data: URIs are already in memory; decode() resolves
-   instantly for cached images.) */
+/* Hold the gate until every first-paint image is loaded AND decoded, so the
+   page is fully rendered the moment it fades. Only EAGER images gate the
+   reveal (the lazy gallery marquee loads natively as you scroll — waiting
+   on 20 more images on iOS's 6-connection limit is what stranded visitors
+   on the loader). decode() is guarded (missing on old iOS), raced against a
+   per-image timeout, and the whole path can never throw — the safety net
+   below is the last backstop. */
 function plReady(){
   if(Date.now()-plStart < plMin){ setTimeout(plReady, Math.max(40, plMin-(Date.now()-plStart))); return; }
-  var imgs = Array.prototype.slice.call(document.images)
-    .filter(function(i){ return i.src && i.src.slice(0,5) !== "data:"; });
-  Promise.all(imgs.map(function(i){
+  var imgs = Array.prototype.slice.call(document.images).filter(function(i){
+    return i.src && i.src.slice(0,5) !== "data:" && i.loading !== "lazy";
+  });
+  function waitOne(i){
     if (i.complete && i.naturalWidth) return Promise.resolve();
-    return i.decode().catch(function(){});
-  })).then(reveal, reveal);
+    if (typeof i.decode !== "function") return Promise.resolve();
+    return Promise.race([
+      i.decode().catch(function(){}),
+      new Promise(function(r){ setTimeout(r, 2500); })
+    ]);
+  }
+  Promise.all(imgs.map(waitOne)).then(reveal, reveal);
 }
 if(document.readyState === "complete") plReady();
 else addEventListener("load", plReady);
-setTimeout(reveal, 8000);   /* safety net: never strand the visitor on the loader */
+/* safety net: scheduled, then guarded — never strand the visitor on the
+   loader even if every image path misbehaves */
+setTimeout(reveal, 8000);
 /* ── PROMO STICKER — fixed bottom-right badge ─────────────────────────
    EDIT THE PROMO COPY HERE (loud word + supporting sub-line). The badge
    keeps its hidden pre-entrance pose until reveal() fires, then springs
