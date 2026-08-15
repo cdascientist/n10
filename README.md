@@ -93,6 +93,8 @@ page in the bottom-left corner:
 </section>
 ```
 
+> ⚠️ **`index.html` is the hand-maintained live marketing page** (Apple-style IN/TENSION bodywork/sauna page with a full-load preloader). `npm run build` REGENERATES `index.html` from `index.template.html` (the React 3D walkthrough) and would overwrite the marketing page — `build.mjs` refuses unless `FORCE_BUILD=1` (set it only if you deliberately want the 3D page served). Marketing deploys: edit `index.html` directly, then commit + push. Test the marketing page with `node scripts/preloader-test.mjs`; `npm run smoke` covers the 3D build only.
+
 ### Rebuilding the React bundle
 
 ```bash

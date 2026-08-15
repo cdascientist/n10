@@ -48,6 +48,21 @@ const out = tpl
   .replace('/*__JS__*/', () => jsSafe)   // function form: never treat $ as special
   .replace('/*__CSS__*/', () => cssSafe);
 
+/* ── 04b ── clobber guard: never silently overwrite the marketing page ──
+   index.html is ALSO the hand-maintained informational page that nginx
+   serves (IN/TENSION bodywork/sauna/movement — see TOOLS.md). Running
+   this build regenerates it from the 3D template, which would destroy
+   the marketing page. Refuse unless FORCE_BUILD=1 is set. */
+const existing = readFileSync(path.join(root, 'index.html'), 'utf8');
+const MARKETING_MARKERS = [
+  'Ninety minutes to reset a whole week',
+  'Swedish bodywork, infrared sauna',
+];
+if (!process.env.FORCE_BUILD && MARKETING_MARKERS.some((m) => existing.includes(m))) {
+  throw new Error('index.html is the hand-maintained marketing page — refusing to clobber. ' +
+    'Set FORCE_BUILD=1 to overwrite it with the 3D build (you almost certainly do not want this).');
+}
+
 /* ── 04 ── verification ────────────────────────────────────────────── */
 if (out.includes('<\\/script') !== out.includes('<\\\\/script')) { /* noop guard */ }
 const strayScript = (out.match(/<\/script>/g) || []).length;
