@@ -6,10 +6,13 @@
 */
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(fileURLToPath(import.meta.url), '..');
+const REPO = resolve(fileURLToPath(import.meta.url), '..');
+// Serve the React build output (dist/) when present, else the repo root.
+const ROOT = existsSync(resolve(REPO, 'dist/index.html')) ? resolve(REPO, 'dist') : REPO;
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
