@@ -1,0 +1,80 @@
+/* =====================================================================
+   sticker.css — the promotional sticker (Sticker.jsx)
+   ---------------------------------------------------------------------
+   A fixed pill pinned to the top edge of the viewport, centred. It
+   hovers ABOVE every layer (z-index 300) so the promotion is visible
+   from the very first paint — preloader screen included — and stays
+   put once the walkthrough starts.
+
+   Visual recipe: dark glass gradient + neon-violet hairline border +
+   soft glow, tilted ~3° so it reads as a sticker, not a UI panel.
+   pointer-events: none means it never intercepts clicks or drags.
+   ===================================================================== */
+
+/* ── 01 ── the sticker itself ──────────────────────────────────────── */
+#sticker {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  z-index: 300;                       /* above boot (100) + deck (200) */
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 18px;
+  white-space: nowrap;
+  font: 700 10px/1 "Helvetica Neue", Inter, Arial, sans-serif;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--filament);
+  background: linear-gradient(180deg, rgba(30, 12, 54, .94), rgba(13, 6, 24, .94));
+  border: 1px solid rgba(176, 107, 255, .65);
+  border-radius: 999px;
+  box-shadow:
+    0 0 20px rgba(123, 45, 255, .4),
+    inset 0 0 14px rgba(176, 107, 255, .16);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;               /* signage only — never blocks */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── 02 ── the pulsing accent dot ──────────────────────────────────── */
+.sticker-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--vein-hot);
+  box-shadow: 0 0 10px var(--vein-hot);
+  animation: sticker-pulse 2.2s ease-in-out infinite;
+}
+@keyframes sticker-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .55; transform: scale(.78); }
+}
+
+/* ── 03 ── the two copy pieces ─────────────────────────────────────── */
+.sticker-promo {
+  color: #fff;
+  text-shadow: 0 0 12px rgba(176, 107, 255, .9);
+}
+.sticker-sub {
+  color: var(--vein-hot);
+  font-weight: 600;
+}
+
+/* ── 04 ── small screens: shrink so it never wraps or overflows ────── */
+@media (max-width: 480px) {
+  #sticker {
+    gap: 7px;
+    padding: 7px 13px;
+    font-size: 9px;
+    letter-spacing: .22em;
+  }
+}
+
+/* ── 05 ── reduced motion: keep the dot steady ─────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .sticker-dot { animation: none; }
+}

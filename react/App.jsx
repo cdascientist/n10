@@ -28,6 +28,7 @@ import Hud from './components/Hud.jsx';
 import TouchControls from './components/TouchControls.jsx';
 import Boot from './components/Boot.jsx';
 import OverlayDeck from './components/OverlayDeck.jsx';
+import Sticker from './components/Sticker.jsx';
 
 /* global design tokens + base styles (scene canvas, root, variables) */
 import './styles/global.css';
@@ -63,6 +64,7 @@ export default function App() {
       <TouchControls />
       <Boot entered={entered} onEnter={handleEnter} />
       <OverlayDeck />
+      <Sticker />   {/* promotional sticker — top-most, above everything */}
     </>
   );
 }

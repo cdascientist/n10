@@ -50,6 +50,10 @@ setTimeout(() => {
   record('react mounted into #react-app', !!(app && app.children.length > 0));
   record('renders CONNECTED status', txt.includes('CONNECTED'));
   record('renders Uptime row', txt.includes('Uptime'));
+  record('promo sticker present', (() => {
+    const s = win.document.getElementById('sticker');
+    return !!(s && s.textContent.includes('NEW') && s.textContent.includes('React Overlay'));
+  })());
 
   /* ── phase 3: expand + minimise interactions ────────────────────── */
   const btn = [...(app ? app.querySelectorAll('button') : [])].find((b) => b.textContent.includes('Expand'));
