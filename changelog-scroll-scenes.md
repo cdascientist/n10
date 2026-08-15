@@ -218,3 +218,17 @@ Done exactly as prescribed. The preloader now contains **zero asset logic**:
 - Backstops only (the reveal never depends on a single path): a 5s fallback timer runs the gate even if `load` never fires; a final 6s hard cap means the loader cannot linger on any device or network.
 - Worst case verified (all image requests aborted, iPhone UA): preloader gone at 775ms. 53/53 dev + live.
 
+
+# Changelog v17.4 — overlay-stuck root cause fixed (2026-08-15, commits `954d4b0` + `939cc73`)
+
+Client: "the page can scroll, but the preloader is still overlaying it... you must have it disengage when the page finally loads."
+
+**Root cause (finally pinned):** React's `render()` commits asynchronously (scheduler task). On slower devices the `setTimeout(initEffects, 0)` fired BEFORE the commit — so `initEffects` captured **null element refs** (preloader, scenes, etc.). The reveal timers then bailed on the missing element, the overlay never disengaged, and every scrub was dead — while plain scrolling (Lenis) still worked. Chromium's fast commit is why automated tests passed.
+
+1. `main.jsx` renders inside **`flushSync`** — the commit is synchronous, so `initEffects` always runs against the committed DOM. No race possible.
+2. `reveal()` **re-queries `#preloader`** on every call (self-healing if the overlay ever appears late).
+3. **Watchdog**: re-runs the load gate every 500ms once the document is complete.
+4. Verified under CDP **CPU throttling ×4 + all images aborted** (the slow-device worst case): preloader gone at ~0.5s.
+5. Bonus fix found by the suite: the v16 snap removal left dead `createSnap()/calcSnapPts()/killSnap()` calls in the resize handler — ReferenceError on every resize (iOS URL-bar show/hide fires constantly), breaking `ScrollTrigger.refresh()` and stale-ing pins. Handlers now just refresh.
+6. 53/53 dev + live.
+
