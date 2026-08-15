@@ -163,3 +163,13 @@ Root cause: the built `index.html` was a bare shell (`<div id="root">` + bundle 
 1. **Static boot layer** in the Vite entry (`index.html`): an inline style sets `html{background:#8B2BFF}` + a fixed `#boot` div painting the brand purple radial (`#A855FF → #8B2BFF`), plus `theme-color #8B2BFF` for mobile browser chrome. The page is purple from the very first byte — verified with a deliberately delayed bundle (boot covers 1440×900 while loading, removed on React mount, preloader takes over seamlessly).
 2. **Hero fallback**: `.hero-bg` gets a lavender gradient base so the hero is never blank while the massage photos load (or offline).
 3. `verify.mjs` 53/53 on dev and live; watcher deployed `b449ddb`.
+
+# Changelog v16 — scene snap removed + return-visit logo fix (2026-08-15, commit `e0fae79`)
+
+Client: "after the preloader the logo does not appear correctly, when scrolling the page glitches in and out, none of the tweens are smooth in page transition, it's like it is trying to scroll."
+
+1. **Mechanic 5 (snap to scene tops) removed.** It re-armed 0.08s after every scroll end and yanked the page to the nearest scene top with its own tween while Lenis was still lerping — that fight was the "trying to scroll" jitter and the glitchy scene transitions. Lenis alone drives scroll now; all scrubs run on the smooth lerp clock.
+2. **Return-visit logo bug fixed.** The introSeen branch forced the floating logo to `opacity:1` at the top, so on repeat visits it appeared right after the preloader, before the purple page. That set is gone — the trust-rise scrub owns the floating logo's visibility on every visit (verified: hidden at top on return visits, hero logo always visible).
+3. `verify.mjs`: hold-landing check now expects an exact Lenis landing; 53/53 on dev and live.
+4. **Infra (same evening):** the server was crashing ~every 10–25 min from memory exhaustion (3.8 GiB RAM, zero swap; Splunk suite + gateway + builds). Added a persistent 4 GiB swapfile (`vm.swappiness=10`) + fail2ban for the SSH brute-force flood. Live site unaffected — v16 was deployed before the crash.
+
