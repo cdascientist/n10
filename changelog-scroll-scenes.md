@@ -255,3 +255,12 @@ This is Safari's rasterization quirk: it skips painting freshly decoded full-vie
 3. `finishIntro()` repeats the kick as a second chance.
 4. 53/53 dev + live.
 
+
+# Changelog v17.7 — strip hero compositing risks + Lenis-aware kick (2026-08-15, commit `63a8de6`)
+
+Client: "still same result, the fading background does not show correctly at first until i scroll down."
+
+1. **Removed the hero-bg compositing stack** that Safari notoriously refuses to paint until a scroll: no `filter` (saturate/brightness/contrast), no `transform:scale(1.05)`, no `will-change` on `.hero-bg`. The shots are plain `object-fit: cover`; the purple veil still does the tinting, so the look is preserved.
+2. **Lenis-aware paint kick**: a plain `window.scrollBy` gets swallowed by Lenis's own scroll loop — the nudge now goes through `lenis.scrollTo(±1, {duration:0})` and back, followed by `ScrollTrigger.refresh()` (full relayout + repaint). Kicked at reveal (rAF, 120ms, 500ms) and again at `finishIntro`.
+3. 53/53 dev + live.
+
