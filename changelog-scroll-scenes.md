@@ -264,3 +264,21 @@ Client: "still same result, the fading background does not show correctly at fir
 2. **Lenis-aware paint kick**: a plain `window.scrollBy` gets swallowed by Lenis's own scroll loop — the nudge now goes through `lenis.scrollTo(±1, {duration:0})` and back, followed by `ScrollTrigger.refresh()` (full relayout + repaint). Kicked at reveal (rAF, 120ms, 500ms) and again at `finishIntro`.
 3. 53/53 dev + live.
 
+
+# Changelog v18 — /frmm — Front Range Mobile Mechanics (2026-08-15, commit `341af51`)
+
+Client: "make a separate second page /frmm — Front Range Mobile Mechanics — use claude code agents, exact copy of this page, mobile mechanic images, light blue theme, similar logo, coordinate-based HELP ME NOW button, corresponding copy, show the new page URL."
+
+Built with Claude Code agents (headless, prompt-file brief) — 1,130-line self-contained static page at `public/frmm/index.html` (Vite `public/` → `dist/`, so it deploys with the normal pipeline; nginx serves it at `/frmm`).
+
+- **Faithful clone** of the IN/TENSION scroll-scene DNA: pure-load-gate preloader, boot layer, sync-decoded hero with veil + crossfade + ticker, pinned floating mark (appears after the cover rises), cover glass panel, bg arc (white ↔ #38BDF8 via composited opacity layer), ink inversion, RM path, Lenis no-snap, 1px paint kick — all the hard-won fixes applied.
+- **Light-blue theme**: sky palette (#38BDF8/#0284C7/#E0F2FE/#7DD3FC), white↔light-blue arc.
+- **Similar logo**: FRMM gradient mark (wrench-stroke motif) + wordmark; ink-outline variant for inverted scenes.
+- **12 verified Unsplash mechanic images** (all curl-checked 200) across hero, services, coverage, about, contact.
+- **HELP ME NOW (centrepiece)**: fixed bottom-right pill + hero + final CTAs → `navigator.geolocation` → "📍 Located · routing to you…" + coords card (Call / Text-my-location) + new-tab Google Maps directions to the Boulder shop; denied/insecure-origin always falls back to Call + Open Google Maps. `window.__frmmGeo` hook.
+- Copy: "Skip the tow. We come to you." — 6 services with flat-rate chips, 3-step how-it-works, coverage marquee, flat-rate pricing, 24/7.
+- `app.js` now serves directory indexes (mirrors nginx) so the dev server serves /frmm too.
+- Verified: `verify-frmm.mjs` **13/13** (desktop, mobile, geolocation granted + denied paths), main suite **53/53**, screenshots `screenshots/frmm-v1/`.
+
+**URL: http://209.46.121.242/frmm/ (and http://localhost/frmm/ locally)**
+
