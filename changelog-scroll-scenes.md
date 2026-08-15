@@ -102,3 +102,12 @@ Client: "remove the gradient behind the logo on the first page, make the logo 30
 3. **Sliding page = semi-transparent glass**: `rgba(255,255,255,.6)` + `backdrop-filter: blur(6px)` — the centred logo stays visible through it at the half-hold. Its white→purple transition now scrubs the translucent pair (`rgba(255,255,255,.6)` → `rgba(139,43,255,.6)`).
 4. **Page-2 content** restored into a `.wrap.scene-in`, arranged menu-style ("calendar selection menu"): headline → **Book a session directly under it** (filled purple selection row, min-width 280px) → sub note below.
 5. `verify.mjs` 54/54 (glow filter, no halo on page 1, translucent glass, logo visible through glass, button order, filled button); `preloader-test.mjs` 18/18. Screenshots: `screenshots/after-v8/`.
+
+# Changelog v9 — logo up 30% / +45% (responsive), opaque purple page removed (2026-08-15, commit `d976f6c`)
+
+Client: "Move the logo up by 30% and make larger by 45% and make the look consistent between mobile and desktop, also that purple background for the element is not transparent, then remove that element."
+
+1. **Logo moved up 30%**: `.panel--base` gets `padding-bottom:60vh` → the logo centres in the upper 40% of the first page (verified: centre at exactly panel.top + 20vh on both desktop and mobile).
+2. **Logo +45% with consistent scaling**: mark `clamp(90px,14vw,120px)`, wordmark `clamp(42px,6.6vw,57px)`, gap `clamp(12px,1.8vw,16px)` — 120/57px at 1440, 90/51px at 375 (same proportions).
+3. **Opaque purple cover page removed** (`#trust` `.panel--cover` — "that purple background is not transparent, then remove that element"). After the glass half-hold the page continues straight into the next scene. The second-swipe scrubs (hold glass white→purple, veil purple return) are gone; the veil completes its purple→white arc at the hold; the purple→white→purple arc is preserved via the canvas (white → purple at book). The pills content that lived on the trust page was removed with it.
+4. `verify.mjs` 53/53 (logo position/size checks, no-#trust, veil white at hold, arc ends purple, page-continues-past-hold), `preloader-test.mjs` 18/18, live 53/53. Screenshots: `screenshots/after-v9/`.
