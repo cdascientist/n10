@@ -153,3 +153,13 @@ Client: "when the page first renders there is no background or color, then the f
 2. **Floating logo timing**: `#hero-object` now has `opacity:0` in CSS — it can never flash in on first frames (previously it rendered at full opacity until JS hid it). Its fade-in was also moved to the **last 15% of the purple page's rise** (`top 15% → top top`), so it only appears once the transparent purple page is essentially fully swiped up.
 3. **Jitter / smoothness**: the background arc only ever goes white ↔ purple, so `#bg-canvas` is now a white base plus a `#bgPurple` layer whose **opacity is scrubbed** — GPU-composited, zero full-screen repaints per frame (the old background-color scrub repainted the whole viewport on every scroll frame). The RM path and interpolation tests were updated for the layer. Snap also gets `inertia:false` so it stops fighting Lenis's smoothed velocity.
 4. `verify.mjs` 53/53 on dev and live. Screenshots: `screenshots/after-v12/`.
+
+# Changelog v15 — boot layer: no white flash on initial load (2026-08-15, commit `b449ddb`)
+
+Client: "the homepage when initially loading is not rendering correctly, there is no background."
+
+Root cause: the built `index.html` was a bare shell (`<div id="root">` + bundle tags), so before React mounted the page painted plain white — on slower loads that white window was the "no background" state.
+
+1. **Static boot layer** in the Vite entry (`index.html`): an inline style sets `html{background:#8B2BFF}` + a fixed `#boot` div painting the brand purple radial (`#A855FF → #8B2BFF`), plus `theme-color #8B2BFF` for mobile browser chrome. The page is purple from the very first byte — verified with a deliberately delayed bundle (boot covers 1440×900 while loading, removed on React mount, preloader takes over seamlessly).
+2. **Hero fallback**: `.hero-bg` gets a lavender gradient base so the hero is never blank while the massage photos load (or offline).
+3. `verify.mjs` 53/53 on dev and live; watcher deployed `b449ddb`.
