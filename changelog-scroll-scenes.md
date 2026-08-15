@@ -173,3 +173,16 @@ Client: "after the preloader the logo does not appear correctly, when scrolling 
 3. `verify.mjs`: hold-landing check now expects an exact Lenis landing; 53/53 on dev and live.
 4. **Infra (same evening):** the server was crashing ~every 10–25 min from memory exhaustion (3.8 GiB RAM, zero swap; Splunk suite + gateway + builds). Added a persistent 4 GiB swapfile (`vm.swappiness=10`) + fail2ban for the SSH brute-force flood. Live site unaffected — v16 was deployed before the crash.
 
+
+# Changelog v17 — preload-everything preloader + gallery duplication fix (2026-08-15, commit `069d2a4`)
+
+Client: "the page is not rendering initially, use the preloader to preload as many assets as possible, and scrolling is not smooth."
+
+**Root cause of BOTH symptoms:** `initEffects()` was called from React's `useEffect` — React's passive-effect commit machinery re-invoked the mount effect ~35×/sec. Every re-run re-appended the gallery marquee (20 tiles per run → thousands of tiles + duplicate images), re-registered listeners, and churned the scroll layer. That constant DOM churn was the "not smooth" jank AND made the page render wrong initially.
+
+1. **initEffects runs exactly once** — from `main.jsx` right after React's commit (setTimeout 0), never from a React effect. The gallery builder is idempotent (skips if already built). Verified: `__initRuns === 1`, exactly 20 gallery tiles, 58 ScrollTriggers, stable over time.
+2. **Preloader now preloads as many assets as possible**: all 7 scene photos flipped from `loading="lazy"` to eager; the two hero shots also `<link rel="preload">` in the HTML head; the purple gate holds until every network image is loaded **and decoded** (`img.decode()`) before fading — the page is fully rendered the moment it reveals (8s safety net so nobody strands).
+3. **Intro starts when the preloader fades** (queued on reveal) — the hero entrance is actually seen instead of playing behind the gate.
+4. `verify.mjs` waits dynamically for preloader+intro; **53/53 on dev and live**.
+5. Scroll probe: a full 2.5s page scroll now shows only 2 sub-45ms frame gaps (before the fix: 7 gaps including an 894ms one).
+
