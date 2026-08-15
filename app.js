@@ -59,7 +59,21 @@ const server = createServer(async (req, res) => {
     }
 
     const info = await stat(file).catch(() => null);
-    if (!info || info.isDirectory()) {
+    if (info && info.isDirectory()) {
+      // serve the directory index (nginx does this natively — mirror it)
+      const idx = resolve(file, 'index.html');
+      if (idx.startsWith(ROOT) && (await stat(idx).catch(() => null))?.isFile()) {
+        const body = await readFile(idx);
+        res.writeHead(200, {
+          'Content-Type': MIME['.html'],
+          'Cache-Control': 'no-cache',
+        });
+        return res.end(body);
+      }
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      return res.end('404 Not Found');
+    }
+    if (!info) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
       return res.end('404 Not Found');
     }
