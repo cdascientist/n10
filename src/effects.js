@@ -30,16 +30,22 @@ function reveal(){
   el.classList.add("gone");
   if(stickerEl) stickerEl.classList.add("in");   /* sticker springs in with the reveal */
   setTimeout(function(){ el.style.display = "none"; }, 850);
-  /* paint nudge: some browsers (Safari) skip painting freshly decoded
-     full-viewport layers until a repaint is forced — promote the hero for
-     one frame so the background is there on the very first paint */
-  var hbg = document.getElementById("hero-bg") || (hero && hero.querySelector(".hero-bg"));
-  if(hbg){
-    requestAnimationFrame(function(){
-      hbg.style.willChange = "transform";
-      requestAnimationFrame(function(){ hbg.style.willChange = ""; });
-    });
-  }
+  /* paint kick: Safari skips rasterizing freshly decoded full-viewport
+     layers until a scroll repaints them — so at reveal we nudge the
+     compositor with an invisible 1px scroll + back (page is at the hero,
+     so this rasterizes the exact region the user sees). Done twice via rAF
+     so it lands after the fade has begun (any artifact hides behind it). */
+  var kick = function () {
+    if (window.scrollY <= 1) {
+      window.scrollBy(0, 1);
+      window.scrollBy(0, -1);
+    } else {
+      window.scrollBy(0, -1);
+      window.scrollBy(0, 1);
+    }
+  };
+  requestAnimationFrame(kick);
+  setTimeout(kick, 120);
   if(plRevealCb){ var cb = plRevealCb; plRevealCb = null; cb(); }
 }
 function plReady(){
@@ -530,6 +536,8 @@ pio.observe(document.getElementById("proto"));
     if (first) gsap.set(first.querySelectorAll("#hero .logo-lg"), { autoAlpha: 1 });
     clearWill();
     ScrollTrigger.refresh();
+    /* second paint kick — Safari needs a scroll nudge to rasterize */
+    window.scrollBy(0, 1); window.scrollBy(0, -1);
   };
   if (!introSeen) {
     try { sessionStorage.setItem(SESSION_KEY, "1"); } catch (e) {}
