@@ -557,13 +557,10 @@ pio.observe(document.getElementById("proto"));
   window.addEventListener("resize", function () {
     clearTimeout(rt);
     rt = setTimeout(function () {
-      if (window.innerWidth >= 768) { createSnap(); calcSnapPts(); }
-      else { killSnap(); }
       ScrollTrigger.refresh();
     }, 200);
   }, { passive: true });
   window.addEventListener("load", function () {
-    calcSnapPts();
     ScrollTrigger.refresh();
   });
 
