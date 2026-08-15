@@ -186,3 +186,13 @@ Client: "the page is not rendering initially, use the preloader to preload as ma
 4. `verify.mjs` waits dynamically for preloader+intro; **53/53 on dev and live**.
 5. Scroll probe: a full 2.5s page scroll now shows only 2 sub-45ms frame gaps (before the fix: 7 gaps including an 894ms one).
 
+
+# Changelog v17.1 — iOS preloader fix (2026-08-15, commit `8b48b81`)
+
+Client (iOS): "when initially loading the page i am stuck at the loading page."
+
+1. **Throw-proof gate**: `plReady()` could throw on iOS < 15 (`img.decode()` is undefined → TypeError inside the promise map) — and since `plReady()` was called before the 8s safety net was scheduled, the throw aborted init and the loader never revealed. `decode()` is now feature-guarded, each image raced against a 2.5s timeout, and the path can never throw.
+2. **Only first-paint images gate the reveal**: the previous gate waited for all 27 network images including the 20 lazy gallery-marquee tiles — on iOS's 6-connections-per-host limit that hangs for ages. Eager scene images gate the reveal (≤7); the lazy marquee loads natively while scrolling.
+3. **CSS backstop**: the static `#boot` layer self-fades after 10s even with fully dead JS — no screen can ever stick.
+4. Verified with an iPhone UA (390×844, touch): preloader gone ≈0.9s, intro done ≈2s. 53/53 dev + live.
+
