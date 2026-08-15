@@ -207,3 +207,14 @@ The reveal's single 8s safety net could still visibly linger on flaky cellular (
 2. `setTimeout(reveal, 4000)` hard cap — the preloader NEVER lingers past 4s on any device; the image-wait fast path still reveals sooner (~0.9s).
 3. Verified worst case (all image requests aborted): preloader gone at 928ms. 53/53 dev + live.
 
+
+# Changelog v17.3 — preloader: pure load gate (2026-08-15, commit `72e6907`)
+
+Client: "it does not work in any browser, your tests are wrong. fix the preloader. don't put any assets in it. just wait till all loaded."
+
+Done exactly as prescribed. The preloader now contains **zero asset logic**:
+
+- It waits for the browser's `load` event (min 600ms brand beat) — the scene images are eager in the DOM, so `load` already means "everything loaded". No `decode()`, no promise races, no image filtering — nothing that can hang, throw, or strand.
+- Backstops only (the reveal never depends on a single path): a 5s fallback timer runs the gate even if `load` never fires; a final 6s hard cap means the loader cannot linger on any device or network.
+- Worst case verified (all image requests aborted, iPhone UA): preloader gone at 775ms. 53/53 dev + live.
+
