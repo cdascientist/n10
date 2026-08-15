@@ -182,9 +182,11 @@
 
   /* ── HERO VEIL — the changing colour layered over the massage images ─────
      Purple at the top, scrubbed to white over the first swipe (until the
-     half-hold), back on reverse. Page two is opaque white, so the white veil
-     hands the screen over seamlessly; page three (purple) then slides in and
-     the canvas tween white→purple completes the arc. */
+     half-hold), then back to purple over the second swipe — the full
+     purple→white→purple arc the client specified, painted on top of the
+     photos. Page two's own background scrubs white→purple in lock-step
+     (see below), so the whole opening hands the screen over to page three
+     with no hard seam. */
   var veilEl = document.getElementById("heroVeil");
   if (veilEl && scenes[1]) {
     gsap.fromTo(veilEl,
@@ -203,6 +205,33 @@
       y: 24, autoAlpha: 0, duration: 0.7, ease: "power2.out", stagger: 0.08,
       scrollTrigger: { trigger: holdPanel, start: "top bottom", end: "top 50%" }
     });
+  }
+
+  /* ── SECOND SWIPE — page 2's background transitions into page 3's ────────
+     As #trust slides in, the half-hold page's white background scrubs to the
+     trust purple, and the hero veil (still visible over the top half of page 1)
+     scrubs white→purple with it, so the whole opening flows purple→white→purple
+     with no hard seam before the cover lands. */
+  if (scenes[2]) {
+    var trustPanel = scenes[2];
+    if (holdPanel) {
+      gsap.fromTo(holdPanel,
+        { backgroundColor: "#FFFFFF" },
+        {
+          backgroundColor: "#8B2BFF", ease: "none", immediateRender: false,
+          scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
+        }
+      );
+    }
+    if (veilEl) {
+      gsap.fromTo(veilEl,
+        { backgroundColor: "#FFFFFF" },
+        {
+          backgroundColor: "#8B2BFF", ease: "none", immediateRender: false,
+          scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
+        }
+      );
+    }
   }
 
   /* ── Mechanic 5 — snap to scene tops (desktop only) ──────────────────────

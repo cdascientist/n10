@@ -69,6 +69,19 @@ Screenshots v3: `/root/n10/screenshots/after-v3/`.
 
 ---
 
+# Changelog v6 — page-2→page-3 background transition + dead-zone removal (2026-08-15)
+
+Client: "apply the content to the sliding page that covers … the logo must be on the first page that is covered … the site should be completely consistent with mobile and desktop." Audit found the two-stage slide was structurally right but (a) page 2's white background did not actually transition into page 3's purple and (b) page 2 occupied a full `100svh`, leaving a ~half-viewport dead scroll before page 3 responded to the second swipe — most noticeable on mobile where snap is off.
+
+1. **Page-2 background now scrubs white → purple** into page 3 (`#8B2BFF`) as `#trust` slides in (`scroll-scenes.js`): the half-hold page's own background and the hero veil both scrub `#FFFFFF → #8B2BFF` over trust's `top bottom → top top`. The whole opening now flows purple → white → purple with no hard seam — "the second page background should transition into the 3rd page background".
+2. **Dead zone removed**: `.panel--hold` is now exactly `50vh`/`50svh` (was `100svh` with `padding-bottom:50vh`). The content, halo and hold position are visually identical, but page 3 now enters the viewport the instant the second swipe passes the half-hold (mobile and desktop behave the same; previously a ~`50vh` static stretch preceded page 3).
+3. `.panel--hold .hero-halo{bottom:0}` so the white readability halo covers the full (half-height) hold page.
+4. `verify.mjs`: 53/53 — added the page-2-bg-purple-at-trust assertion and changed the veil-on-arrival check from white to purple (behavior changed by design). `preloader-test.mjs` 18/18.
+
+Screenshots: `screenshots/after-v5/`.
+
+---
+
 # Changelog v5 — two-stage slide (2026-08-15, commit `9199bb5`)
 
 Client: "the second page swiping up is not smooth … only keep the logo on page 1 … rest of the content on page 2 … page 2 slides in half way, keeping the logo visible … another swipe slides page 3 in entirely … white gradient behind the logo on pages 1–2 only … header 15% taller, header logo 15% bigger."

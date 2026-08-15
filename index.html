@@ -360,10 +360,11 @@ p{color:var(--label-2);text-wrap:pretty}
 }
 .panel--hold{
   position:sticky;top:50vh;z-index:2;      /* slides up half way, then holds */
-  height:100vh;height:100svh;min-height:0;
-  overflow:hidden;padding:0 0 50vh;        /* content centred in its top half (the visible bottom half) */
-  background:#FFFFFF;                       /* opaque — the 'second page' */
+  height:50vh;height:50svh;min-height:0;   /* exactly the visible bottom half — the next page can follow immediately */
+  overflow:hidden;padding:0;               /* content centred within the hold page */
+  background:#FFFFFF;                       /* opaque — the 'second page' (scrubbed white→purple by JS) */
 }
+.panel--hold .hero-halo{bottom:0}          /* halo covers the whole (half-height) hold page */
 .panel--cover{
   position:relative;z-index:3;              /* slides in entirely over both */
   min-height:100vh;min-height:100svh;
