@@ -316,7 +316,12 @@ p{color:var(--label-2);text-wrap:pretty}
 @keyframes heroXfade{0%,42%{opacity:0}58%,100%{opacity:1}}
 .hero-bg .veil{
   position:absolute;inset:0;
-  background:#8B2BFF;opacity:.5;   /* the changing colour — scrubbed purple→white by JS */
+  background:#8B2BFF;opacity:.5;   /* the purple base tint — stays constant */
+}
+.hero-bg .veil-w{
+  position:absolute;inset:0;
+  background:#FFFFFF;opacity:0;    /* the white crossfade layer — opacity-scrubbed, no repaint */
+  will-change:opacity;
 }
 .hero-halo{
   position:absolute;top:0;left:0;right:0;bottom:50vh;  /* content lives in the top half */
@@ -335,9 +340,12 @@ p{color:var(--label-2);text-wrap:pretty}
   position:sticky;top:50vh;z-index:2;      /* slides up half way, then holds */
   height:50vh;height:50svh;min-height:0;   /* exactly the visible bottom half — the next page can follow immediately */
   overflow:hidden;padding:0;               /* content centred within the hold page */
-  background:rgba(255,255,255,.6);          /* semi-transparent glass — the logo stays visible through it */
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
+  background:rgba(255,255,255,.78);          /* glass — no backdrop-filter: it repaints every frame and jitters */
+}
+.hold-tint{
+  position:absolute;inset:0;pointer-events:none;
+  background:rgba(139,43,255,.3);opacity:0;  /* purple tint — opacity-scrubbed (compositor-friendly) */
+  will-change:opacity;
 }
 .panel--hold .hero-halo{bottom:0}          /* halo covers the whole (half-height) hold page */
 .panel--hold .cta-row .btn{                  /* the selection row — calendar-menu style */

@@ -192,6 +192,7 @@ export default function App() {
     <img className="shot" src="https://images.unsplash.com/photo-1741522509438-a120c0bb5e88?fm=jpg&q=76&w=1800&auto=format&fit=crop" alt="" aria-hidden="true" fetchPriority="high" decoding="async" referrerpolicy="no-referrer" />
     <img className="shot alt" src="https://images.unsplash.com/photo-1745327883508-b6cd32e5dde5?fm=jpg&q=76&w=1800&auto=format&fit=crop" alt="" aria-hidden="true" decoding="async" referrerpolicy="no-referrer" />
     <span className="veil" id="heroVeil"></span>
+    <span className="veil-w" id="heroVeilW"></span>
   </div>
   <a className="logo logo-lg" href="#top" aria-label="InTension home">
     <svg className="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg>
@@ -201,6 +202,7 @@ export default function App() {
 
 {/* INTRO (page 2 — half-hold glass: headline, then the selection row, then the note) */}
 <section className="scene panel panel--hold" data-bg="#FFFFFF" data-ink="dark" id="intro">
+  <span className="hold-tint" id="holdTint"></span>
   <div className="hero-halo"></div>
   <div className="wrap scene-in">
     <h1>

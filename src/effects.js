@@ -433,37 +433,37 @@ pio.observe(document.getElementById("proto"));
      photos. Page two's own background scrubs white→purple in lock-step
      (see below), so the whole opening hands the screen over to page three
      with no hard seam. */
-  /* ── floating item (hero object) — hidden until the Tension in/out section ──
-     slides up into place, then fades in; fades back out when scrolling up. */
-  if (obj && scenes[1]) {
+  /* ── floating item (hero object) — hidden until the purple page has been ──
+     swiped up (fades in as #trust rises, fades back out on scroll-up). */
+  if (obj && scenes[2]) {
     gsap.set(obj, { opacity: 0 });
     gsap.fromTo(obj, { opacity: 0 }, {
+      opacity: 1, ease: "none",
+      scrollTrigger: { trigger: scenes[2], start: "top bottom", end: "top top", scrub: true }
+    });
+  }
+  /* veil: purple base + a white crossfade layer — opacity-only scrubs
+     (compositor-friendly; no per-frame background repaint = no jitter) */
+  var veilEl = document.getElementById("heroVeil");
+  var veilW = document.getElementById("heroVeilW");
+  if (veilW && scenes[1]) {
+    gsap.fromTo(veilW, { opacity: 0 }, {
       opacity: 1, ease: "none",
       scrollTrigger: { trigger: scenes[1], start: "top bottom", end: "top 50%", scrub: true }
     });
   }
-  var veilEl = document.getElementById("heroVeil");
-  if (veilEl && scenes[1]) {
-    gsap.fromTo(veilEl,
-      { backgroundColor: "#8B2BFF" },
-      {
-        backgroundColor: "#FFFFFF", ease: "none", immediateRender: false,
-        scrollTrigger: { trigger: scenes[1], start: "top bottom", end: "top 50%", scrub: true }
-      }
-    );
-  }
-  /* page 2 (the half-hold) content reveals as it slides in */
   var trustPanel = document.querySelector(".panel--cover");
+  var holdTint = document.getElementById("holdTint");
   if (trustPanel && scenes[2]) {
-    if (veilEl) {
-      gsap.fromTo(veilEl, { backgroundColor: "#FFFFFF" }, {
-        backgroundColor: "#8B2BFF", ease: "none", immediateRender: false,
+    if (veilW) {
+      gsap.fromTo(veilW, { opacity: 1 }, {
+        opacity: 0, ease: "none",
         scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
       });
     }
-    if (holdPanel) {
-      gsap.fromTo(holdPanel, { backgroundColor: "rgba(255,255,255,.6)" }, {
-        backgroundColor: "rgba(139,43,255,.3)", ease: "none", immediateRender: false,
+    if (holdTint) {
+      gsap.fromTo(holdTint, { opacity: 0 }, {
+        opacity: 1, ease: "none",
         scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
       });
     }
@@ -475,11 +475,9 @@ pio.observe(document.getElementById("proto"));
       scrollTrigger: { trigger: holdPanel, start: "top bottom", end: "top 50%" }
     });
   }
-  /* ── SECOND SWIPE ─────────────────────────────────────────────────────────
-     The opaque purple cover page was removed (client), so after the half-hold
-     the page simply continues into the next scene; the veil stays white and
-     the hold keeps its translucent white glass. The purple→white→purple arc
-     is preserved by the canvas tween (white → purple at book). */
+  /* ── SECOND SWIPE — the purple page (70% transparent) slides up; the veil's
+     white layer fades out (purple returns over the photos) and the glass hold
+     picks up a matching purple tint, all via compositor-friendly opacity. */
   /* ── Mechanic 5 — snap to scene tops (desktop only) ──────────────────────
      Snap targets are computed per scene (scenes may outgrow 100svh on short
      viewports), which degenerates to the reference's even 1/(n-1) spacing on
