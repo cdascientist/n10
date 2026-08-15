@@ -3,18 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "InTension — single-page WebGL experience with a React overlay deck",
+  "description": "InTension — scroll-scene marketing site (vanilla HTML/CSS/JS + GSAP/Lenis)",
   "scripts": {
-    "start": "node app.js",
-    "build": "node scripts/build.mjs",
-    "smoke": "node scripts/smoke.mjs"
+    "start": "node app.js"
   },
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "esbuild": "^0.23.0",
     "jsdom": "^30.0.1"
   }
 }

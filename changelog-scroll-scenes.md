@@ -111,3 +111,12 @@ Client: "Move the logo up by 30% and make larger by 45% and make the look consis
 2. **Logo +45% with consistent scaling**: mark `clamp(90px,14vw,120px)`, wordmark `clamp(42px,6.6vw,57px)`, gap `clamp(12px,1.8vw,16px)` — 120/57px at 1440, 90/51px at 375 (same proportions).
 3. **Opaque purple cover page removed** (`#trust` `.panel--cover` — "that purple background is not transparent, then remove that element"). After the glass half-hold the page continues straight into the next scene. The second-swipe scrubs (hold glass white→purple, veil purple return) are gone; the veil completes its purple→white arc at the hold; the purple→white→purple arc is preserved via the canvas (white → purple at book). The pills content that lived on the trust page was removed with it.
 4. `verify.mjs` 53/53 (logo position/size checks, no-#trust, veil white at hold, arc ends purple, page-continues-past-hold), `preloader-test.mjs` 18/18, live 53/53. Screenshots: `screenshots/after-v9/`.
+
+# Changelog v10 — repo cleanup (2026-08-15, commit pending)
+
+Client: "push to github with all changes, then remove the components and unused code file but keep directory."
+
+- **Files removed, directories kept**: all `react/**` component/engine/style/dist files (the separate 3D-walkthrough source — not part of the live marketing page), `index.template.html` (its template), `scripts/build.mjs` + `scripts/smoke.mjs` (its build/test pipeline). Directory structure preserved (`react/`, `react/components/`, `react/engine/`, `react/styles/`, `react/dist/` remain as empty dirs; `scripts/` keeps `preloader-test.mjs`).
+- **package.json tidied**: scripts reduced to `start` (build/smoke dangled); deps trimmed to `jsdom` (preloader-test) — react/react-dom/esbuild were only for the removed walkthrough.
+- **Everything pushed**: screenshots (v2–v9 deliverables) committed; branch `scroll-scenes` fully in sync with origin.
+- Live site unaffected (marketing `index.html` + `scroll-scenes.js` + `app.js` + preloader-test remain; nginx never served react/).
