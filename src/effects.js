@@ -51,9 +51,13 @@ function plReady(){
 }
 if(document.readyState === "complete") plReady();
 else addEventListener("load", plReady);
-/* safety net: scheduled, then guarded — never strand the visitor on the
-   loader even if every image path misbehaves */
-setTimeout(reveal, 8000);
+/* Independent safety rails (defense in depth — the user reported being
+   stuck on iOS, so the reveal must never depend on a single path):
+   1) run the gate even if the load event never fires (flaky networks,
+      hung image requests)
+   2) hard cap: the preloader NEVER lingers past 4s, on any device */
+setTimeout(plReady, 3500);
+setTimeout(reveal, 4000);
 /* ── PROMO STICKER — fixed bottom-right badge ─────────────────────────
    EDIT THE PROMO COPY HERE (loud word + supporting sub-line). The badge
    keeps its hidden pre-entrance pose until reveal() fires, then springs
