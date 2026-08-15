@@ -484,73 +484,11 @@ pio.observe(document.getElementById("proto"));
   /* ── SECOND SWIPE — the purple page (70% transparent) slides up; the veil's
      white layer fades out (purple returns over the photos) and the glass hold
      picks up a matching purple tint, all via compositor-friendly opacity. */
-  /* ── Mechanic 5 — snap to scene tops (desktop only) ──────────────────────
-     Snap targets are computed per scene (scenes may outgrow 100svh on short
-     viewports), which degenerates to the reference's even 1/(n-1) spacing on
-     uniform pages. Disabled under 768px — it fights touch momentum. */
-  var snapST = null;
-  var snapPts = [];
-  /* Layout tops. The sticky panels report their *stuck* position through
-     offsetTop/rect while pinned, so their true layout tops are cached once at
-     scroll 0 (they can only change when the dismissible promo bar collapses —
-     see the MutationObserver below). Other scenes are measured live. The
-     half-hold panel's resting position is its layout top minus half a viewport. */
-  var panelDocs = {};
-  var calcSnapPts = function () {
-    var sy = window.scrollY;
-    snapPts = Array.prototype.map.call(scenes, function (s) {
-      if (s.classList.contains("panel--base") || s.classList.contains("panel--hold")) {
-        var key = s.id;
-        if (panelDocs[key] === undefined) panelDocs[key] = s.getBoundingClientRect().top + sy;
-        var top = panelDocs[key];
-        return s.classList.contains("panel--hold") ? top - window.innerHeight / 2 : top;
-      }
-      return s.getBoundingClientRect().top + sy;
-    });
-  };
-  var barEl = document.getElementById("bar");
-  if (barEl && "MutationObserver" in window) {
-    var barObs = new MutationObserver(function () {
-      if (!barEl.classList.contains("gone")) return;
-      panelDocs = {};          // the page shifts up — recompute from scratch
-      calcSnapPts();
-      ScrollTrigger.refresh();
-      barObs.disconnect();
-    });
-    barObs.observe(barEl, { attributes: true, attributeFilter: ["class"] });
-  }
-  var createSnap = function () {
-    if (snapST || !sceneRun) return;
-    calcSnapPts();
-    snapST = ScrollTrigger.create({
-      snap: {
-        /* ScrollTrigger passes progress (0–1) here, not pixels — convert via
-           the trigger's own start/end, find the nearest scene top, convert
-           back. (Defensive: also accept raw pixels if a caller passes them.) */
-        snapTo: function (v, self) {
-          var start = self.start, range = (self.end - self.start) || 1;
-          var px = (v <= 1 && v >= 0) ? start + v * range : v;
-          var best = snapPts[0], bd = Infinity, k;
-          for (k = 0; k < snapPts.length; k++) {
-            var d = Math.abs(snapPts[k] - px);
-            if (d < bd) { bd = d; best = snapPts[k]; }
-          }
-          return (best - start) / range;
-        },
-        duration: { min: 0.2, max: 0.5 },
-        delay: 0.08,
-        inertia: false,
-        ease: "power2.inOut"
-      },
-      trigger: sceneRun,
-      start: "top top",
-      end: "bottom bottom"
-    });
-  };
-  var killSnap = function () {
-    if (snapST) { snapST.kill(); snapST = null; }
-  };
-  if (window.innerWidth >= 768) createSnap();
+  /* (Mechanic 5 — scene snap — REMOVED v16: it fought Lenis on every
+     scroll end, yanking the page to the nearest scene top = the 'trying to
+     scroll' jitter the client kept hitting. Lenis alone drives the scroll
+     now; scrubs stay buttery. Anchor jumps still route through lenis.) */
+
   /* ── Mechanic 6 — intro sequence with skip ─────────────────────────────── */
   var clearWill = function () {
     if (bg) bg.style.willChange = "auto";
@@ -588,9 +526,10 @@ pio.observe(document.getElementById("proto"));
     }
     intro.play();
   } else {
-    /* return visit: intro skipped, object starts settled, logo always visible */
-    if (objInner) gsap.set(objInner, { y: 0, rotate: 0, opacity: 1 });
-    if (obj) gsap.set(obj, { opacity: 1 });
+    /* return visit: intro skipped, logo always visible; the floating item
+       stays hidden — it only appears once the purple page is swiped up
+       (the trust-rise scrub owns its visibility, every visit) */
+    if (objInner) gsap.set(objInner, { y: 0, rotate: 0 });
     if (first) gsap.set(first.querySelectorAll("#hero .logo-lg"), { autoAlpha: 1 });
     clearWill();
   }
