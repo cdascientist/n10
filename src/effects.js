@@ -4,6 +4,7 @@ import Lenis from "lenis";
 
 export function initEffects() {
   window.__gsap = gsap; window.__ST = ScrollTrigger; // test hooks
+  window.__initRuns = (window.__initRuns || 0) + 1;
     "use strict";
   gsap.registerPlugin(ScrollTrigger);
   var hasLibs = true;
@@ -14,7 +15,8 @@ var clamp = function(v,a,b){ return Math.min(b,Math.max(a,v)); };
 /* ── preloader: hold the themed gate until EVERYTHING has loaded,
       then fade into the page (the hero entrance starts with the fade) ── */
 var plEl = document.getElementById("preloader");
-var plStart = Date.now(), plMin = 500, plShown = false;
+var plStart = Date.now(), plMin = 800, plShown = false;
+var plRevealCb = null;   /* intro (or anything else) waiting on the reveal */
 function reveal(){
   if(plShown || !plEl) return;
   plShown = true;
@@ -23,10 +25,20 @@ function reveal(){
   plEl.classList.add("gone");
   if(stickerEl) stickerEl.classList.add("in");   /* sticker springs in with the reveal */
   setTimeout(function(){ plEl.style.display = "none"; }, 850);
+  if(plRevealCb){ var cb = plRevealCb; plRevealCb = null; cb(); }
 }
+/* Hold the gate until every network image is loaded AND decoded, so the page
+   is fully rendered the moment it fades — no blank hero, no mid-scroll
+   fetch/decode jank. (data: URIs are already in memory; decode() resolves
+   instantly for cached images.) */
 function plReady(){
   if(Date.now()-plStart < plMin){ setTimeout(plReady, Math.max(40, plMin-(Date.now()-plStart))); return; }
-  reveal();
+  var imgs = Array.prototype.slice.call(document.images)
+    .filter(function(i){ return i.src && i.src.slice(0,5) !== "data:"; });
+  Promise.all(imgs.map(function(i){
+    if (i.complete && i.naturalWidth) return Promise.resolve();
+    return i.decode().catch(function(){});
+  })).then(reveal, reveal);
 }
 if(document.readyState === "complete") plReady();
 else addEventListener("load", plReady);
@@ -200,7 +212,7 @@ var GAL = [
   ["1730207375825-d734728f877e","Lockers · Phones stay here","A row of metal lockers"]
 ];
 var galRun = document.getElementById("galRun");
-if(galRun){
+if(galRun && !galRun.children.length){  /* idempotent: build the marquee once */
   var frag = document.createDocumentFragment();
   for(var pass = 0; pass < 2; pass++){
     GAL.forEach(function(g){
@@ -524,7 +536,11 @@ pio.observe(document.getElementById("proto"));
         intro.progress(1); // jumps the timeline to its end
       });
     }
-    intro.play();
+    /* The intro starts when the preloader fades (all assets ready), not
+       behind it — queue it on the reveal. If the reveal already fired
+       (instant cache / safety net), play now. */
+    if (plShown) intro.play();
+    else plRevealCb = function () { intro.play(); };
   } else {
     /* return visit: intro skipped, logo always visible; the floating item
        stays hidden — it only appears once the purple page is swiped up
