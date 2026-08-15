@@ -216,9 +216,9 @@
     var trustPanel = scenes[2];
     if (holdPanel) {
       gsap.fromTo(holdPanel,
-        { backgroundColor: "#FFFFFF" },
+        { backgroundColor: "rgba(255,255,255,.6)" },
         {
-          backgroundColor: "#8B2BFF", ease: "none", immediateRender: false,
+          backgroundColor: "rgba(139,43,255,.6)", ease: "none", immediateRender: false,
           scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
         }
       );

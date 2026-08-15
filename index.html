@@ -189,7 +189,7 @@ p{color:var(--label-2);text-wrap:pretty}
 .logo-type .sl{color:var(--brand);font-weight:400;padding-inline:1px}
 .logo-lg .logo-mark{width:83px;height:83px;border-radius:21px}   /* hero logo +30% */
 .logo-lg .logo-type{font-size:39px}                              /* hero wordmark +30% */
-#hero .logo-lg{position:relative;z-index:2}                       /* always above the halo */
+#hero .logo-lg{position:relative;z-index:2;filter:drop-shadow(0 0 34px rgba(255,255,255,.8)) drop-shadow(0 0 12px rgba(255,255,255,.55))}
 
 /* ══ CONTROLS (Apple button language) ════════════════════════ */
 .btn{
@@ -357,15 +357,22 @@ p{color:var(--label-2);text-wrap:pretty}
 .panel--base{
   position:sticky;top:0;z-index:1;
   height:100vh;height:100svh;min-height:0;
-  overflow:hidden;padding:0 0 50vh;   /* content centred in the top half — logo stays visible */
+  overflow:hidden;padding:0;              /* content (the logo) centred in the full page */
 }
 .panel--hold{
   position:sticky;top:50vh;z-index:2;      /* slides up half way, then holds */
   height:50vh;height:50svh;min-height:0;   /* exactly the visible bottom half — the next page can follow immediately */
   overflow:hidden;padding:0;               /* content centred within the hold page */
-  background:#FFFFFF;                       /* opaque — the 'second page' (scrubbed white→purple by JS) */
+  background:rgba(255,255,255,.6);          /* semi-transparent glass — the logo stays visible through it */
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
 }
 .panel--hold .hero-halo{bottom:0}          /* halo covers the whole (half-height) hold page */
+.panel--hold .cta-row .btn{                  /* the selection row — calendar-menu style */
+  background:var(--brand);color:#fff;border-color:transparent;
+  min-width:min(280px,80vw);
+}
+.panel--hold .cta-row .btn:hover{background:var(--brand-2);color:#fff}
 .panel--cover{
   position:relative;z-index:3;              /* slides in entirely over both */
   min-height:100vh;min-height:100svh;
@@ -993,23 +1000,24 @@ p{color:var(--label-2);text-wrap:pretty}
     <img class="shot alt" src="https://images.unsplash.com/photo-1745327883508-b6cd32e5dde5?fm=jpg&amp;q=76&amp;w=1800&amp;auto=format&amp;fit=crop" alt="" aria-hidden="true" decoding="async" referrerpolicy="no-referrer">
     <span class="veil" id="heroVeil"></span>
   </div>
-  <div class="hero-halo"></div>
   <a class="logo logo-lg" href="#top" aria-label="InTension home">
     <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg>
     <span class="logo-type"><i class="lg-in">In</i><i class="lg-ten">Tension</i></span>
   </a>
 </section>
 
-<!-- INTRO (page 2 — half-hold: the rest of the hero content) -->
+<!-- INTRO (page 2 — half-hold glass: headline, then the selection row, then the note) -->
 <section class="scene panel panel--hold" data-bg="#FFFFFF" data-ink="dark" id="intro">
   <div class="hero-halo"></div>
-  <h1>
-    <span class="ln"><i>Tension in.</i></span>
-    <span class="ln"><i><em>Tension out.</em></i></span>
-  </h1>
-  <p class="hero-sub">Swedish massage, infrared heat, cold water, movement and a fuel bar — all in one bright, quiet building. Ninety minutes here undoes a whole week out there.</p>
-  <div class="cta-row">
-    <a class="btn mag" href="#book">Book a session <svg class="arw" viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
+  <div class="wrap scene-in">
+    <h1>
+      <span class="ln"><i>Tension in.</i></span>
+      <span class="ln"><i><em>Tension out.</em></i></span>
+    </h1>
+    <div class="cta-row">
+      <a class="btn mag" href="#book">Book a session <svg class="arw" viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
+    </div>
+    <p class="hero-sub">Swedish massage, infrared heat, cold water, movement and a fuel bar — all in one bright, quiet building. Ninety minutes here undoes a whole week out there.</p>
   </div>
 </section>
 
