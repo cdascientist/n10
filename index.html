@@ -187,8 +187,9 @@ p{color:var(--label-2);text-wrap:pretty}
 .logo-type{display:inline-flex;align-items:baseline;font-size:19px;font-weight:600;
            letter-spacing:-.024em;color:var(--ink);transition:color .45s ease}
 .logo-type .sl{color:var(--brand);font-weight:400;padding-inline:1px}
-.logo-lg .logo-mark{width:83px;height:83px;border-radius:21px}   /* hero logo +30% */
-.logo-lg .logo-type{font-size:39px}                              /* hero wordmark +30% */
+.logo-lg .logo-mark{width:clamp(90px,14vw,120px);height:clamp(90px,14vw,120px);border-radius:clamp(22px,3.5vw,30px)}   /* hero logo +45%, scales consistently */
+.logo-lg .logo-type{font-size:clamp(42px,6.6vw,57px)}                                              /* hero wordmark +45% */
+.logo-lg{gap:clamp(12px,1.8vw,16px)}
 #hero .logo-lg{position:relative;z-index:2;filter:drop-shadow(0 0 34px rgba(255,255,255,.8)) drop-shadow(0 0 12px rgba(255,255,255,.55))}
 
 /* ══ CONTROLS (Apple button language) ════════════════════════ */
@@ -357,7 +358,7 @@ p{color:var(--label-2);text-wrap:pretty}
 .panel--base{
   position:sticky;top:0;z-index:1;
   height:100vh;height:100svh;min-height:0;
-  overflow:hidden;padding:0;              /* content (the logo) centred in the full page */
+  overflow:hidden;padding:0 0 60vh;   /* logo centred in the upper 40% — moved up 30% */
 }
 .panel--hold{
   position:sticky;top:50vh;z-index:2;      /* slides up half way, then holds */
@@ -1021,17 +1022,6 @@ p{color:var(--label-2);text-wrap:pretty}
   </div>
 </section>
 
-<!-- TRUST (page 3 — slides in entirely) -->
-<section class="scene panel panel--cover" data-bg="#8B2BFF" data-ink="light" id="trust">
-  <div class="wrap scene-in">
-    <div class="trust">
-      <div><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg><b>Licensed</b> therapists</div>
-      <div><svg viewBox="0 0 24 24"><use href="#i-heat"/></svg><b>190°</b> infrared</div>
-      <div><svg viewBox="0 0 24 24"><use href="#i-cold"/></svg><b>42°</b> plunge</div>
-      <div><svg viewBox="0 0 24 24"><use href="#i-clock"/></svg><b>6a–10p</b> daily</div>
-    </div>
-  </div>
-</section>
 </div><!-- /cover-stack -->
 
 <!-- PROTOCOL -->

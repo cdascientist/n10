@@ -207,32 +207,11 @@
     });
   }
 
-  /* ── SECOND SWIPE — page 2's background transitions into page 3's ────────
-     As #trust slides in, the half-hold page's white background scrubs to the
-     trust purple, and the hero veil (still visible over the top half of page 1)
-     scrubs white→purple with it, so the whole opening flows purple→white→purple
-     with no hard seam before the cover lands. */
-  if (scenes[2]) {
-    var trustPanel = scenes[2];
-    if (holdPanel) {
-      gsap.fromTo(holdPanel,
-        { backgroundColor: "rgba(255,255,255,.6)" },
-        {
-          backgroundColor: "rgba(139,43,255,.6)", ease: "none", immediateRender: false,
-          scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
-        }
-      );
-    }
-    if (veilEl) {
-      gsap.fromTo(veilEl,
-        { backgroundColor: "#FFFFFF" },
-        {
-          backgroundColor: "#8B2BFF", ease: "none", immediateRender: false,
-          scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
-        }
-      );
-    }
-  }
+  /* ── SECOND SWIPE ─────────────────────────────────────────────────────────
+     The opaque purple cover page was removed (client), so after the half-hold
+     the page simply continues into the next scene; the veil stays white and
+     the hold keeps its translucent white glass. The purple→white→purple arc
+     is preserved by the canvas tween (white → purple at book). */
 
   /* ── Mechanic 5 — snap to scene tops (desktop only) ──────────────────────
      Snap targets are computed per scene (scenes may outgrow 100svh on short
