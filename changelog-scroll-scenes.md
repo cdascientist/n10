@@ -66,3 +66,16 @@ Client follow-up: "first page like 3 versions ago … background images of massa
 5. `verify.mjs` updated: cover checks removed, hero-veil checks added (purple at top, translucent, white on arrival) — **44/44 green on :3000 and :80**. `preloader-test.mjs` 18/18.
 
 Screenshots v3: `/root/n10/screenshots/after-v3/`.
+
+---
+
+# Changelog v5 — two-stage slide (2026-08-15, commit `9199bb5`)
+
+Client: "the second page swiping up is not smooth … only keep the logo on page 1 … rest of the content on page 2 … page 2 slides in half way, keeping the logo visible … another swipe slides page 3 in entirely … white gradient behind the logo on pages 1–2 only … header 15% taller, header logo 15% bigger."
+
+1. **Page 1 (`#hero`, sticky base, z1)**: only the InTension logo, centred vertically + horizontally in the top half (the panel's content area is `padding-bottom:50vh` so the logo sits above the half-hold). Background = the two massage images + the changing colour veil (purple→white over the first swipe) + a **white radial gradient halo** behind the logo for readability.
+2. **Page 2 (`#intro`, sticky `top:50vh`, z2, opaque white)**: the rest of the hero content — "Tension in. / Tension out.", sub, Book CTA — aligned + centred, with the same white halo. It slides up from page 1 over the first swipe and **holds half way up**, logo staying visible above it. `wrap scene-in` removed from the hero panels.
+3. **Page 3 (`#trust`, z3, opaque purple)**: slides in **in its entirety** on the second swipe, covering both pages. The canvas tween white→purple is the "second page background transitioning into the third page background". The rest of the page scrolls normally (protocol → … → book, purple→white→purple arc intact).
+4. **Snap** now includes the half-hold resting point (`hold layout top − 50vh`): first and second swipes resolve to logo-full / half-hold / trust-land — never parked mid-slide.
+5. **Header +15%**: `--navh` 56→64px; nav logo mark 32→37px, wordmark 19→22px (scoped to `.nav` so the footer logo is unchanged).
+6. `verify.mjs` 52/52 (half-hold geometry, logo visibility, hold snap, opaque page 2, header sizes, page-1-logo-only); `preloader-test.mjs` 18/18. Screenshots: `screenshots/after-v4/`.
