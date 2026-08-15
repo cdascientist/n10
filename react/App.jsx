@@ -64,7 +64,7 @@ export default function App() {
       <TouchControls />
       <Boot entered={entered} onEnter={handleEnter} />
       <OverlayDeck />
-      <Sticker />   {/* promotional sticker — top-most, above everything */}
+      <Sticker entered={entered} />   {/* promotional sticker — top-most; enters its walkthrough pose when entered */}
     </>
   );
 }
