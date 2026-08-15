@@ -63,7 +63,7 @@
 
   --pad:clamp(18px,5vw,64px);
   --maxw:1120px;
-  --navh:56px;
+  --navh:64px;
 
   /* Apple-ish continuous corners */
   --r-s:12px; --r-m:18px; --r-l:26px;
@@ -180,6 +180,8 @@ p{color:var(--label-2);text-wrap:pretty}
   box-shadow:0 2px 6px rgba(120,40,200,.28),0 0 0 .5px rgba(0,0,0,.04);
   transition:transform .5s var(--e-spring),box-shadow .5s var(--e-soft);
 }
+.nav .logo-mark{width:37px;height:37px;border-radius:10px}   /* header logo +15% */
+.nav .logo-type{font-size:22px}                              /* header wordmark +15% */
 .logo:hover .logo-mark{transform:scale(1.06) rotate(-3deg);
                        box-shadow:0 6px 18px rgba(120,40,200,.4)}
 .logo-type{display:inline-flex;align-items:baseline;font-size:19px;font-weight:600;
@@ -343,12 +345,36 @@ p{color:var(--label-2);text-wrap:pretty}
   position:absolute;inset:0;
   background:#8B2BFF;opacity:.5;   /* the changing colour — scrubbed purple→white by JS */
 }
-#hero h1{
+.hero-halo{
+  position:absolute;top:0;left:0;right:0;bottom:50vh;  /* content lives in the top half */
+  pointer-events:none;
+  background:radial-gradient(ellipse 72% 82% at 50% 50%,rgba(255,255,255,.92) 0%,rgba(255,255,255,.5) 45%,rgba(255,255,255,0) 72%);
+}
+
+/* ══ TWO-STAGE SLIDE — logo page → half-hold page → full-cover page ══ */
+.cover-stack{position:relative}  /* no overflow / transform / filter on this element */
+.panel--base{
+  position:sticky;top:0;z-index:1;
+  height:100vh;height:100svh;min-height:0;
+  overflow:hidden;padding:0 0 50vh;   /* content centred in the top half — logo stays visible */
+}
+.panel--hold{
+  position:sticky;top:50vh;z-index:2;      /* slides up half way, then holds */
+  height:100vh;height:100svh;min-height:0;
+  overflow:hidden;padding:0 0 50vh;        /* content centred in its top half (the visible bottom half) */
+  background:#FFFFFF;                       /* opaque — the 'second page' */
+}
+.panel--cover{
+  position:relative;z-index:3;              /* slides in entirely over both */
+  min-height:100vh;min-height:100svh;
+  background-color:#8B2BFF;
+}
+.panel--hold h1{
   font-size:clamp(38px,7.4vw,76px);line-height:1.04;letter-spacing:-.032em;
   font-weight:700;margin:0;color:var(--ink);
 }
-#hero h1 .ln{display:block;padding-bottom:.06em}
-#hero h1 em{
+.panel--hold h1 .ln{display:block;padding-bottom:.06em}
+.panel--hold h1 em{
   font-style:normal;
   background:linear-gradient(96deg,var(--brand),var(--purple) 46%,var(--brand-2));
   -webkit-background-clip:text;background-clip:text;color:transparent;
@@ -957,31 +983,36 @@ p{color:var(--label-2);text-wrap:pretty}
   </div>
 </div>
 
-<!-- HERO -->
-<section class="scene" data-bg="#FFFFFF" data-ink="dark" id="hero">
+<!-- HERO (page 1 — sticky base: logo only, centered) -->
+<div class="cover-stack">
+<section class="scene panel panel--base" data-bg="#FFFFFF" data-ink="dark" id="hero">
   <div class="hero-bg">
     <img class="shot" src="https://images.unsplash.com/photo-1741522509438-a120c0bb5e88?fm=jpg&amp;q=76&amp;w=1800&amp;auto=format&amp;fit=crop" alt="" aria-hidden="true" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">
     <img class="shot alt" src="https://images.unsplash.com/photo-1745327883508-b6cd32e5dde5?fm=jpg&amp;q=76&amp;w=1800&amp;auto=format&amp;fit=crop" alt="" aria-hidden="true" decoding="async" referrerpolicy="no-referrer">
     <span class="veil" id="heroVeil"></span>
   </div>
-  <div class="wrap scene-in">
-    <a class="logo logo-lg" href="#top" aria-label="InTension home">
-      <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg>
-      <span class="logo-type"><i class="lg-in">In</i><i class="lg-ten">Tension</i></span>
-    </a>
-    <h1>
-      <span class="ln"><i>Tension in.</i></span>
-      <span class="ln"><i><em>Tension out.</em></i></span>
-    </h1>
-    <p class="hero-sub">Swedish massage, infrared heat, cold water, movement and a fuel bar — all in one bright, quiet building. Ninety minutes here undoes a whole week out there.</p>
-    <div class="cta-row">
-      <a class="btn mag" href="#book">Book a session <svg class="arw" viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
-    </div>
+  <div class="hero-halo"></div>
+  <a class="logo logo-lg" href="#top" aria-label="InTension home">
+    <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg>
+    <span class="logo-type"><i class="lg-in">In</i><i class="lg-ten">Tension</i></span>
+  </a>
+</section>
+
+<!-- INTRO (page 2 — half-hold: the rest of the hero content) -->
+<section class="scene panel panel--hold" data-bg="#FFFFFF" data-ink="dark" id="intro">
+  <div class="hero-halo"></div>
+  <h1>
+    <span class="ln"><i>Tension in.</i></span>
+    <span class="ln"><i><em>Tension out.</em></i></span>
+  </h1>
+  <p class="hero-sub">Swedish massage, infrared heat, cold water, movement and a fuel bar — all in one bright, quiet building. Ninety minutes here undoes a whole week out there.</p>
+  <div class="cta-row">
+    <a class="btn mag" href="#book">Book a session <svg class="arw" viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
   </div>
 </section>
 
-<!-- TRUST -->
-<section class="scene" data-bg="#8B2BFF" data-ink="light" id="trust">
+<!-- TRUST (page 3 — slides in entirely) -->
+<section class="scene panel panel--cover" data-bg="#8B2BFF" data-ink="light" id="trust">
   <div class="wrap scene-in">
     <div class="trust">
       <div><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg><b>Licensed</b> therapists</div>
@@ -991,6 +1022,7 @@ p{color:var(--label-2);text-wrap:pretty}
     </div>
   </div>
 </section>
+</div><!-- /cover-stack -->
 
 <!-- PROTOCOL -->
 <section class="scene" data-bg="#FFFFFF" data-ink="dark" id="protocol">

@@ -181,18 +181,28 @@
   }
 
   /* ── HERO VEIL — the changing colour layered over the massage images ─────
-     Purple at the top (the arc's start), scrubbed to white as the next scene
-     arrives, back on reverse — the purple→white→purple arc the client
-     specified, painted on top of the hero photos. */
+     Purple at the top, scrubbed to white over the first swipe (until the
+     half-hold), back on reverse. Page two is opaque white, so the white veil
+     hands the screen over seamlessly; page three (purple) then slides in and
+     the canvas tween white→purple completes the arc. */
   var veilEl = document.getElementById("heroVeil");
   if (veilEl && scenes[1]) {
     gsap.fromTo(veilEl,
       { backgroundColor: "#8B2BFF" },
       {
         backgroundColor: "#FFFFFF", ease: "none", immediateRender: false,
-        scrollTrigger: { trigger: scenes[1], start: "top bottom", end: "top top", scrub: true }
+        scrollTrigger: { trigger: scenes[1], start: "top bottom", end: "top 50%", scrub: true }
       }
     );
+  }
+
+  /* page 2 (the half-hold) content reveals as it slides in */
+  var holdPanel = document.querySelector(".panel--hold");
+  if (holdPanel) {
+    gsap.from(holdPanel.querySelectorAll("h1, .hero-sub, .cta-row"), {
+      y: 24, autoAlpha: 0, duration: 0.7, ease: "power2.out", stagger: 0.08,
+      scrollTrigger: { trigger: holdPanel, start: "top bottom", end: "top 50%" }
+    });
   }
 
   /* ── Mechanic 5 — snap to scene tops (desktop only) ──────────────────────
@@ -201,17 +211,20 @@
      uniform pages. Disabled under 768px — it fights touch momentum. */
   var snapST = null;
   var snapPts = [];
-  /* Layout tops. The sticky base panel reports its *stuck* position through
-     offsetTop/rect while pinned to the viewport, so its true layout top is
-     cached once at scroll 0 (it can only change when the dismissible promo
-     bar collapses — see the MutationObserver below). Other scenes are
-     measured live (rect.top + scrollY is exact for non-sticky elements). */
-  var heroDoc = null;
+  /* Layout tops. The sticky panels report their *stuck* position through
+     offsetTop/rect while pinned, so their true layout tops are cached once at
+     scroll 0 (they can only change when the dismissible promo bar collapses —
+     see the MutationObserver below). Other scenes are measured live. The
+     half-hold panel's resting position is its layout top minus half a viewport. */
+  var panelDocs = {};
   var calcSnapPts = function () {
     var sy = window.scrollY;
     snapPts = Array.prototype.map.call(scenes, function (s) {
-      if (s.classList.contains("panel--base")) {
-        return heroDoc !== null ? heroDoc : (heroDoc = s.getBoundingClientRect().top + sy);
+      if (s.classList.contains("panel--base") || s.classList.contains("panel--hold")) {
+        var key = s.id;
+        if (panelDocs[key] === undefined) panelDocs[key] = s.getBoundingClientRect().top + sy;
+        var top = panelDocs[key];
+        return s.classList.contains("panel--hold") ? top - window.innerHeight / 2 : top;
       }
       return s.getBoundingClientRect().top + sy;
     });
@@ -220,7 +233,7 @@
   if (barEl && "MutationObserver" in window) {
     var barObs = new MutationObserver(function () {
       if (!barEl.classList.contains("gone")) return;
-      heroDoc = null;          // the page shifts up — recompute from scroll 0-equivalent
+      panelDocs = {};          // the page shifts up — recompute from scratch
       calcSnapPts();
       ScrollTrigger.refresh();
       barObs.disconnect();
@@ -282,8 +295,8 @@
 
     var intro = gsap.timeline({ paused: true, onComplete: finishIntro });
     intro
-      .from(first.querySelectorAll("#hero .ln, #hero .logo-lg, #hero .hero-sub, #hero .cta-row"), {
-        y: 26, autoAlpha: 0, duration: 0.8, ease: "power2.out", stagger: 0.1
+      .from(first.querySelectorAll("#hero .logo-lg"), {
+        y: 26, autoAlpha: 0, duration: 0.8, ease: "power2.out"
       }, 0.2)
       .from(objInner, { y: 26, rotate: 3, autoAlpha: 0, duration: 0.8, ease: "power2.out" }, 0.35)
       .add(finishIntro, "+=0.15");
