@@ -18,6 +18,7 @@ export default function MobileSheet() {
       <div className="wrap" style={{paddingInline:0}}>
         <h4>Treatments</h4>
         <div className="grouped">
+          <a href="#treatments"><span className="gi"><svg viewBox="0 0 24 24"><use href="#i-hands"/></svg></span>Massage & recovery<svg className="chev" viewBox="0 0 24 24"><use href="#i-chev"/></svg></a>
           <a href="#heat"><span className="gi"><svg viewBox="0 0 24 24"><use href="#i-heat"/></svg></span>Sauna & cold plunge<svg className="chev" viewBox="0 0 24 24"><use href="#i-chev"/></svg></a>
           <a href="#movement"><span className="gi"><svg viewBox="0 0 24 24"><use href="#i-move"/></svg></span>Yoga & mobility<svg className="chev" viewBox="0 0 24 24"><use href="#i-chev"/></svg></a>
         </div>

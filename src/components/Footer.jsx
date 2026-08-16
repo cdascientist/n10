@@ -29,6 +29,7 @@ export default function Footer() {
           <div>
             <h4>Treatments</h4>
             <div className="grouped">
+              <a href="#treatments">Massage & recovery<svg className="chev" viewBox="0 0 24 24"><use href="#i-chev"/></svg></a>
               <a href="#heat">Sauna & plunge<svg className="chev" viewBox="0 0 24 24"><use href="#i-chev"/></svg></a>
               <a href="#movement">Yoga & mobility<svg className="chev" viewBox="0 0 24 24"><use href="#i-chev"/></svg></a>
             </div>

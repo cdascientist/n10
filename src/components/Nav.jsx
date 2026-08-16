@@ -26,6 +26,7 @@ export default function Nav() {
           <div className="menu-item">
             <button aria-expanded="false" aria-controls="d1">Treatments <svg viewBox="0 0 24 24"><use href="#i-chevd"/></svg></button>
             <div className="drop" id="d1">
+              <a href="#treatments"><span className="gi"><svg viewBox="0 0 24 24"><use href="#i-hands"/></svg></span><span><b>Massage & recovery</b><span>Sports, deep tissue, prenatal, travel</span></span></a>
               <a href="#heat"><span className="gi"><svg viewBox="0 0 24 24"><use href="#i-heat"/></svg></span><span><b>Sauna & cold plunge</b><span>Contrast therapy by the hour</span></span></a>
               <a href="#movement"><span className="gi"><svg viewBox="0 0 24 24"><use href="#i-move"/></svg></span><span><b>Yoga & mobility</b><span>Slow flow, restore, mobility</span></span></a>
             </div>

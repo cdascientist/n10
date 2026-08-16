@@ -31,6 +31,7 @@ import HeroObject from './components/HeroObject.jsx';
 import HeroScene from './components/Scenes/HeroScene.jsx';
 import IntroScene from './components/Scenes/IntroScene.jsx';
 import TrustScene from './components/Scenes/TrustScene.jsx';
+import TreatmentsScene from './components/Scenes/TreatmentsScene.jsx';
 import GalleryScene from './components/Scenes/GalleryScene.jsx';
 import MovementScene from './components/Scenes/MovementScene.jsx';
 import HeatScene from './components/Scenes/HeatScene.jsx';
@@ -87,6 +88,9 @@ export default function App() {
           {/* #trust — page 3, purple cover (src/components/Scenes/TrustScene.jsx) */}
           <TrustScene />
         </div>{/* /cover-stack */}
+
+        {/* #treatments — sports recovery menu (src/components/Scenes/TreatmentsScene.jsx) */}
+        <TreatmentsScene />
 
         {/* #gallery — marquee scene (src/components/Scenes/GalleryScene.jsx) */}
         <GalleryScene />
