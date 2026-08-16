@@ -327,3 +327,13 @@ it scrolls away and back before checking the veil (a different tween-render path
 
 No other pages touched; FRMM (`/frmm`) untouched. `holdTint` (single tween, correct
 rest value) unchanged. Deployed via main auto-pipeline.
+
+
+# Changelog v18.3 — section reorder: gallery replaces the protocol widget, yoga under it (2026-08-16)
+
+Client: "put the 'inside a session' section in place of the section protocol widget. then move the yoga tuesdays section right underneath."
+
+1. **Scene order rebuilt**: the Session protocol widget scene (`#protocol` — gauge/stages/verdict) is **removed**; the "Inside a session" gallery scene now sits in its place (index 3, right after the purple trust cover), with **Movement ("YOGA TUESDAY") directly underneath** (index 4). Heat & cold follows at index 5, then membership/cards/fuel/board/book unchanged. New order: `hero → intro → trust → gallery → movement → heat → membership → cards → fuel-menu → board → book` (11 scenes, was 12).
+2. **Protocol JS no-ops cleanly**: the gauge/stages/verdict wiring is now guarded behind `if (document.getElementById("proto"))` — no dead `IntersectionObserver` on a missing node (it would have thrown on `observe(null)`).
+3. **Suite updated**: 11 scenes, a new order assertion (gallery=3, movement=4, heat=5, no `#protocol`), the hero-object variant check made parity-independent (exact complements at book — parity flipped with 11 scenes). **57/57 pass** dev; live re-verified after deploy.
+4. Screenshots `screenshots/after-v20/` (gallery / movement / heat scenes; gallery marquee 20 tiles × 6104px confirmed).

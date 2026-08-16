@@ -263,6 +263,10 @@ document.addEventListener("error", function(e){
   var host = img.closest(".duo") || img.closest(".stage-bg") || img.closest(".bg");
   if(host){ var t = host.querySelector(".tone"); if(t) t.style.opacity = ".12"; }
 }, true);
+/* ── Session protocol widget — only wired when the widget exists in the DOM ──
+   (removed from the page in v18.3; kept live so the code no-ops cleanly if it
+   ever returns) */
+if (document.getElementById("proto")) {
 var tnum = document.getElementById("tnum"), tbar = document.getElementById("tbar");
 var stageEls = [].slice.call(document.querySelectorAll("#stages li"));
 var verdict = document.getElementById("verdict"), tot = document.getElementById("tot");
@@ -303,6 +307,7 @@ var pio = new IntersectionObserver(function(en){
   en.forEach(function(x){ if(x.isIntersecting) runProtocol(); else clearAll(); });
 }, {threshold:.2});
 pio.observe(document.getElementById("proto"));
+}
 })();
 /* ============================================================================
    scroll-scenes.js — GSAP ScrollTrigger + Lenis scroll-scene layer
