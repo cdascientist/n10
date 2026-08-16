@@ -2,7 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch InTension",
+      "name": "Run (vite dev · localhost:3000)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Run built site (app.js · needs npm run build)",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/app.js",

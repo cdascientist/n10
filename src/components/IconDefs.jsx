@@ -21,7 +21,7 @@ export default function IconDefs() {
     <svg style={{display:"none"}} aria-hidden="true">
       <defs>
         <linearGradient id="markG" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#C77DFF"/><stop offset=".5" stop-color="#8B2BFF"/><stop offset="1" stop-color="#6E1FD1"/>
+          <stop offset="0" stopColor="#C77DFF"/><stop offset=".5" stopColor="#8B2BFF"/><stop offset="1" stopColor="#6E1FD1"/>
         </linearGradient>
       </defs>
       <g id="i-hands" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">

@@ -350,3 +350,29 @@ Executed end-to-end with Claude Code (headless background worker, DeepSeek backe
 3. **Comments everywhere**: every component has a header block (purpose · used-by breadcrumb up · contains breadcrumb down) + inline single-line breadcrumbs at block boundaries; `effects.js` +~114 comment lines (section banners per mechanic), `index.css` +~101 (banners mapping blocks → components), `main.jsx` and `index.html` commented. Behavior code untouched (effects.js/index.css NOT split).
 4. **Verification (worker + independent)**: build PASS; **DOM-contract gate** (golden snapshot of rendered #root, styles stripped — `domcheck.mjs`) MATCH at 64,164 chars; Playwright suite **57/57** (run twice); hero veil pixel probe unchanged (purple-tinted at rest, white layer off); both base64 textures byte-identical; protocol widget stays absent; `public/frmm`, `package.json`, `app.js`, `vite.config.js`, suite, changelog untouched.
 5. Worker self-caught one bug during iteration (a `*/` sequence inside a JSX breadcrumb comment terminated it early — reworded, full scan, build re-passed).
+
+
+# Changelog v18.5 — VS Code local test flow fixed (blank page on :3000) (2026-08-16)
+
+Client: "when testing in visual studio code the website does not display in the test browser at localhost port 3000, however on live the website appears correctly."
+
+**Root cause:** `dist/` is gitignored, so a fresh checkout (the VS Code machine) has no
+built site. F5 ran `node app.js`, which fell back to serving the **raw repo root** — the
+Vite template's `<script src="/src/main.jsx">` is unparseable JSX to a browser → blank
+page at :3000. Live works because the deploy pipeline builds `dist/`.
+
+1. **VS Code F5 now runs the Vite dev server** (`.vscode/launch.json`): `npm run dev` on
+   **localhost:3000** with HMR — works from a fresh checkout, no build step. Second
+   launch config keeps the built-site server (`node app.js`) for when dist exists.
+2. **Port pinned**: `vite.config.js` gets `server: { port: 3000, strictPort: true }` — a
+   busy port fails loudly instead of silently moving to 3001.
+3. **app.js fails loudly without dist/**: prints the fix to the terminal AND serves a
+   styled hint page on every path ("No built site found — run npm run dev") instead of
+   the blank-page template. Normal serving unchanged when dist/ exists.
+4. **Zero React dev warnings** (were cluttering the VS Code console): `referrerpolicy` →
+   `referrerPolicy`, `fetchPriority` → `fetchpriority`, `stop-color` → `stopColor` in JSX
+   (effects.js innerHTML string untouched). Rendered DOM proven byte-identical by the
+   golden-DOM gate (64,164 chars MATCH).
+5. Suite made dev-aware: the "build assets referenced" check now also accepts the vite
+   dev entry (`/src/main.jsx`). **57/57 on the dev server, 57/57 on the built site, DOM
+   gate MATCH on both.** README "Run it" section updated.

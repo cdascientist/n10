@@ -180,16 +180,29 @@ screenshots are kept in `screenshots/`.
 
 ## 🚀 Run it
 
+**Recommended — VS Code / fresh checkout (no build step):**
+
 ```bash
 npm install        # react, react-dom, gsap, lenis, vite
-npm start          # node app.js → http://localhost:3000  (serves dist/ + /frmm, mirrors nginx)
-npm run dev        # vite dev server with HMR (no build step needed while developing)
-npm run build      # production build → dist/
+npm run dev        # vite dev server with HMR → http://localhost:3000  (press F5 in VS Code)
 ```
 
-`app.js` mirrors production nginx behaviour: serves `dist/` (or the repo root when
-`dist/` is absent), serves directory indexes (`/frmm/`), blocks dotfiles and
-`node_modules` (403), and refuses path traversal.
+`npm run dev` (vite) transforms JSX on the fly and serves `public/` too, so it works
+from a **fresh clone** — unlike `app.js`, which serves the **built** `dist/` and shows
+a blank page when `dist/` is absent (it is gitignored; the deploy pipeline builds it).
+Port 3000 is pinned (`strictPort`) so a conflict fails loudly instead of silently
+moving to 3001.
+
+**Serve the built site (mirrors production nginx):**
+
+```bash
+npm run build      # production build → dist/
+npm start          # node app.js → http://localhost:3000  (serves dist/ + /frmm)
+```
+
+If `dist/` is missing, `app.js` prints the fix instead of silently serving a broken
+page. `app.js` mirrors production nginx: serves `dist/`, directory indexes
+(`/frmm/`), blocks dotfiles and `node_modules` (403), refuses path traversal.
 
 ---
 

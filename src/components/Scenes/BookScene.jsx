@@ -19,7 +19,7 @@ export default function BookScene() {
     <section className="scene" data-bg="#8B2BFF" data-ink="light" id="book">
       <div className="wrap scene-in">
         <div className="close-in">
-          <img src="https://images.unsplash.com/photo-1741552205317-817c8c9a4016?fm=jpg&q=76&w=1800&auto=format&fit=crop" alt="" aria-hidden="true" decoding="sync" referrerpolicy="no-referrer" />
+          <img src="https://images.unsplash.com/photo-1741552205317-817c8c9a4016?fm=jpg&q=76&w=1800&auto=format&fit=crop" alt="" aria-hidden="true" decoding="sync" referrerPolicy="no-referrer" />
           <div className="veil"></div>
           <div className="inner">
             <p className="eyebrow"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Book</p>

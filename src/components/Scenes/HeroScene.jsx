@@ -19,8 +19,8 @@ export default function HeroScene() {
     /* HERO (page 1 — sticky base: logo only, centered) */
     <section className="scene panel panel--base" data-bg="#FFFFFF" data-ink="dark" id="hero">
       <div className="hero-bg">
-        <img className="shot" src="https://images.unsplash.com/photo-1741522509438-a120c0bb5e88?fm=jpg&q=76&w=1800&auto=format&fit=crop" alt="" aria-hidden="true" fetchPriority="high" decoding="sync" referrerpolicy="no-referrer" />
-        <img className="shot alt" src="https://images.unsplash.com/photo-1745327883508-b6cd32e5dde5?fm=jpg&q=76&w=1800&auto=format&fit=crop" alt="" aria-hidden="true" decoding="sync" referrerpolicy="no-referrer" />
+        <img className="shot" src="https://images.unsplash.com/photo-1741522509438-a120c0bb5e88?fm=jpg&q=76&w=1800&auto=format&fit=crop" alt="" aria-hidden="true" fetchpriority="high" decoding="sync" referrerPolicy="no-referrer" />
+        <img className="shot alt" src="https://images.unsplash.com/photo-1745327883508-b6cd32e5dde5?fm=jpg&q=76&w=1800&auto=format&fit=crop" alt="" aria-hidden="true" decoding="sync" referrerPolicy="no-referrer" />
         <span className="veil" id="heroVeil"></span>
         <span className="veil-w" id="heroVeilW"></span>
       </div>

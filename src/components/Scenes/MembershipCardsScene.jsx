@@ -22,7 +22,7 @@ export default function MembershipCardsScene() {
       <div className="wrap scene-in">
         <div className="grid">
           <div className="card wide rv tilt">
-            <div className="bg"><img className="shot" src="https://images.unsplash.com/photo-1696841212541-449ca29397cc?fm=jpg&q=76&w=1200&auto=format&fit=crop" alt="" aria-hidden="true" decoding="sync" referrerpolicy="no-referrer" /><span className="tone"></span><span className="fade"></span></div>
+            <div className="bg"><img className="shot" src="https://images.unsplash.com/photo-1696841212541-449ca29397cc?fm=jpg&q=76&w=1200&auto=format&fit=crop" alt="" aria-hidden="true" decoding="sync" referrerPolicy="no-referrer" /><span className="tone"></span><span className="fade"></span></div>
             <div className="ico"><svg viewBox="0 0 24 24"><use href="#i-hands"/></svg></div>
             <p className="kicker">Same hands, every time</p>
             <h3>Your therapist is assigned, not rotated</h3>
@@ -44,7 +44,7 @@ export default function MembershipCardsScene() {
           </div>
 
           <div className="card rv d-3 tilt">
-            <div className="bg"><img className="shot" src="https://images.unsplash.com/photo-1730207375825-d734728f877e?fm=jpg&q=76&w=1200&auto=format&fit=crop" alt="" aria-hidden="true" decoding="sync" referrerpolicy="no-referrer" /><span className="tone"></span><span className="fade"></span></div>
+            <div className="bg"><img className="shot" src="https://images.unsplash.com/photo-1730207375825-d734728f877e?fm=jpg&q=76&w=1200&auto=format&fit=crop" alt="" aria-hidden="true" decoding="sync" referrerPolicy="no-referrer" /><span className="tone"></span><span className="fade"></span></div>
             <div className="ico"><svg viewBox="0 0 24 24"><use href="#i-lock"/></svg></div>
             <p className="kicker">Phone policy</p>
             <h3>Screens stay in the locker</h3>
