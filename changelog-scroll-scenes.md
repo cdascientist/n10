@@ -293,3 +293,37 @@ Client: title runs off the first page; prices ×1.56; HELP ME NOW → large prom
 4. **Apple liquid-glass wizard dialog**: `backdrop-filter: blur(30px) saturate(180%)`, 30px radius, springy entrance; 3-step flow — (1) three huge radio cards + big Next (disabled until a choice), (2) details (GPS auto-locates + saves coords with call/maps fallback · Call shows the number · Email takes email + notes), (3) confirm summary → Request help → "Help is on the way" done state. Every choice saved to `window.__hmn` {step, method, coords, email, notes, submitted}.
 5. `verify-frmm.mjs` 18/18 dev + live. Screenshots `screenshots/frmm-v2/`.
 
+
+
+# Changelog v18.2 — first page rebuilt: changing background renders at load (2026-08-16)
+
+Client: "rebuild the first page, the background that changes does not render initially."
+
+**Root cause (finally the real one — not Safari paint):** two scrubbed `fromTo` tweens
+fought over `#heroVeilW` (the white crossfade layer over the hero photos). The second
+one (white→transparent as the purple cover rises) kept `immediateRender: true` — the
+fromTo default — so from page load it rendered its *from* value (opacity 1) on every
+ScrollTrigger update until its trigger was reached, permanently overriding the first
+tween (0→1 over the first swipe). **The hero rendered pure white from load** — purple
+tint and photos invisible until the user scrolled ~450px. Measured: 99.1% of the hero
+viewport was white at rest (pixel-sampled). The old acceptance suite missed it because
+it scrolls away and back before checking the veil (a different tween-render path).
+
+**Rebuild — one owner, one progress:**
+1. The two competing tweens are replaced by **one scrubbed timeline** owning the white
+   layer's whole arc: `0 → 1` over the half-hold rise (scroll 121→571), `1 → 0` as the
+   purple cover takes over (571→1471) — same geometry as the design intent, verified
+   point-by-point. A timeline has a single progress, so no two tweens can conflict.
+2. **Deterministic rest state**: explicit `gsap.set(veilW, {opacity:0})` after setup —
+   the white layer is OFF at scroll 0 no matter the setup order. Resting hero = the
+   purple-tinted massage photo, rendered at load.
+3. Fresh-load pixel verification: hero at rest now shows the photo through the 50%
+   purple veil (26.9% purple / 59.8% photo tones / 13.3% white-logo area vs 99.1%
+   white before). Arc points re-checked at 0/571/1200/1471px — peak exactly at the
+   half-hold, zero when the cover lands.
+4. Acceptance suite hardened: 3 new **fresh-load** regression checks (white veil OFF at
+   rest, purple tint on, photos painted) that would have caught this. **56/56 pass.**
+5. Screenshots `screenshots/after-v19/` (rest / half-hold / trust-rise).
+
+No other pages touched; FRMM (`/frmm`) untouched. `holdTint` (single tween, correct
+rest value) unchanged. Deployed via main auto-pipeline.

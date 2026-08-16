@@ -486,30 +486,38 @@ pio.observe(document.getElementById("proto"));
     });
   }
   /* veil: purple base + a white crossfade layer — opacity-only scrubs
-     (compositor-friendly; no per-frame background repaint = no jitter) */
+     (compositor-friendly; no per-frame background repaint = no jitter).
+     REBUILT (v18.2): ONE scrubbed timeline owns the white layer's full arc
+     (0 → 1 over the half-hold rise, 1 → 0 as the purple cover takes over).
+     The old two-tween pair fought over the same property — the second
+     fromTo's immediateRender pinned the white layer at opacity 1 from load,
+     so the first page rendered pure white until the user scrolled ~400px
+     ("the changing background does not render initially"). One owner = one
+     progress = deterministic rest state: white layer OFF at scroll 0. */
   var veilEl = document.getElementById("heroVeil");
   var veilW = document.getElementById("heroVeilW");
-  if (veilW && scenes[1]) {
-    gsap.fromTo(veilW, { opacity: 0 }, {
-      opacity: 1, ease: "none",
-      scrollTrigger: { trigger: scenes[1], start: "top bottom", end: "top 50%", scrub: true }
-    });
-  }
   var trustPanel = document.querySelector(".panel--cover");
   var holdTint = document.getElementById("holdTint");
-  if (trustPanel && scenes[2]) {
-    if (veilW) {
-      gsap.fromTo(veilW, { opacity: 1 }, {
-        opacity: 0, ease: "none",
-        scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
-      });
-    }
-    if (holdTint) {
-      gsap.fromTo(holdTint, { opacity: 0 }, {
-        opacity: 1, ease: "none",
-        scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
-      });
-    }
+  if (veilW && scenes[1] && scenes[2]) {
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: scenes[1],
+        start: "top bottom",          /* scroll 0 — hero owns the screen */
+        end: function () {            /* trust's top reaches the viewport top */
+          return scenes[2].getBoundingClientRect().top + window.scrollY;
+        },
+        scrub: true
+      }
+    })
+      .to(veilW, { opacity: 1, ease: "none", duration: 1 }, 0)  /* 0 → half-hold (viewport/2) */
+      .to(veilW, { opacity: 0, ease: "none", duration: 2 });    /* half-hold → trust covers */
+    gsap.set(veilW, { opacity: 0 });  /* deterministic rest state, whatever the setup order */
+  }
+  if (trustPanel && scenes[2] && holdTint) {
+    gsap.fromTo(holdTint, { opacity: 0 }, {
+      opacity: 1, ease: "none",
+      scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
+    });
   }
   var holdPanel = document.querySelector(".panel--hold");
   if (holdPanel) {
