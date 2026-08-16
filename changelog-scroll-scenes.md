@@ -463,3 +463,16 @@ Client: remove the top border "Founding memberships are open" banner.
 3. Verified: `#bar`/`#barX` absent from the rendered DOM, no banner text;
    suite **57/57** (built site + vite dev), golden DOM re-captured
    (66,460 chars) + MATCH. No other pages touched.
+
+
+# Changelog v19.0 — header logo icon: black→purple gradient (2026-08-16)
+
+Client: "on the header change the icon to black purple gradient."
+
+1. New `#markGbp` gradient (black `#000000` → deep purple `#4A0D8F` → brand `#8B2BFF`,
+   diagonal, same direction as the brand gradient) + a `#mark-bp` symbol (identical
+   white slashes) in `IconDefs.jsx`.
+2. `Nav.jsx` header logo now references `#mark-bp` — **only the header changes**;
+   preloader, hero object, sheet-less footer etc. keep the standard purple `#mark`.
+3. Verified: nav logo use → `#mark-bp`, footer use → `#mark`; suite **57/57** (built),
+   golden DOM re-captured (67,056 chars) + MATCH.

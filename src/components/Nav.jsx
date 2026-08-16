@@ -18,7 +18,7 @@ export default function Nav() {
     <header className="nav" id="nav">
       <div className="wrap nav-in">
         <a className="logo" href="#top" aria-label="InTension home">
-          <svg className="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg>
+          <svg className="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark-bp"/></svg>
           <span className="logo-type"><i className="lg-in">In</i><i className="lg-ten">Tension</i></span>
         </a>
 

@@ -23,6 +23,10 @@ export default function IconDefs() {
         <linearGradient id="markG" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#C77DFF"/><stop offset=".5" stopColor="#8B2BFF"/><stop offset="1" stopColor="#6E1FD1"/>
         </linearGradient>
+        {/* black→purple gradient — used by the #mark-bp header logo mark (Nav.jsx) */}
+        <linearGradient id="markGbp" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#000000"/><stop offset=".55" stopColor="#4A0D8F"/><stop offset="1" stopColor="#8B2BFF"/>
+        </linearGradient>
       </defs>
       <g id="i-hands" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 15c3-4.5 6.4-6.8 9-6.8s6 2.3 9 6.8"/><path d="M12 8.2V3.4"/><circle cx="12" cy="18.6" r="1.6"/>
@@ -81,6 +85,13 @@ export default function IconDefs() {
       </g>
       <symbol id="mark" viewBox="0 0 64 64">
         <rect width="64" height="64" rx="15" fill="url(#markG)"/>
+        <path d="M17 20v24" stroke="#fff" strokeWidth="5.4" strokeLinecap="round"/>
+        <path d="M39 18 25 46" stroke="#fff" strokeWidth="5.4" strokeLinecap="round" opacity=".92"/>
+        <path d="M47 20v24" stroke="#fff" strokeWidth="5.4" strokeLinecap="round"/>
+      </symbol>
+      {/* header variant — same slashes on the black→purple gradient (Nav.jsx logo) */}
+      <symbol id="mark-bp" viewBox="0 0 64 64">
+        <rect width="64" height="64" rx="15" fill="url(#markGbp)"/>
         <path d="M17 20v24" stroke="#fff" strokeWidth="5.4" strokeLinecap="round"/>
         <path d="M39 18 25 46" stroke="#fff" strokeWidth="5.4" strokeLinecap="round" opacity=".92"/>
         <path d="M47 20v24" stroke="#fff" strokeWidth="5.4" strokeLinecap="round"/>
