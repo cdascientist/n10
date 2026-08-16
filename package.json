@@ -5,7 +5,7 @@
   "type": "module",
   "description": "InTension — scroll-scene marketing site (React + Vite, GSAP ScrollTrigger + Lenis)",
   "scripts": {
-    "predev": "node scripts/free-port.mjs",
+    "predev": "node scripts/free-port.mjs && node scripts/ensure-deps.mjs",
     "dev": "vite",
     "prestart": "node scripts/free-port.mjs",
     "start": "node app.js",

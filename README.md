@@ -183,15 +183,16 @@ screenshots are kept in `screenshots/`.
 **Recommended — VS Code / fresh checkout (no build step):**
 
 ```bash
-npm install        # react, react-dom, gsap, lenis, vite
 npm run dev        # vite dev server with HMR → http://localhost:3000  (press F5 in VS Code)
 ```
 
-`npm run dev` (vite) transforms JSX on the fly and serves `public/` too, so it works
-from a **fresh clone** — unlike `app.js`, which serves the **built** `dist/` and shows
-a blank page when `dist/` is absent (it is gitignored; the deploy pipeline builds it).
-Port 3000 is pinned (`strictPort`) so a conflict fails loudly instead of silently
-moving to 3001.
+`npm run dev` is **self-healing on a fresh clone**: its `predev` hook frees port 3000
+from any stale server and, if `node_modules` is missing (it is gitignored), runs
+`npm install` automatically (one-time, may take a minute — including vite's esbuild
+binary). No manual setup needed. `npm run dev` (vite) transforms JSX on the fly and
+serves `public/` too — unlike `app.js`, which serves the **built** `dist/` and shows a
+hint page when `dist/` is absent. Port 3000 is pinned (`strictPort`) so a conflict
+fails loudly instead of silently moving to 3001.
 
 **Serve the built site (mirrors production nginx):**
 

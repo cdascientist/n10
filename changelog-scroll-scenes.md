@@ -401,3 +401,22 @@ shows.
    Docs updated (CLAUDE.md, README).
 3. Verified end-to-end: stale vite on :3000 → `npm run dev` → `freed :3000` → vite binds
    → 200 → golden-DOM MATCH (64,168 chars).
+
+
+# Changelog v18.7 — fresh-checkout dev flow: deps auto-install (2026-08-16)
+
+Client: VS Code launch now shows `'vite' is not recognized as an internal or external
+command` — a fresh clone has no `node_modules` (gitignored), so the dev script can't
+find the vite binary. Live is unaffected (deploy pipeline installs deps).
+
+1. **`scripts/ensure-deps.mjs`** (new), wired as part of the `predev` hook
+   (`node scripts/free-port.mjs && node scripts/ensure-deps.mjs`): if vite is missing
+   it runs `npm install` automatically (one-time); then verifies esbuild's platform
+   binary (npm's allowScripts gate can skip its postinstall — checks both the nested
+   `node_modules/vite/node_modules/@esbuild/<platform>/bin/` and hoisted locations,
+   unix `bin/esbuild` vs win32 `esbuild.exe`) and runs esbuild's install.js as the
+   same workaround the deploy pipeline uses. No-op when deps are present.
+2. Verified on this host: happy path no-op; missing-deps + missing-binary paths
+   attempt repair and warn honestly; `npm run build` still green afterwards.
+3. README updated: `npm run dev` is self-healing on a fresh clone (auto free-port +
+   auto install).
