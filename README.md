@@ -208,26 +208,23 @@ page. `app.js` mirrors production nginx: serves `dist/`, directory indexes
 
 ## 🔁 Deploy (automatic)
 
-The **live site is branch `main`**, deployed to nginx (`/var/n10`) by a cron watcher
-(`/root/deploy-n10.sh`, every 2 minutes):
+The **live site is branch `main`** — and `main` is the working branch: commit and
+push straight to it, and the change goes live automatically within ~2 minutes via
+a cron watcher (`/root/deploy-n10.sh`):
 
 1. Polls GitHub `refs/heads/main` for a new SHA.
 2. Checks the exact SHA out into `/var/n10` (nginx root).
 3. Runs `npm install` (if needed) + `npm run build`.
 4. curl-verifies, records the SHA.
 
-**Working workflow:**
-
 ```bash
-# edit on scroll-scenes (all feature work lives here)
-git checkout scroll-scenes && … edit … && git add -A && git commit
-# ship: fast-forward main and push — live within ~2 minutes
-git checkout main && git merge --ff-only scroll-scenes && git push origin main
-git checkout scroll-scenes && git push origin scroll-scenes
+git add -A && git commit -m "…" && git push origin main   # live in ~2 min
 ```
 
-Verify after deploy: `curl -s localhost | grep -c 'id="root"'` and the acceptance
-suite against `http://localhost:80/`.
+`scroll-scenes` is kept as a fast-forward mirror of `main` (no staging dance — the
+client also pushes to `main` directly, so a separate working branch only causes
+divergence). Verify after deploy: `curl -s localhost | grep -c 'id="root"'` and the
+acceptance suite against `http://localhost:80/`.
 
 ---
 

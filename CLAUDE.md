@@ -14,7 +14,9 @@ page `/frmm` (Front Range Mobile Mechanics) — **do not touch `public/frmm/`**.
 - `public/frmm/index.html` — FRMM page (separate product; leave alone).
 - `app.js` — tiny static server for dev (:3000, serves `dist/` + `/frmm`).
 - Live site = branch `main` → nginx `/var/n10` (auto-deploy from GitHub every 2 min).
-  Working branch = `scroll-scenes`. Deploy: merge `scroll-scenes` → `main`, push.
+  **`main` is the working branch** — commit and push to `main` directly; it goes live
+  automatically within ~2 minutes. `scroll-scenes` is kept as a fast-forward mirror
+  of `main` (no staging dance).
 
 ## DOM CONTRACT (critical — never break)
 `effects.js` and the acceptance suite (`/opt/pwtest/verify.mjs`, 57 checks) depend on:

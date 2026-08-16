@@ -14,8 +14,10 @@
       "name": "Run built site (app.js · needs npm run build)",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/app.js",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
       "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
       "env": {
         "PORT": "3000"
       }

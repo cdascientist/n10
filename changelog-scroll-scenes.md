@@ -376,3 +376,28 @@ page at :3000. Live works because the deploy pipeline builds `dist/`.
 5. Suite made dev-aware: the "build assets referenced" check now also accepts the vite
    dev entry (`/src/main.jsx`). **57/57 on the dev server, 57/57 on the built site, DOM
    gate MATCH on both.** README "Run it" section updated.
+
+
+# Changelog v18.6 — purple screen on :3000 (stale server) + main-first workflow (2026-08-16)
+
+Client: "on visual studio code built in web browser it looks for localhost port 3000,
+currently a page does appear but its just the purple background … always push all changes
+to main branch live as soon as it happens."
+
+**Purple screen root cause:** a stale dev server (an old `node app.js` started before the
+v18.5 pull) kept squatting on :3000. `npm run dev` (vite) with strictPort refused to start
+("port in use") while the OLD server kept serving the raw Vite template — `/src/main.jsx`
+is unparseable JSX to a browser → React never mounts → only the purple boot background
+shows.
+
+1. **`scripts/free-port.mjs`** (new): cross-platform port freer (lsof / ss / fuser /
+   netstat; kills node-ish listeners — verified against a live node listener, incl. the
+   Node "MainThread" comm quirk). Wired as npm `predev` and `prestart` hooks, so
+   `npm run dev` / `npm start` ALWAYS free :3000 first and vite wins the port — the flow
+   is now self-healing from any stale server. `.vscode/launch.json` built-site config now
+   uses `npm start` (gets the hook too).
+2. **Workflow change (client directive):** `main` is now the working branch — commit +
+   push to `main` directly, live in ~2 min. `scroll-scenes` stays a fast-forward mirror.
+   Docs updated (CLAUDE.md, README).
+3. Verified end-to-end: stale vite on :3000 → `npm run dev` → `freed :3000` → vite binds
+   → 200 → golden-DOM MATCH (64,168 chars).
