@@ -1,3 +1,17 @@
+{/* ════════════════════════════════════════════════════════════
+    main.jsx — application entry point
+    Renders: mounts <App/> (the composition root from src/App.jsx)
+    under #root, then calls initEffects() exactly once to wire the
+    imperative scroll/interaction layer (GSAP, ScrollTrigger, Lenis).
+
+    Used-by (breadcrumb up): index.html — this is the module that
+    index.html loads as the script entry.
+
+    Contains (breadcrumb down): the React root render (flushSync) +
+    the single initEffects() call. The comments below explain why
+    StrictMode is absent and why the render is flushed synchronously.
+    ════════════════════════════════════════════════════════════ */}
+
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';

@@ -1,25 +1,62 @@
+/* ════════════════════════════════════════════════════════════════════════
+   effects.js — the ONE imperative behaviour file for IN/TENSION.
+   ------------------------------------------------------------------------
+   initEffects() (called once from src/main.jsx after React renders) runs
+   two layers, in order:
+     A) Chrome / first-page wiring (~lines 5–311): preloader gate, promo
+        sticker, dismissible banner, nav dropdowns, mobile sheet,
+        Lenis-aware anchor scroll, count-up metrics, segmented tabs,
+        button ripples, gallery marquee build, image-fallback handling,
+        and the guarded session-protocol widget. Hosted in one RAF-loop
+        IIFE so the magnet/tilt loop and the wiring share one scope.
+     B) Scroll-scenes layer (~lines 312–612): GSAP ScrollTrigger + Lenis
+        mechanics 1–6 (background interpolation, ink inversion, masked
+        tickers, pinned hero object, hero veil, intro sequence).
+   HARD RULES honoured here: only transform/opacity/background-color are
+   animated; no CSS pose is hidden by default (GSAP applies every hidden
+   state at runtime); the page stays readable with JS disabled.
+   NEVER split this file into modules — one file, heavily commented.
+   ════════════════════════════════════════════════════════════════════════ */
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
+/* ── initEffects() — entry point, invoked once from src/main.jsx (NOT from
+   a React effect; React's passive-effect machinery used to re-invoke it).
+   Everything below runs inside this single call. ── */
 export function initEffects() {
+  /* test hooks — expose the libraries + a run counter so the Playwright
+     acceptance suite can assert effects.js initialized exactly once. */
   window.__gsap = gsap; window.__ST = ScrollTrigger; // test hooks
   window.__initRuns = (window.__initRuns || 0) + 1;
     "use strict";
   gsap.registerPlugin(ScrollTrigger);
+  /* ── shared helpers / feature flags (used by both layers) ─────────────
+     hasLibs gates layer B (no GSAP/Lenis → content stays fully visible);
+     RM = prefers-reduced-motion, fine = precise-pointer desktop; lerp and
+     clamp are the easing helpers the magnet/tilt loops use. ── */
   var hasLibs = true;
 var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 var fine = matchMedia("(hover:hover) and (pointer:fine)").matches;
 var lerp = function(a,b,t){ return a+(b-a)*t; };
 var clamp = function(v,a,b){ return Math.min(b,Math.max(a,v)); };
-/* ── preloader: pure gate — no asset logic inside it. The scene images are
+  /* ═══ LAYER A — preloader → sticker → chrome wiring ═════════════════ */
+
+  /* ── preloader: pure gate — no asset logic inside it. The scene images are
       eager in the DOM, so the browser's load event already means "everything
       loaded". On load (or a fallback timer if load never fires) we reveal.
       Hard caps below guarantee the loader can never linger. ── */
+/* preloader state: #preloader overlay (App.jsx), a 600ms minimum display
+   so the reveal never feels clipped, a shown flag, and a one-shot reveal
+   callback the intro sequence queues on (see Mechanic 6). */
 var plStart = Date.now(), plMin = 600, plShown = false;
 var plRevealCb = null;   /* intro (or anything else) waiting on the reveal */
 /* Self-healing: re-query the element every time instead of caching it — if
    the overlay is ever (re)created after init, reveal still finds it. */
+/* reveal(): the single gate that fades #preloader out (.gone), adds .go
+   to #hero (hero entrance), springs #sticker in, fires the queued intro
+   callback, and nudges the compositor so Safari rasterizes the
+   freshly-decoded hero layer (see `kick` inside). */
 function reveal(){
   if(plShown) return;
   var el = document.getElementById("preloader");
@@ -54,6 +91,8 @@ function reveal(){
   setTimeout(kick, 500);
   if(plRevealCb){ var cb = plRevealCb; plRevealCb = null; cb(); }
 }
+/* plReady(): the polled gate — waits out the minimum display time, then
+   calls reveal(). Re-run by the backstops below until shown. */
 function plReady(){
   if(Date.now()-plStart < plMin){ setTimeout(plReady, 40); return; }
   reveal();
@@ -74,6 +113,8 @@ setTimeout(reveal, 6000);
    in with the page and idles on a slow float. Under reduced motion (RM)
    it snaps straight to the visible resting pose — no dead hidden state. */
 var STICKER_COPY = { word: "NEW", sub: "FOUNDING MEMBERS" };
+/* ── PROMO STICKER (#sticker, App.jsx) — copy injected here; RM jumps it
+   straight to the visible pose so it is never stuck hidden. ── */
 var stickerEl = document.getElementById("sticker");
 if(stickerEl){
   var stWord = stickerEl.querySelector(".st-word");
@@ -83,11 +124,15 @@ if(stickerEl){
   stickerEl.setAttribute("aria-label", STICKER_COPY.word + " · " + STICKER_COPY.sub);
   if(RM) stickerEl.classList.add("in");
 }
+/* ── DISMISSIBLE BANNER (#bar / #barX, App.jsx) — the "Founding memberships
+   are open" strip; the X collapses it via .gone. ── */
 var bar = document.getElementById("bar");
 document.getElementById("barX").addEventListener("click", function(){
   bar.classList.add("gone");
   setTimeout(function(){ bar.style.display = "none"; }, 760);
 });
+/* ── MAGNET CARDS (.mag — e.g. the book-scene CTAs) — pointer-follow
+   translate; the targets (tx/ty) are consumed by the RAF loop below. ── */
 var mags = fine ? [].slice.call(document.querySelectorAll(".mag")).map(function(el){
   return {el:el,x:0,y:0,tx:0,ty:0}; }) : [];
 mags.forEach(function(m){
@@ -98,6 +143,9 @@ mags.forEach(function(m){
   });
   m.el.addEventListener("pointerleave", function(){ m.tx = 0; m.ty = 0; });
 });
+/* ── TILT CARDS (.tilt — the .art images in movement/heat + membership
+   .card) — pointer-follow rotateX/rotateY; targets (trx/try_) are consumed
+   by the same RAF loop. ── */
 var tilts = fine ? [].slice.call(document.querySelectorAll(".tilt")).map(function(el){
   return {el:el,rx:0,ry:0,trx:0,try_:0}; }) : [];
 tilts.forEach(function(t){
@@ -108,6 +156,13 @@ tilts.forEach(function(t){
   });
   t.el.addEventListener("pointerleave", function(){ t.trx = 0; t.try_ = 0; });
 });
+/* ── RAF LOOP + remaining chrome wiring — one shared IIFE ────────────────
+   The named function expression `frame` self-schedules with
+   requestAnimationFrame; each tick lerps the magnet/tilt transforms toward
+   their pointer targets (skipped under RM). The rest of the first-page
+   wiring below (dropdowns, sheet, anchors, counters, tabs, ripples,
+   gallery, protocol) lives in the same IIFE body — one init scope that
+   keeps the loop alive. ── */
 (function frame(){
   if(!RM){
     mags.forEach(function(m){
@@ -120,10 +175,15 @@ tilts.forEach(function(t){
     });
   }
   requestAnimationFrame(frame);
+/* closeDrops(): closes every open nav dropdown (.drop.open) and resets its
+   aria-expanded buttons — shared by the dropdown handlers and the global
+   Escape / outside-click listeners below. */
 function closeDrops(){
   document.querySelectorAll(".drop.open").forEach(function(d){ d.classList.remove("open"); });
   document.querySelectorAll('.menu button[aria-expanded="true"]').forEach(function(b){ b.setAttribute("aria-expanded","false"); });
 }
+/* ── NAV DROPDOWNS (#d1 / #d2, App.jsx header .menu) — click toggles
+   aria-expanded and the .open panel class; opening one closes the others. ── */
 document.querySelectorAll(".menu button[aria-controls]").forEach(function(btn){
   var panel = document.getElementById(btn.getAttribute("aria-controls"));
   btn.addEventListener("click", function(e){
@@ -133,8 +193,13 @@ document.querySelectorAll(".menu button[aria-controls]").forEach(function(btn){
     if(!open){ panel.classList.add("open"); btn.setAttribute("aria-expanded","true"); }
   });
 });
+/* Global dismiss: Escape closes dropdowns + the mobile sheet; a click
+   anywhere outside a .menu-item closes the dropdowns. */
 addEventListener("keydown", function(e){ if(e.key === "Escape"){ closeDrops(); closeSheet(); } });
 addEventListener("click", function(e){ if(!e.target.closest(".menu-item")) closeDrops(); });
+/* ── MOBILE SHEET (#sheet / #burger, App.jsx) — full-screen overlay menu;
+   toggles .on, locks body scroll while open, staggers the link entrance
+   via per-link transition-delay. ── */
 var burger = document.getElementById("burger"), sheet = document.getElementById("sheet");
 var sLinks = [].slice.call(sheet.querySelectorAll(".grouped a"));
 sLinks.forEach(function(a,i){ a.style.transitionDelay = (.1 + i*.035) + "s"; });
@@ -149,6 +214,10 @@ burger.addEventListener("click", function(){
   document.body.style.overflow = on ? "hidden" : "";
 });
 sheet.querySelectorAll("a").forEach(function(a){ a.addEventListener("click", closeSheet); });
+/* ── ANCHOR NAVIGATION — every in-page `href="#…"` link routes through
+   Lenis when present (the DOM contract's "anchor jumps route through
+   Lenis"); otherwise a manual eased scroll. Long jumps flash the white
+   #warp peel (three-page CSS animation) before moving. ── */
 var warp = document.getElementById("warp");
 document.querySelectorAll('a[href^="#"]:not(#skipIntro)').forEach(function(a){
   a.addEventListener("click", function(e){
@@ -177,6 +246,9 @@ document.querySelectorAll('a[href^="#"]:not(#skipIntro)').forEach(function(a){
     }
   });
 });
+/* ── COUNT-UP METRICS ([data-count], the membership .metric numbers) —
+   one-shot IntersectionObserver; counts from 0 to target over ~1.7s with
+   an ease-out expo; RM renders the final value immediately. ── */
 var cio = new IntersectionObserver(function(en){
   en.forEach(function(x){
     if(!x.isIntersecting) return;
@@ -192,6 +264,9 @@ var cio = new IntersectionObserver(function(en){
   });
 }, {threshold:.5});
 document.querySelectorAll("[data-count]").forEach(function(el){ cio.observe(el); });
+/* ── SEGMENTED CONTROL (fuel-menu board scene) — [data-tab] buttons switch
+   [data-pane] panels and slide the #segbar pill under the active tab
+   (disabled under 720px where the pill is display:none). ── */
 var tabs = [].slice.call(document.querySelectorAll(".seg [data-tab]"));
 var panes = [].slice.call(document.querySelectorAll("[data-pane]"));
 var segbar = document.getElementById("segbar");
@@ -213,6 +288,8 @@ addEventListener("resize", function(){
   var c = document.querySelector('.seg [aria-selected="true"]'); if(c) moveSeg(c);
 }, {passive:true});
 setTimeout(function(){ moveSeg(tabs[0]); }, 240);
+/* ── BUTTON RIPPLE (.btn) — spawns a transient .ripple span at the
+   pointer-down position which the CSS animates outward; RM skips it. ── */
 document.querySelectorAll(".btn").forEach(function(b){
   b.addEventListener("pointerdown", function(e){
     if(RM) return;
@@ -224,6 +301,9 @@ document.querySelectorAll(".btn").forEach(function(b){
     setTimeout(function(){ d.remove(); }, 850);
   });
 });
+/* ── GALLERY MARQUEE data (gallery scene) — Unsplash photo ids + captions
+   for the 10 tiles; the builder below injects the markup so App.jsx keeps
+   a static #galRun container. ── */
 var GAL = [
   ["1745327883508-b6cd32e5dde5","Table 03 · Swedish, 90 min","A therapist working along a client's back"],
   ["1745894118353-88e64617e064","Cabin 01 · 190°","The wood-lined interior of a sauna cabin"],
@@ -236,6 +316,9 @@ var GAL = [
   ["1717356495389-6ab1e5ff9d84","Cabin 02 · Low bench","A wooden room with a bench and a single light"],
   ["1730207375825-d734728f877e","Lockers · Phones stay here","A row of metal lockers"]
 ];
+/* Build the marquee once (idempotent): two identical passes of tiles — the
+   CSS translateX(-50%) loop needs the content doubled, so the second pass
+   is aria-hidden. Each tile = .duo (img + tone + lift), .shade and .cap. */
 var galRun = document.getElementById("galRun");
 if(galRun && !galRun.children.length){  /* idempotent: build the marquee once */
   var frag = document.createDocumentFragment();
@@ -255,6 +338,9 @@ if(galRun && !galRun.children.length){  /* idempotent: build the marquee once */
   }
   galRun.appendChild(frag);
 }
+/* ── IMAGE FALLBACK — a load error on an Unsplash image fades it out and
+   darkens its host's .tone overlay, so a room never shows a broken icon.
+   capture:true lets us catch the img load errors before they bubble. ── */
 document.addEventListener("error", function(e){
   var img = e.target;
   if(!img || img.tagName !== "IMG") return;
@@ -266,6 +352,9 @@ document.addEventListener("error", function(e){
 /* ── Session protocol widget — only wired when the widget exists in the DOM ──
    (removed from the page in v18.3; kept live so the code no-ops cleanly if it
    ever returns) */
+/* v18.3: the session-protocol widget was REMOVED from the DOM — this guard
+   is intentionally preserved so the wiring below stays a clean no-op if
+   the widget ever returns. Do not remove or alter the guard. */
 if (document.getElementById("proto")) {
 var tnum = document.getElementById("tnum"), tbar = document.getElementById("tbar");
 var stageEls = [].slice.call(document.querySelectorAll("#stages li"));
@@ -308,6 +397,8 @@ var pio = new IntersectionObserver(function(en){
 }, {threshold:.2});
 pio.observe(document.getElementById("proto"));
 }
+/* end of the layer-A IIFE — the RAF loop keeps ticking via the
+   self-scheduled requestAnimationFrame(frame) above. */
 })();
 /* ============================================================================
    scroll-scenes.js — GSAP ScrollTrigger + Lenis scroll-scene layer
@@ -327,16 +418,27 @@ pio.observe(document.getElementById("proto"));
      - No-ops completely when GSAP/ScrollTrigger/Lenis are absent (jsdom).
    ========================================================================== */
 
+  /* ── LAYER B begins — the scroll-scenes layer. This RM re-computes the
+     reduced-motion flag (shadows layer A's RM in this scope). ── */
   var RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  /* Query the 11 `.scene` sections once (DOM contract, in order: hero,
+     intro, trust, gallery, movement, heat, membership, membership-cards,
+     fuel-menu, board, book — inside #top.scene-run). */
   var scenes = document.querySelectorAll(".scene");
   if (!scenes.length) return;
   /* signal to CSS that JS is live (reveals the pinned object) */
   document.documentElement.classList.add("js");
   if (!hasLibs) return; // no GSAP/Lenis: content stays fully visible
+  /* Background canvas (#bg-canvas / #bgPurple, App.jsx) — the white base +
+     purple layer whose opacity Mechanic 1 scrubs between scenes. */
   var bg = document.getElementById("bg-canvas");
   var bgPurple = document.getElementById("bgPurple");
   var isWhite = function (s) { return s.dataset.bg === "#FFFFFF"; };
   var setBg = function (s) { if (bgPurple) bgPurple.style.opacity = isWhite(s) ? "0" : "1"; };
+  /* Remaining layer-B locals: #hero-object (Mechanic 4), the .scene-run
+     wrapper, #skipIntro (Mechanic 6), <html> (drives data-ink = Mechanic
+     2), the first scene, its ticker words, and the sessionStorage flag
+     that skips the intro on return visits. */
   var obj = document.getElementById("hero-object");
   var sceneRun = document.querySelector(".scene-run");
   var skip = document.getElementById("skipIntro");
@@ -499,6 +601,9 @@ pio.observe(document.getElementById("proto"));
      so the first page rendered pure white until the user scrolled ~400px
      ("the changing background does not render initially"). One owner = one
      progress = deterministic rest state: white layer OFF at scroll 0. */
+  /* Veil layers (#heroVeil purple base + #heroVeilW white crossfade, inside
+     the hero scene's .hero-bg) and the glass tint (#holdTint on the intro
+     hold panel) — all opacity-scrubbed. */
   var veilEl = document.getElementById("heroVeil");
   var veilW = document.getElementById("heroVeilW");
   var trustPanel = document.querySelector(".panel--cover");
@@ -524,6 +629,8 @@ pio.observe(document.getElementById("proto"));
       scrollTrigger: { trigger: trustPanel, start: "top bottom", end: "top top", scrub: true }
     });
   }
+  /* Hold panel (#intro, .panel--hold) — its headline/sub/CTA rise in from
+     below as it first approaches. */
   var holdPanel = document.querySelector(".panel--hold");
   if (holdPanel) {
     gsap.from(holdPanel.querySelectorAll("h1, .hero-sub, .cta-row"), {
@@ -540,6 +647,10 @@ pio.observe(document.getElementById("proto"));
      now; scrubs stay buttery. Anchor jumps still route through lenis.) */
 
   /* ── Mechanic 6 — intro sequence with skip ─────────────────────────────── */
+  /* Mechanic 6 helpers — clearWill() drops the will-change hints once the
+     intro finishes (no reason to keep compositing hints forever); the
+     finishIntro() below resets scroll, hides the skip link and re-kicks
+     Safari's rasterizer. */
   var clearWill = function () {
     if (bg) bg.style.willChange = "auto";
     if (obj) obj.style.willChange = "auto";
@@ -599,6 +710,8 @@ pio.observe(document.getElementById("proto"));
     clearWill();
   }
   /* ── refresh: after webfonts (none here) and on debounced resize ───────── */
+  /* ── refresh — recompute ScrollTrigger positions on debounced resize and
+     once on load (covers fonts/late images shifting layout). ── */
   var rt;
   window.addEventListener("resize", function () {
     clearTimeout(rt);

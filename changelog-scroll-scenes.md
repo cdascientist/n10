@@ -337,3 +337,16 @@ Client: "put the 'inside a session' section in place of the section protocol wid
 2. **Protocol JS no-ops cleanly**: the gauge/stages/verdict wiring is now guarded behind `if (document.getElementById("proto"))` — no dead `IntersectionObserver` on a missing node (it would have thrown on `observe(null)`).
 3. **Suite updated**: 11 scenes, a new order assertion (gallery=3, movement=4, heat=5, no `#protocol`), the hero-object variant check made parity-independent (exact complements at book — parity flipped with 11 scenes). **57/57 pass** dev; live re-verified after deploy.
 4. Screenshots `screenshots/after-v20/` (gallery / movement / heat scenes; gallery marquee 20 tiles × 6104px confirmed).
+
+
+# Changelog v18.4 — hierarchical components + breadcrumb comments (2026-08-16, Claude Code)
+
+Client: "place as much into hierarchical components, apply inline single line comments with breadcrumb descriptions indicating where the components are utilized and where they are organized, place extensive self descriptive comments in all of the codebase describing functionality and hierarchical implementation. use claude code but modify the agents section to have more implementation and testing agents."
+
+Executed end-to-end with Claude Code (headless background worker, DeepSeek backend).
+
+1. **Agents section added** (`.claude/agents/`, 4 subagents): `implementer-react` (component extraction), `implementer-effects` (effects.js/index.css commenting), `tester-build` (npm run build gate), `tester-suite` (Playwright 57-check gate). Plus `CLAUDE.md` — the project contract (DOM contract, hard rules, verification gates, comment conventions).
+2. **Hierarchical components**: `src/App.jsx` (476 → 121 lines) is now a composition root importing 22 extracted components under `src/components/` (BackgroundCanvas, SkipIntroLink, Preloader, PromoSticker, Warp, IconDefs, PromoBar, Nav, MobileSheet, HeroObject, Footer + `Scenes/{Hero,Intro,Trust,Gallery,Movement,Heat,Membership,MembershipCards,FuelMenu,Board,Book}Scene.jsx`), rendered in the exact DOM order.
+3. **Comments everywhere**: every component has a header block (purpose · used-by breadcrumb up · contains breadcrumb down) + inline single-line breadcrumbs at block boundaries; `effects.js` +~114 comment lines (section banners per mechanic), `index.css` +~101 (banners mapping blocks → components), `main.jsx` and `index.html` commented. Behavior code untouched (effects.js/index.css NOT split).
+4. **Verification (worker + independent)**: build PASS; **DOM-contract gate** (golden snapshot of rendered #root, styles stripped — `domcheck.mjs`) MATCH at 64,164 chars; Playwright suite **57/57** (run twice); hero veil pixel probe unchanged (purple-tinted at rest, white layer off); both base64 textures byte-identical; protocol widget stays absent; `public/frmm`, `package.json`, `app.js`, `vite.config.js`, suite, changelog untouched.
+5. Worker self-caught one bug during iteration (a `*/` sequence inside a JSX breadcrumb comment terminated it early — reworded, full scan, build re-passed).

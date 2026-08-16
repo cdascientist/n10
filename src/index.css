@@ -1,4 +1,10 @@
 
+/* ════════════════════════════════════════════════════════════════════════
+   index.css — the ONE stylesheet for IN/TENSION. Every block below maps to
+   a component / DOM node in src/App.jsx and (where relevant) to a mechanic
+   wired in src/effects.js. Keep this as a single file; never split.
+   ════════════════════════════════════════════════════════════════════════ */
+
 /* ══ APPLE SYSTEM TOKENS ═════════════════════════════════════ */
 :root{
   /* backgrounds */
@@ -42,15 +48,20 @@
   --sh-2:0 2px 6px rgba(0,0,0,.06),0 14px 40px rgba(0,0,0,.08);
   --sh-3:0 4px 12px rgba(0,0,0,.07),0 26px 70px rgba(120,60,190,.14);
 
+  /* ink tokens (Mechanic 2): --ink / --ink-dim flip dark↔light with each
+     scene's data-ink; consumed by scene text, nav, tickers, buttons */
   /* scroll-scene ink tokens — driven by data-ink on <html> (Mechanic 2) */
   --ink:#1C1C1E;                /* existing --label */
   --ink-dim:rgba(60,60,67,.62); /* existing --label-2 */
 }
 :root[data-ink="light"]{ --ink:#FFFFFF; --ink-dim:rgba(255,255,255,.82); }
 :root[data-ink="dark"]{ --ink:#1C1C1E; --ink-dim:rgba(60,60,67,.62); }
+/* reset — global box-sizing + margin/padding zeroing */
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:#fff;-webkit-text-size-adjust:100%;overflow-x:clip}
 @supports not (overflow: clip){ html,body{overflow-x:hidden} }
+/* body base — the shell background is transparent so the fixed #bg-canvas
+   (Mechanic 1) shows through; everything inherits the Apple system font */
 body{
   background:transparent;color:var(--label);
   font-family:var(--f);font-size:17px;line-height:1.55;font-weight:400;
@@ -62,12 +73,15 @@ a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 img,svg{display:block;max-width:100%}
 ::selection{background:rgba(139,43,255,.18);color:var(--brand-2)}
+/* focus-visible ring — brand-violet, legible on both ink states */
 :focus-visible{outline:3px solid rgba(175,82,222,.5);outline-offset:3px;border-radius:10px}
 
-/* ══ SCROLL SCENES ═════════════════════════════════════════════════ */
+/* ══ SCROLL SCENES — the 11 `.scene` sections in App.jsx (hero → book) ══ */
 /* The whole background arc is white ↔ purple, so the canvas is a white base
    plus a purple layer whose OPACITY is scrubbed — compositor-friendly, no
    full-screen repaint per frame (this was the jitter source). */
+/* → App.jsx <div id="bg-canvas"><span id="bgPurple"/></div>; Mechanic 1 in
+   effects.js scrubs #bgPurple's opacity between scenes */
 #bg-canvas{
   position:fixed;inset:0;z-index:-1;background:#FFFFFF;
 }
@@ -75,6 +89,8 @@ img,svg{display:block;max-width:100%}
   position:absolute;inset:0;background:#8B2BFF;
   opacity:0;will-change:opacity;
 }
+/* → App.jsx <section className="scene" …> ×11; each is a full-viewport grid
+   that centers its .scene-in content */
 .scene{
   position:relative;display:grid;place-items:center;
   min-height:100vh;min-height:100svh;
@@ -96,6 +112,8 @@ img,svg{display:block;max-width:100%}
 
 /* pinned hero object (Mechanic 4) — opacity 0 in CSS so it can never flash
    in before the purple page is swiped up (JS scrubs it to 1) */
+/* → App.jsx #hero-object (Mechanic 4); JS reveals it once the purple page
+   (#trust) is approached; display:none until html.js is set */
 #hero-object{
   display:none;position:fixed;top:15%;left:max(4vw,32px);z-index:5;
   width:clamp(120px,22vw,220px);aspect-ratio:1;
@@ -107,6 +125,8 @@ html.js #hero-object{display:block}
 #hero-object .variant{position:absolute;inset:0;width:100%;height:100%}
 
 /* intro skip (Mechanic 6) */
+/* → App.jsx #skipIntro (Mechanic 6); shown by effects.js while the intro
+   timeline runs */
 .skip-intro{
   position:fixed;left:14px;bottom:14px;z-index:150;
   font-size:12px;font-weight:600;letter-spacing:.02em;
@@ -117,9 +137,11 @@ html.js #hero-object{display:block}
 .skip-intro.show{opacity:1;visibility:visible;pointer-events:auto}
 .skip-intro:focus-visible{outline:3px solid rgba(175,82,222,.5);outline-offset:2px;color:var(--ink)}
 
+/* layout wrapper — centered max-width column used by every scene */
 .wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--pad)}
 
-/* Apple large-title type ramp */
+/* Apple large-title type ramp — headings, body text, and the .num tabular
+   face used by the count-up metrics ([data-count], effects.js layer A) */
 h1,h2,h3,h4{font-family:var(--f);line-height:1.06;text-wrap:balance;color:var(--label)}
 h1{font-size:clamp(38px,7.4vw,76px);font-weight:700;letter-spacing:-.032em;line-height:1.04}
 h2{font-size:clamp(28px,4.8vw,48px);font-weight:700;letter-spacing:-.028em}
@@ -128,6 +150,7 @@ p{color:var(--label-2);text-wrap:pretty}
 .num{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:0}
 
 /* footnote / caption style */
+/* → App.jsx eyebrow pills (e.g. "Inside a session", "Movement", "Membership") */
 .eyebrow{
   display:inline-flex;align-items:center;gap:7px;
   padding:6px 13px;border-radius:999px;
@@ -136,7 +159,8 @@ p{color:var(--label-2);text-wrap:pretty}
 }
 .eyebrow svg{width:14px;height:14px;flex:none}
 
-/* ══ ATMOSPHERE ══════════════════════════════════════════════ */
+/* ══ ATMOSPHERE — #warp, the white three-page peel flashed on long anchor
+   jumps (effects.js layer A: warp.classList.add("go")) ══ */
 #warp{position:fixed;inset:0;z-index:125;pointer-events:none;perspective:1200px;display:flex}
 #warp i{flex:1;background:linear-gradient(180deg,#fff,#fff);
         transform:rotateY(90deg);transform-origin:left center;opacity:0}
@@ -152,7 +176,9 @@ p{color:var(--label-2);text-wrap:pretty}
   100%{transform:rotateY(-90deg);opacity:0}
 }
 
-/* ══ LOGO — real SVG mark, always renders ════════════════════ */
+/* ══ LOGO — real SVG mark, always renders. Appears in the nav (#nav), the
+   footer (.foot), and the hero (#hero .logo-lg); the gradient wordmark is
+   .lg-in / .lg-ten ══ */
 .logo{display:inline-flex;align-items:center;gap:10px;line-height:1;white-space:nowrap}
 .logo-mark{
   width:32px;height:32px;flex:none;border-radius:9px;
@@ -171,7 +197,8 @@ p{color:var(--label-2);text-wrap:pretty}
 .logo-lg{gap:clamp(13px,1.9vw,17px)}
 #hero .logo-lg{position:relative;z-index:2;filter:drop-shadow(0 0 34px rgba(255,255,255,.8)) drop-shadow(0 0 12px rgba(255,255,255,.55))}
 
-/* ══ CONTROLS (Apple button language) ════════════════════════ */
+/* ══ CONTROLS (Apple button language) — .btn + .ripple + .cta-row; the
+   ripple span is spawned by effects.js layer A on pointerdown ══ */
 .btn{
   position:relative;overflow:hidden;isolation:isolate;
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -196,6 +223,8 @@ p{color:var(--label-2);text-wrap:pretty}
 @keyframes rip{to{transform:scale(3);opacity:0}}
 .cta-row{display:flex;flex-wrap:wrap;gap:11px;justify-content:center;align-items:center}
 
+/* text link with arrow — the "See the schedule / Reserve heat time" links
+   in the movement/heat scenes */
 .tlink{
   display:inline-flex;align-items:center;gap:5px;min-height:44px;
   color:var(--brand);font-size:16px;font-weight:600;letter-spacing:-.012em;
@@ -203,7 +232,8 @@ p{color:var(--label-2);text-wrap:pretty}
 .tlink svg{width:16px;height:16px;transition:transform .4s var(--e-spring)}
 .tlink:hover svg{transform:translateX(4px)}
 
-/* ══ BANNER ══════════════════════════════════════════════════ */
+/* ══ BANNER — the dismissible #bar / #barX strip (App.jsx); collapsed by
+   effects.js layer A via .gone ══ */
 .bar{
   position:relative;z-index:60;overflow:hidden;
   background:#FFFFFF;border-bottom:.5px solid var(--sep);
@@ -218,7 +248,8 @@ p{color:var(--label-2);text-wrap:pretty}
 .bar-x:hover{background:rgba(175,82,222,.14);transform:rotate(90deg)}
 .bar-x svg{width:15px;height:15px}
 
-/* ══ NAV — iOS translucent bar ═══════════════════════════════ */
+/* ══ NAV — iOS translucent bar (#nav, App.jsx); the #d1/#d2 dropdowns are
+   opened by effects.js layer A; the burger swaps in under 900px → #sheet ══ */
 .nav{
   position:sticky;top:0;z-index:100;
   background:transparent;border-bottom:0;
@@ -238,6 +269,8 @@ p{color:var(--label-2);text-wrap:pretty}
 }
 .menu button svg{width:11px;height:11px;transition:transform .4s var(--e-spring)}
 .menu-item:hover button svg{transform:rotate(180deg)}
+/* dropdown panel — the two Treatment/Fuel Lab menus in #nav; the .open
+   class is driven by effects.js layer A */
 .drop{
   position:absolute;top:calc(100% + 9px);left:50%;width:284px;margin-left:-142px;
   background:rgba(255,255,255,.86);backdrop-filter:saturate(180%) blur(24px);
@@ -271,6 +304,8 @@ p{color:var(--label-2);text-wrap:pretty}
 .burger.on span:nth-child(2){opacity:0}
 .burger.on span:nth-child(3){transform:translateY(-5.8px) rotate(-45deg)}
 
+/* mobile sheet (#sheet) — full-screen overlay menu toggled by the burger;
+   the link entrance stagger is set inline by effects.js layer A */
 .sheet{
   position:fixed;inset:0;z-index:95;background:rgba(255,255,255,.97);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -298,11 +333,12 @@ p{color:var(--label-2);text-wrap:pretty}
 .sheet .chev{margin-left:auto;color:var(--label-3);width:14px;height:14px}
 .sheet .btn{margin-top:26px;width:100%}
 
-/* ══ STAGE ═══════════════════════════════════════════════════ */
+/* ══ STAGE — the .scene-run deck (#top, App.jsx <main>) containing
+   #hero-object, the .cover-stack, the plain scenes, and the footer ══ */
 .scene-run{position:relative}
 .hero-sub{font-size:clamp(17px,2.2vw,21px);max-width:42ch;margin:0 auto;color:var(--ink-dim)}
 
-/* ══ WORDMARK — InTension (restyled logo title) ═══════════════════ */
+/* ══ WORDMARK — .lg-in / .lg-ten gradient-text spans inside .logo-type ══ */
 .lg-in,.lg-ten{font-style:normal;line-height:1.15;padding-bottom:.06em}
 .lg-in{
   background:linear-gradient(96deg,var(--brand),var(--purple) 46%,var(--brand-2));
@@ -313,7 +349,9 @@ p{color:var(--label-2);text-wrap:pretty}
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 
-/* ══ HERO — classic first page: massage images + changing colour veil ══ */
+/* ══ HERO — first page (#hero, .cover-stack .panel--base): the massage
+   photos + the changing colour veil (#heroVeil / #heroVeilW — the veil
+   layers are scrubbed by effects.js layer B, the hero-veil mechanic) ══ */
 .hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;
   background:linear-gradient(160deg,#C77DFF,#8B2BFF); /* fallback while photos load / offline */
 }
@@ -341,7 +379,9 @@ p{color:var(--label-2);text-wrap:pretty}
   background:radial-gradient(ellipse 72% 82% at 50% 50%,rgba(255,255,255,.92) 0%,rgba(255,255,255,.5) 45%,rgba(255,255,255,0) 72%);
 }
 
-/* ══ TWO-STAGE SLIDE — logo page → half-hold page → full-cover page ══ */
+/* ══ TWO-STAGE SLIDE — the .cover-stack opening: #hero base → #intro half-
+   hold → #trust full-cover. Sticky panels slide the first two pages up as
+   you scroll; the purple #trust page (70% transparent) slides over last ══ */
 .cover-stack{position:relative}  /* no overflow / transform / filter on this element */
 .panel--base{
   position:sticky;top:0;z-index:1;
@@ -381,6 +421,8 @@ p{color:var(--label-2);text-wrap:pretty}
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 
+/* trust badges — the pill row on the purple #trust page
+   (Licensed / 190° / 42° / 6a–10p) */
 .trust{
   display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:36px auto 0;max-width:760px;
 }
@@ -391,7 +433,10 @@ p{color:var(--label-2);text-wrap:pretty}
 .trust svg{width:15px;height:15px;color:var(--brand);flex:none}
 .trust b{color:var(--label);font-weight:600}
 
-/* ══ PROTOCOL CARD ═══════════════════════════════════════════ */
+/* ══ PROTOCOL CARD — the session-protocol widget REMOVED from the DOM in
+   v18.3 (see CLAUDE.md). Styles preserved so the guarded JS in effects.js
+   layer A no-ops cleanly if the widget ever returns; currently no node in
+   App.jsx ══ */
 .proto{
   position:relative;overflow:hidden;text-align:left;max-width:500px;
   margin:40px auto 0;padding:22px;border-radius:var(--r-l);
@@ -443,8 +488,10 @@ p{color:var(--label-2);text-wrap:pretty}
 .verdict b{font-size:16px;font-weight:600;color:var(--brand-2)}
 .verdict span{margin-left:auto;font-size:13px;color:var(--label-2)}
 
-/* ══ TICKER ══════════════════════════════════════════════════ */
-/* ══ TICKER HEADLINES (Mechanic 3) ═════════════════════════════════ */
+/* ══ TICKER HEADLINES — Mechanic 3: masked .word reveals driven by
+   effects.js layer B; .line is the overflow mask, .word slides up from
+   115% translateY. Used by the gallery/movement/heat/membership/book
+   scene headlines ══ */
 .scene .ticker{
   font-family:var(--f);font-weight:700;text-transform:uppercase;
   letter-spacing:-.04em;line-height:.9;text-align:center;
@@ -459,12 +506,16 @@ p{color:var(--label-2);text-wrap:pretty}
 
 
 
+/* chip pills — the treatment keyword rows in the movement/heat scenes */
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:999px;
       background:#FFFFFF;border:1px solid rgba(139,43,255,.3);font-size:13.5px;font-weight:500;color:var(--brand-2);
       transition:background .3s var(--e-soft),color .3s,transform .4s var(--e-spring)}
 .chip:hover{background:rgba(139,43,255,.08);color:var(--brand-2);transform:translateY(-2px)}
 
+/* framed artwork — the big .art image card in the movement + heat scenes;
+   it is a .tilt target (effects.js layer A); .breath / .drift are the
+   ambient ring + bubble overlays inside it */
 .art{
   position:relative;width:min(100%,700px);margin:0 auto 28px;aspect-ratio:16/10;
   border-radius:var(--r-l);overflow:hidden;background:#FFFFFF;
@@ -509,6 +560,8 @@ p{color:var(--label-2);text-wrap:pretty}
 @keyframes rise2{0%{transform:translateY(0) scale(.6);opacity:0}20%{opacity:.6}
                  100%{transform:translateY(-290px) scale(1.5);opacity:0}}
 
+/* GALLERY — the marquee band in the #gallery scene. #galRun is built by
+   effects.js layer A; this CSS scrolls it and styles the .tile frames */
 /* ══ GALLERY ═════════════════════════════════════════════════ */
 .gal-track{overflow:hidden;
   mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
@@ -530,6 +583,8 @@ p{color:var(--label-2);text-wrap:pretty}
   transition:opacity .55s var(--e-soft),transform .6s var(--e-out)}
 .tile:hover .cap{opacity:1;transform:none}
 
+/* SPACE BAND — .space-stats stat row (no node in the current App.jsx; kept
+   for a future space/heat stat band). White text → light-ink scenes */
 /* ══ SPACE BAND ══════════════════════════════════════════════ */
 .space-stats{display:flex;flex-wrap:wrap;justify-content:center;gap:14px clamp(24px,6vw,56px);margin-top:6px}
 .space-stats b{color:var(--ink)}
@@ -537,6 +592,8 @@ p{color:var(--label-2);text-wrap:pretty}
                line-height:1;font-variant-numeric:tabular-nums}
 .space-stats span{display:block;margin-top:6px;font-size:13.5px;color:rgba(255,255,255,.7)}
 
+/* CARDS — the membership-cards scene grid (.grid > .card). Each .card is a
+   .tilt target and .metric[data-count] drives the count-up (effects.js) */
 /* ══ CARDS ═══════════════════════════════════════════════════ */
 .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:15px}
 .card{
@@ -570,6 +627,8 @@ p{color:var(--label-2);text-wrap:pretty}
         font-variant-numeric:tabular-nums;color:var(--label)}
 .metric small{font-size:.4em;color:var(--brand);vertical-align:super;margin-left:2px;font-weight:600}
 
+/* MENU BOARD + segmented control — fuel-menu / board scenes; the .seg tabs
+   + #segbar pill are wired in effects.js layer A */
 /* ══ MENU BOARD + segmented control ══════════════════════════ */
 .screen{position:relative;overflow:hidden;border-radius:var(--r-l);background:var(--card);
         border:.5px solid var(--sep);box-shadow:var(--sh-2)}
@@ -601,6 +660,8 @@ p{color:var(--label-2);text-wrap:pretty}
 .mrow .ing{display:block;font-size:13.5px;color:var(--label-3);margin-top:1px}
 .mrow .pr{font-size:15.5px;font-weight:600;color:var(--label-2);font-variant-numeric:tabular-nums}
 
+/* CTA — the .close-in booking card on the #book scene (purple page, light
+   ink) */
 /* ══ CTA ═════════════════════════════════════════════════════ */
 .close-in{position:relative;overflow:hidden;border-radius:var(--r-l);text-align:center;
   padding:clamp(38px,7vw,80px) clamp(22px,5vw,60px);
@@ -615,6 +676,8 @@ p{color:var(--label-2);text-wrap:pretty}
 .close-in p{margin:13px auto 0;font-size:18px}
 .close-in .cta-row{margin-top:26px}
 
+/* FOOTER — the <footer className="foot"> (App.jsx); also the trigger that
+   fades the pinned hero object out (Mechanic 4, effects.js layer B) */
 /* ══ FOOTER (grouped list style) ═════════════════════════════ */
 .foot{position:relative;z-index:2;background:#FFFFFF;
       border-top:.5px solid var(--sep);padding:clamp(42px,7vw,72px) 0 30px;text-align:center}
@@ -642,6 +705,9 @@ p{color:var(--label-2);text-wrap:pretty}
 .legal a:hover{color:var(--brand)}
 .legal .note{flex-basis:100%;margin-top:6px}
 
+/* RESPONSIVE — breakpoints: 1000px card grid, 900px nav → burger + sheet,
+   720px single-column + segmented-control fallback, 400px tight, hover:none
+   reveals hover-only captions */
 /* ══ RESPONSIVE ══════════════════════════════════════════════ */
 @media (max-width:1000px){
   .grid{grid-template-columns:repeat(2,1fr)}
@@ -676,6 +742,8 @@ p{color:var(--label-2);text-wrap:pretty}
   .art .tag,.tile .cap{opacity:1;transform:none}
 }
 
+/* PRELOADER — the #preloader overlay (App.jsx); faded out by effects.js
+   layer A's reveal() once the load event fires */
 /* ══ PRELOADER — full-load gate, fades into the page ═══════════════ */
 #preloader{
   position:fixed;inset:0;z-index:200;
@@ -718,6 +786,8 @@ p{color:var(--label-2);text-wrap:pretty}
   color:var(--label-2);margin-top:2px;
 }
 
+/* STICKER — fixed bottom-right #sticker promo badge (App.jsx); copy is
+   injected and the .in class applied by effects.js layer A on reveal */
 /* ══ STICKER — fixed bottom-right promo badge (springs in on reveal) ═══ */
 #sticker{
   position:fixed;
@@ -801,6 +871,9 @@ p{color:var(--label-2);text-wrap:pretty}
   .st-dot{width:8px;height:8px}
 }
 
+/* ══ REDUCED MOTION — the no-motion safety net: kills animation/transition
+   durations, hides the pinned hero object, keeps the sticker visible, and
+   lets the background follow scenes via a plain opacity transition ══ */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
                        transition-duration:.001ms!important}

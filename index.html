@@ -1,5 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- ════════════════════════════════════════════════════════════════
+     index.html — static boot shell for IN/TENSION.
+     Paints the brand-purple boot layer (#boot) from the very first
+     byte, preloads the two hero shots above the preloader, and hands
+     off to the React app once the bundle mounts.
+     Used-by (breadcrumb up): served by the build (app.js / nginx).
+     Contains (breadcrumb down): boot layer + preloads → #root → the
+     entry module src/main.jsx (renders <App/> then initEffects()).
+     ════════════════════════════════════════════════════════════════ -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -24,7 +33,11 @@
 <link rel="preload" as="image" href="https://images.unsplash.com/photo-1745327883508-b6cd32e5dde5?fm=jpg&q=76&w=1800&auto=format&fit=crop">
 </head>
 <body>
+<!-- React mount point — src/main.jsx creates the root here and renders
+     <App/> (composition root, src/App.jsx) inside it. -->
 <div id="root"></div>
+<!-- Entry module: renders <App/> then calls initEffects() once to wire
+     the GSAP/ScrollTrigger/Lenis scroll layer (src/effects.js). -->
 <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
