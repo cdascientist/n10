@@ -10,10 +10,10 @@
     element mounted under #root.
 
     Contains (breadcrumb down): chrome (BackgroundCanvas,
-    SkipIntroLink, Preloader, PromoSticker, Warp, IconDefs, PromoBar,
+    SkipIntroLink, Preloader, PromoSticker, Warp, IconDefs,
     Nav, MobileSheet) → <main class="deck scene-run" id="top">
     (HeroObject, cover-stack {HeroScene, IntroScene, TrustScene},
-    GalleryScene, MovementScene, HeatScene, MembershipScene,
+    TreatmentsScene, GalleryScene, MovementScene, HeatScene, MembershipScene,
     MembershipCardsScene, FuelMenuScene, BoardScene, BookScene) →
     Footer.
     ════════════════════════════════════════════════════════════ */}
@@ -24,7 +24,6 @@ import Preloader from './components/Preloader.jsx';
 import PromoSticker from './components/PromoSticker.jsx';
 import Warp from './components/Warp.jsx';
 import IconDefs from './components/IconDefs.jsx';
-import PromoBar from './components/PromoBar.jsx';
 import Nav from './components/Nav.jsx';
 import MobileSheet from './components/MobileSheet.jsx';
 import HeroObject from './components/HeroObject.jsx';
@@ -63,9 +62,6 @@ export default function App() {
 
       {/* hidden SVG defs — the #i-* icons plus #mark, #mark-ink, and #markG symbols (src/components/IconDefs.jsx) */}
       <IconDefs />
-
-      {/* #bar — dismissible promo banner (src/components/PromoBar.jsx) */}
-      <PromoBar />
 
       {/* #nav — site header (src/components/Nav.jsx) */}
       <Nav />

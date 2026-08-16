@@ -447,3 +447,19 @@ Prenatal / Travel), then test, build, push, deploy.
    gallery=4, movement=5, heat=6). Golden DOM re-captured (66,766 chars) —
    intentional content addition. **57/57 on built site AND vite dev server, DOM gate
    MATCH on both.** Screenshots `screenshots/after-v21/` (1440 + 375).
+
+
+# Changelog v18.9 — top "Founding memberships" banner removed (2026-08-16)
+
+Client: remove the top border "Founding memberships are open" banner.
+
+1. Removed the `#bar` promo strip entirely: `PromoBar.jsx` component deleted,
+   composition-root import/render removed, banner wiring in `effects.js`
+   (the `#barX` dismiss handler — which would have thrown on a missing node)
+   removed, `.bar`/`.bar-in`/`.bar-txt`/`.bar-x` CSS block removed, breadcrumb
+   headers in Nav/IconDefs and the CLAUDE.md DOM-contract id list updated.
+2. Layout: content shifts up ~57px (banner's height); all scroll geometry is
+   measured live at refresh, so the veil arc / triggers adapt automatically.
+3. Verified: `#bar`/`#barX` absent from the rendered DOM, no banner text;
+   suite **57/57** (built site + vite dev), golden DOM re-captured
+   (66,460 chars) + MATCH. No other pages touched.

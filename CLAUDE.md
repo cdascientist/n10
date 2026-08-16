@@ -24,7 +24,7 @@ page `/frmm` (Front Range Mobile Mechanics) — **do not touch `public/frmm/`**.
   membership, membership-cards, fuel-menu, board, book`. Every scene carries
   `data-bg` (`#FFFFFF` or `#8B2BFF`) and `data-ink` (`dark`/`light`).
 - **IDs used by JS:** `bg-canvas`, `bgPurple`, `skipIntro`, `preloader`, `sticker`,
-  `bar`, `barX`, `nav`, `burger`, `sheet`, `warp`, `hero-object`, `obj-inner`,
+  `nav`, `burger`, `sheet`, `warp`, `hero-object`, `obj-inner`,
   `heroVeil`, `heroVeilW`, `holdTint`, `galRun`, `segbar`, `top`, `d1`, `d2`, `book`.
 - **SVG symbols** (`#mark`, `#mark-ink`, `#i-*`, `#markG`) referenced via `<use href>`.
 - `.scene` order inside `<main class="deck scene-run" id="top">`: `#hero-object` first,

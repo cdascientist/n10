@@ -5,8 +5,8 @@
     aria-expanded toggling owned by effects.js), the Gallery / Book
     buttons and the #burger button (also wired in effects.js).
 
-    Used-by (breadcrumb up): App (src/App.jsx) — eighth top-level
-    sibling in the outer fragment, after PromoBar, before MobileSheet.
+    Used-by (breadcrumb up): App (src/App.jsx) — seventh top-level
+    sibling in the outer fragment, after IconDefs, before MobileSheet.
 
     Contains (breadcrumb down): <header#nav> > .wrap.nav-in > a.logo
     + nav.menu (2 .menu-item with .drop#d1/#d2 + plain Membership

@@ -7,7 +7,7 @@
     href="#mark"> in the app references a symbol defined here.
 
     Used-by (breadcrumb up): App (src/App.jsx) — sixth top-level
-    sibling in the outer fragment, after Warp, before PromoBar.
+    sibling in the outer fragment, after Warp, before Nav.
 
     Contains (breadcrumb down): hidden <svg style={{display:"none"}}>
     > <defs> (#markG) + <g id="i-hands|heat|cold|move|cup|key|clock|

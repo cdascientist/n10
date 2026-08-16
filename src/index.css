@@ -233,22 +233,6 @@ p{color:var(--label-2);text-wrap:pretty}
 .tlink svg{width:16px;height:16px;transition:transform .4s var(--e-spring)}
 .tlink:hover svg{transform:translateX(4px)}
 
-/* ══ BANNER — the dismissible #bar / #barX strip (App.jsx); collapsed by
-   effects.js layer A via .gone ══ */
-.bar{
-  position:relative;z-index:60;overflow:hidden;
-  background:#FFFFFF;border-bottom:.5px solid var(--sep);
-  max-height:140px;transition:max-height .7s var(--e-inout),opacity .4s var(--e-soft);
-}
-.bar.gone{max-height:0;opacity:0}
-.bar-in{display:flex;align-items:center;gap:12px;padding:11px 0}
-.bar-txt{flex:1;min-width:0;text-align:center;font-size:14.5px;color:var(--brand-2);font-weight:500}
-.bar-txt a{font-weight:600;text-decoration:underline;text-underline-offset:3px}
-.bar-x{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;
-       color:var(--brand-2);transition:background .3s,transform .4s var(--e-spring)}
-.bar-x:hover{background:rgba(175,82,222,.14);transform:rotate(90deg)}
-.bar-x svg{width:15px;height:15px}
-
 /* ══ NAV — iOS translucent bar (#nav, App.jsx); the #d1/#d2 dropdowns are
    opened by effects.js layer A; the burger swaps in under 900px → #sheet ══ */
 .nav{

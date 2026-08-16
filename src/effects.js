@@ -124,13 +124,6 @@ if(stickerEl){
   stickerEl.setAttribute("aria-label", STICKER_COPY.word + " · " + STICKER_COPY.sub);
   if(RM) stickerEl.classList.add("in");
 }
-/* ── DISMISSIBLE BANNER (#bar / #barX, App.jsx) — the "Founding memberships
-   are open" strip; the X collapses it via .gone. ── */
-var bar = document.getElementById("bar");
-document.getElementById("barX").addEventListener("click", function(){
-  bar.classList.add("gone");
-  setTimeout(function(){ bar.style.display = "none"; }, 760);
-});
 /* ── MAGNET CARDS (.mag — e.g. the book-scene CTAs) — pointer-follow
    translate; the targets (tx/ty) are consumed by the RAF loop below. ── */
 var mags = fine ? [].slice.call(document.querySelectorAll(".mag")).map(function(el){
