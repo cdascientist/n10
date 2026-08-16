@@ -1,22 +1,22 @@
 <div align="center">
 
-# ⚡ InTension
+# ⚡ IN/TENSION
 
-### *Wireframe Walkthrough*
+### *Bodywork · Heat · Movement · Fuel*
 
-A single-file WebGL world — a first-person drift through a glowing wireframe cathedral,
-built entirely with **three.js** and rendered in your browser. No frameworks, no build step,
-no dependencies beyond one vendored library.
+A scroll-scene marketing site: Swedish massage, infrared sauna, cold plunge, movement
+and the Fuel Lab in one bright, quiet building. Built with **React 18 + Vite**, with
+**GSAP ScrollTrigger + Lenis** driving an Apple-style scroll-storytelling layer.
 
 <br>
 
-<div style="display:inline-block;background:#0d0618;border:1px solid rgba(155,90,255,.28);border-radius:999px;padding:6px 18px;color:#e4ccff;font-size:13px;">
-⬡ three.js &nbsp;·&nbsp; ⬡ WebGL &nbsp;·&nbsp; ⬡ 100% client-side &nbsp;·&nbsp; ⬡ zero dependencies
+<div style="display:inline-block;background:#16082e;border:1px solid rgba(139,43,255,.35);border-radius:999px;padding:6px 18px;color:#e4ccff;font-size:13px;">
+⚛️ React 18 · ⚡ Vite 5 · 🎞 GSAP ScrollTrigger + Lenis · 🔁 CI auto-deploy
 </div>
 
 <br>
 
-<a href="#about">About</a> · <a href="#features">Features</a> · <a href="#controls">Controls</a> · <a href="#run-it">Run it</a> · <a href="#structure">Structure</a>
+<a href="#about">About</a> · <a href="#architecture">Architecture</a> · <a href="#structure">Structure</a> · <a href="#scene-flow">Scene flow</a> · <a href="#verification">Verification</a> · <a href="#run-it">Run it</a> · <a href="#deploy">Deploy</a> · <a href="#frmm">FRMM</a> · <a href="#claude-code">Claude Code</a>
 
 </div>
 
@@ -24,130 +24,71 @@ no dependencies beyond one vendored library.
 
 ## 🌌 About
 
-**InTension** drops you into a procedurally-lit wireframe space — a quiet, neon-violet void
-filled with particle motes, ribbon-light geometry, and a minimap to keep your bearings.
+**IN/TENSION** is the live marketing site (`https://<host>/`) for a bodywork studio.
+The page is a sequence of full-viewport "scenes" that the user swipes through —
+a full-page background colour that continuously interpolates white ↔ purple, ink
+inversion for text legibility, masked ticker headlines, a persistent pinned
+IN/TENSION mark, a purple veil arc over the hero photos, a load-gated preloader,
+and a booking scene that closes the arc back to purple.
 
-It is a single `index.html` (~73 KB) that boots a full 3D scene: animated preloader,
-first-person camera, live performance HUD, and a resolution scaler that keeps the frame
-rate pinned to a 70 FPS target on weak hardware.
-
----
-
-## ✨ Features
-
-- **First-person wireframe world** — fly and walk through layered vector geometry
-- **Particle motes** — thousands of drifting light points with adaptive parallelism
-- **Live HUD** — real-time FPS, mote count, resolution scale, and parallelism readout
-- **Minimap** — keeps you oriented inside the space
-- **Adaptive renderer** — auto-scales resolution to hold 70 FPS
-- **Boot sequence** — animated 3D preloader with graceful fallback wordmark
-- **Zero setup** — one file, open it and go
-- **⚛️ React overlay deck** — a transparent control panel (bottom-left) mounted
-  on top of the scene, with live status, uptime, an expandable log, and a
-  minimise mode that collapses it completely to a chip
+A second, fully separate static page — **FRMM** (Front Range Mobile Mechanics,
+`/frmm/`) — ships in the same repo and deploys with the same pipeline. See
+[FRMM](#frmm).
 
 ---
 
-## ⚛️ React Overlay & Component Architecture
+## 🏗 Architecture
 
-The scene page is still a **single `index.html`**, but it is now built from a
-real React component tree — the entire interface (boot, HUD, minimap, touch
-controls, and the overlay deck) is split into individual, heavily-commented
-components, each with its own stylesheet:
+The page is one static React tree; all scroll/interaction behaviour is wired
+imperatively in a single behaviour file after render.
 
 ```
-react/
-├── App.jsx                    # composition root (layers + "entered" state)
-├── main.jsx                   # React 18 mount point
-├── engine/                    # imperative 3D layer (no React re-renders at 60fps)
-│   ├── registry.js            # shared DOM ref bus between components & engine
-│   ├── palette.js             # design tokens + floor-plan data
-│   ├── geometry.js            # wire & panel builders
-│   ├── pool.js                # parallel.js-style worker pool
-│   ├── textures.js            # canvas-painted logo/glow/chrome textures
-│   ├── loader.js              # 3D preloader scene (chrome wordmark)
-│   ├── minimap.js             # minimap base + player arrow + locate()
-│   ├── controls.js            # keyboard / pointer lock / touch / collision
-│   └── engine.js              # scene, staged build pipeline, adaptive loop
-├── components/                # one file per UI piece, numbered comments
-│   ├── Scene.jsx              # full-screen WebGL canvas + engine host
-│   ├── Boot.jsx               # preloader + ENTER gate
-│   ├── Hud.jsx                # HUD container (fades in after enter)
-│   ├── Stats.jsx              # FPS/parallelism/motes/res panel
-│   ├── Where.jsx              # "you are here" readout
-│   ├── Keys.jsx               # control legend
-│   ├── Minimap.jsx            # floor-plan minimap + brand dot
-│   ├── TouchControls.jsx      # joystick + RUN button
-│   └── OverlayDeck.jsx        # the React control deck (bottom-left)
-└── styles/                    # one stylesheet per component
-    ├── global.css  boot.css  hud.css  touch.css  overlay.css
+index.html ──► src/main.jsx ──► <App/> (composition root, src/App.jsx)
+                    │                │
+                    │                └─► 22 components under src/components/
+                    │
+                    └─► initEffects() once ──► src/effects.js (GSAP + Lenis)
 ```
 
-The overlay deck mounts into a labelled section that hovers above the entire
-page in the bottom-left corner:
+**Layers**
 
-```
-<section id="react-root" aria-label="React overlay">   ← fixed, bottom-left, z-index 200
-  <div id="react-label">⚛️ REACT</div>
-  <div id="react-app"></div>                            ← React root (transparent glass panel)
-</section>
-```
+| Layer | File | Responsibility |
+|---|---|---|
+| Entry | `src/main.jsx` | Mounts `<App/>` inside `flushSync` (render commits synchronously — prevents null-ref races on slow devices), then calls `initEffects()` exactly once. No StrictMode (React's passive-effect machinery used to re-invoke the scroll layer). |
+| Composition root | `src/App.jsx` | Imports and renders every component in the exact DOM order the DOM contract requires. ~121 lines. |
+| Components | `src/components/**` | 22 hierarchical components (chrome + scenes + footer). Each file opens with a breadcrumb header (purpose · used-by ↑ · contains ↓) and carries inline single-line breadcrumbs. |
+| Behaviour | `src/effects.js` | **The one imperative file** — GSAP ScrollTrigger + Lenis mechanics, preloader gate, sticker, nav/sheet, marquee, tabs, counters, ripples. Deliberately not split. |
+| Styles | `src/index.css` | **The one stylesheet** — section banners map every block to its component. Deliberately not split. |
 
-> ⚠️ **`index.html` is the hand-maintained live marketing page** (Apple-style IN/TENSION bodywork/sauna page with a full-load preloader). `npm run build` REGENERATES `index.html` from `index.template.html` (the React 3D walkthrough) and would overwrite the marketing page — `build.mjs` refuses unless `FORCE_BUILD=1` (set it only if you deliberately want the 3D page served). Marketing deploys: edit `index.html` directly, then commit + push. Test the marketing page with `node scripts/preloader-test.mjs`; `npm run smoke` covers the 3D build only.
+### The DOM contract (don't break it)
 
-### Rebuilding the React bundle
+`effects.js` and the acceptance suite depend on exact ids, classNames, `data-*`
+attributes and order. The contract is documented in `CLAUDE.md` and enforced by a
+golden-DOM gate (see [Verification](#verification)):
 
-```bash
-npm install        # react, react-dom, esbuild (jsdom for the smoke test)
-npm run build      # bundles react/ + styles/ → inlines into index.html (verified)
-npm run smoke      # headless DOM test: every layer mounts, enter flow works
-```
+- **11 scenes in fixed order:** `hero → intro → trust → gallery → movement → heat →
+  membership → membership-cards → fuel-menu → board → book`, each with `data-bg`
+  (`#FFFFFF` / `#8B2BFF`) and `data-ink` (`dark` / `light`).
+- JS-lookup ids: `bg-canvas`, `bgPurple`, `skipIntro`, `preloader`, `sticker`,
+  `bar`, `barX`, `nav`, `burger`, `sheet`, `warp`, `hero-object`, `obj-inner`,
+  `heroVeil`, `heroVeilW`, `holdTint`, `galRun`, `segbar`, `top`, `d1`, `d2`, `book`.
+- SVG `<symbol>`s (`#mark`, `#mark-ink`, `#i-*`, `#markG`) referenced via `<use href>`.
+- Hard rules: only `transform` / `opacity` / `background-color` are animated; no CSS
+  rule hides content by default (every hidden pose is applied by GSAP at runtime, so
+  the page is fully readable with JS disabled).
 
----
+### Scroll-scene mechanics (`src/effects.js`)
 
-## 🎮 Controls
-
-| Input | Action |
-| --- | --- |
-| `W A S D` / `Arrows` | Move |
-| `Click` | Capture mouse |
-| `Drag` | Look around |
-| `Shift` | Run |
-| `T` | Toggle wall surfaces |
-
-*Works with touch devices too — tap to enter.*
-
----
-
-## 🚀 Run it
-
-### From VS Code (recommended)
-
-1. Open the repo folder in VS Code
-2. Press **F5** (Run → Start Debugging) — the included `.vscode/launch.json`
-   runs `app.js`, a zero-dependency static server
-3. Open **http://localhost:3000** — the scene + ⚛️ React overlay load exactly
-   like production
-
-Breakpoints in `app.js` work normally; `Ctrl+C` stops the server.
-
-### Or from a terminal
-
-```bash
-npm start          # node app.js → http://localhost:3000
-```
-
-The dev server mirrors production nginx behavior: serves the repo root,
-blocks dotfiles and `node_modules` (403), and refuses path traversal.
-
-### No build step
-
-```bash
-# just serve the folder with any static server:
-python3 -m http.server 8080
-```
-
-Then open `http://<your-host>:8080`.
+| # | Mechanic | How |
+|---|---|---|
+| 1 | Continuous background interpolation | Full-page `#bg-canvas` (white base) + `#bgPurple` layer whose **opacity is scrubbed** white↔purple — compositor-friendly, zero repaints. |
+| 2 | Ink inversion | Each scene's `data-ink` flips `--ink`/`--paper` at the luminance midpoint. |
+| 3 | Masked ticker headlines | Words slide up from a mask on scene enter (scene 0 owned by the intro timeline on first visit). |
+| 4 | Persistent pinned hero object | One IN/TENSION mark, two SVG variants (gradient ↔ ink outline), CSS-fixed across the run; variants crossfade and the object alternates left/right; fades out over the footer. |
+| 5 | Hero veil arc | Purple-tinted hero photos → white crossfade layer over the half-hold rise → purple returns as the trust cover lands. **One scrubbed timeline owns the white layer** (v18.2 — two competing tweens used to pin it white at load). |
+| 6 | Intro sequence | ~1s logo reveal after the preloader; `sessionStorage` flag skips on return visits; "Skip animation" link; body scroll locked until done. |
+| — | Preloader | Pure load-event gate (min 600ms brand beat) + hard backstops so it can never linger; Lenis-aware 1px paint kicks defeat Safari's no-paint-until-scroll quirk. |
+| — | Protocol widget (v18.3) | Removed from the page; its JS is guarded behind `#proto` existence and no-ops cleanly. |
 
 ---
 
@@ -155,26 +96,173 @@ Then open `http://<your-host>:8080`.
 
 ```
 n10/
-├── index.html          # BUILT single-file artifact (nginx + app.js serve this)
-├── index.template.html # the shell the build inlines JS/CSS into
-├── app.js              # zero-dep dev server (npm start / VS Code F5)
-├── package.json        # start, build & smoke tooling (esbuild)
-├── .vscode/
-│   └── launch.json     # F5 → node app.js under the debugger
-├── react/              # source of truth (components + engine + styles)
-├── scripts/
-│   ├── build.mjs       # bundle JS+CSS → inline into index.html (verified)
-│   └── smoke.mjs       # jsdom headless test of the full component stack
-└── README.md
+├── index.html              # Vite HTML entry — boot shell (brand-purple #boot layer,
+│                           #   hero-shot preloads, #root, entry script)
+├── package.json            # start / dev / build / preview (vite)
+├── vite.config.js
+├── app.js                  # zero-dep static server (npm start → :3000, mirrors nginx)
+├── CLAUDE.md               # project contract for Claude Code (DOM contract, gates, conventions)
+├── .claude/
+│   └── agents/             # Claude Code subagents (see § Claude Code)
+├── src/
+│   ├── main.jsx            # entry — flushSync render <App/> + initEffects() once
+│   ├── App.jsx             # composition root (imports + renders 22 components in order)
+│   ├── effects.js          # ONE imperative behaviour file (mechanics + wiring, commented)
+│   ├── index.css           # ONE stylesheet (commented, section-bannered)
+│   └── components/
+│       ├── BackgroundCanvas.jsx   # #bg-canvas + #bgPurple (Mechanic 1)
+│       ├── SkipIntroLink.jsx      # #skipIntro
+│       ├── Preloader.jsx          # #preloader
+│       ├── PromoSticker.jsx       # #sticker (founding-members badge)
+│       ├── Warp.jsx               # #warp vignette overlay
+│       ├── IconDefs.jsx           # hidden SVG defs: #i-* icons, #mark, #mark-ink, #markG
+│       ├── PromoBar.jsx           # #bar dismissible promo banner
+│       ├── Nav.jsx                # <header id="nav"> dropdowns (#d1/#d2) + burger
+│       ├── MobileSheet.jsx        # #sheet mobile menu
+│       ├── HeroObject.jsx         # #hero-object pinned mark (2 variants)
+│       ├── Footer.jsx             # <footer class="foot">
+│       └── Scenes/
+│           ├── HeroScene.jsx            # #hero      — page 1, logo on purple-tinted photo
+│           ├── IntroScene.jsx           # #intro     — half-hold glass, "Tension in/out"
+│           ├── TrustScene.jsx           # #trust     — 70% transparent purple cover + pills
+│           ├── GalleryScene.jsx         # #gallery   — "Inside a session" marquee (#galRun)
+│           ├── MovementScene.jsx        # #movement  — YOGA TUESDAY (base64 texture)
+│           ├── HeatScene.jsx            # #heat      — 190° DON'T (base64 texture)
+│           ├── MembershipScene.jsx      # #membership — KEY ROOM
+│           ├── MembershipCardsScene.jsx # #membership-cards — card grid
+│           ├── FuelMenuScene.jsx        # #fuel-menu — Fuel Lab head (THE BOARD)
+│           ├── BoardScene.jsx           # #board     — tabbed fuel menu (#segbar + panes)
+│           └── BookScene.jsx            # #book      — purple booking scene
+├── public/
+│   └── frmm/index.html     # FRMM static page (separate product, see § FRMM)
+├── dist/                    # vite build output — what nginx and app.js serve
+├── screenshots/             # per-release verification screenshots (after-v19, after-v20, …)
+├── changelog-scroll-scenes.md   # every change, client-quote + fix + verification
+├── design-audit.md              # step-0 inventory, palette, scene→colour mapping, decisions
+└── openclaw-scroll-scene-brief.md
 ```
 
-> `index.html` is generated — edit `react/` + `index.template.html`, then
-> `npm run build`. The live site and dev server both serve the built file.
+---
+
+## 🎬 Scene flow
+
+```
+hero ──► intro ──► trust ──► gallery ──► movement ──► heat ──► membership
+ (logo)   (half-hold) (purple   (inside a   (yoga      (190°      (key/room)
+          glass,       cover)    session)    tuesday)   don't)
+ ──► membership-cards ──► fuel-menu ──► board ──► book
+     (card grid)          (THE BOARD)  (tabs)   (purple, booking)
+```
+
+The first three scenes form the opening "cover-stack": the hero is a sticky base,
+the intro half-hold slides up to the viewport midpoint, and the 70%-transparent
+purple trust cover slides over both. Background colour interpolates continuously
+across every scene boundary (white ↔ purple) with no hard seams.
+
+---
+
+## ✅ Verification
+
+The acceptance suite lives outside the repo (`/opt/pwtest/`) and is the source of
+truth for "behaviour unchanged":
+
+| Gate | Command | Pass condition |
+|---|---|---|
+| Build | `npm run build` | Vite build succeeds |
+| Acceptance suite | `node /opt/pwtest/verify.mjs http://localhost:3000/` | **57 passed, 0 failed** (scenes, bg interpolation, veil arc, intro/skip/sessionStorage, pinned object, nav anchor, gallery, mobile 375px, keyboard, JS-off, reduced-motion, fresh-load veil checks) |
+| Golden-DOM gate | `node /opt/pwtest/domcheck.mjs capture <url>` then `check <url>` | Rendered `#root` tree (inline styles stripped) byte-identical to the golden snapshot — catches ANY markup/attribute/base64 change |
+| Pixel probes | `node /opt/pwtest/probe-hero.mjs` + `px-hero.mjs` | Hero veil renders at rest (purple-tinted photo, white layer off) |
+
+Run the suite against **both** dev (:3000) and live (:80) after any change. Per-release
+screenshots are kept in `screenshots/`.
+
+---
+
+## 🚀 Run it
+
+```bash
+npm install        # react, react-dom, gsap, lenis, vite
+npm start          # node app.js → http://localhost:3000  (serves dist/ + /frmm, mirrors nginx)
+npm run dev        # vite dev server with HMR (no build step needed while developing)
+npm run build      # production build → dist/
+```
+
+`app.js` mirrors production nginx behaviour: serves `dist/` (or the repo root when
+`dist/` is absent), serves directory indexes (`/frmm/`), blocks dotfiles and
+`node_modules` (403), and refuses path traversal.
+
+---
+
+## 🔁 Deploy (automatic)
+
+The **live site is branch `main`**, deployed to nginx (`/var/n10`) by a cron watcher
+(`/root/deploy-n10.sh`, every 2 minutes):
+
+1. Polls GitHub `refs/heads/main` for a new SHA.
+2. Checks the exact SHA out into `/var/n10` (nginx root).
+3. Runs `npm install` (if needed) + `npm run build`.
+4. curl-verifies, records the SHA.
+
+**Working workflow:**
+
+```bash
+# edit on scroll-scenes (all feature work lives here)
+git checkout scroll-scenes && … edit … && git add -A && git commit
+# ship: fast-forward main and push — live within ~2 minutes
+git checkout main && git merge --ff-only scroll-scenes && git push origin main
+git checkout scroll-scenes && git push origin scroll-scenes
+```
+
+Verify after deploy: `curl -s localhost | grep -c 'id="root"'` and the acceptance
+suite against `http://localhost:80/`.
+
+---
+
+## 🛠 FRMM — Front Range Mobile Mechanics (`/frmm/`)
+
+A separate, self-contained static page at `public/frmm/index.html` (Vite copies
+`public/` → `dist/`, so it deploys with the normal pipeline; nginx serves it at
+`/frmm/`). Mobile-mechanic clone of the IN/TENSION DNA with its own theme:
+
+- Light-blue palette (`#38BDF8`/`#0284C7`), white↔light-blue background arc.
+- Same scroll-scene mechanics: load-gated preloader, sync-decoded hero, veil +
+  crossfade, pinned floating mark, cover glass panel, ink inversion, RM path.
+- **HELP ME NOW** — big promotional green 3D button opening an Apple liquid-glass
+  wizard: Find Me GPS / CALL / Request Email flow, every choice saved to
+  `window.__hmn`, geolocation with Call/Text fallback + Google Maps directions.
+- Flat-rate pricing ($139–$295), 6 services, 3-step how-it-works, coverage marquee.
+- Verified by `verify-frmm.mjs` (18 checks).
+
+**Never modify `public/frmm/` when working on the main site** — it is a separate
+product shipped from the same repo.
+
+---
+
+## 🤖 Claude Code
+
+The repo carries a Claude Code setup for agentic work (DeepSeek backend):
+
+- **`CLAUDE.md`** — the project contract: layout, DOM contract, hard rules,
+  verification gates, comment conventions.
+- **`.claude/agents/`** — four subagents:
+  - `implementer-react` — component extraction/refactor (DOM-contract aware)
+  - `implementer-effects` — effects.js / index.css commenting
+  - `tester-build` — `npm run build` gate
+  - `tester-suite` — Playwright 57-check acceptance suite
+
+Headless drive from OpenClaw:
+
+```bash
+claude --print --agents implementer-react,implementer-effects,tester-build,tester-suite < prompt.txt
+```
+
+The full component hierarchy (v18.4) was produced by this team; the golden-DOM gate
+and suite proved the rendered page byte-identical before and after.
 
 ---
 
 <div align="center">
 
-<sub>Styled after the void — `#05020c` · `#7b2dff` · `#e4ccff`</sub>
+<sub>Brand purple `#8B2BFF` — styled after the light. Changelog: `changelog-scroll-scenes.md`.</sub>
 
 </div>
