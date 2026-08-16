@@ -34,7 +34,7 @@ export default function MovementScene() {
         <h2 className="ticker">
           <span className="sr-only">Yoga that respects your Tuesday.</span>
           <span className="line"><span className="word">Restore</span></span>
-          <span className="line"><span className="word">Movement</span></span>
+          <span className="line"><span className="word">Movement!</span></span>
         </h2>
         <p>Slow flow, restorative and mobility labs in a calm, bright room. No mirrors, no leaderboard, no one calling out your name. Mats and props are stocked; just bring yourself.</p>
         <div className="chips"><span className="chip">Slow flow</span><span className="chip">Restore</span><span className="chip">Mobility lab</span><span className="chip">Breathwork</span></div>
