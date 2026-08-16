@@ -420,3 +420,30 @@ find the vite binary. Live is unaffected (deploy pipeline installs deps).
    attempt repair and warn honestly; `npm run build` still green afterwards.
 3. README updated: `npm run dev` is self-healing on a fresh clone (auto free-port +
    auto install).
+
+
+# Changelog v18.8 — SPORTS RECOVERY treatments scene (new copy) (2026-08-16)
+
+Client: replace the current copy where appropriate with the Sports Recovery content
+(Recover Hard. Come Back Strong. + Deep Tissue / Swedish / Trigger Point Therapy /
+Prenatal / Travel), then test, build, push, deploy.
+
+1. **New `#treatments` scene** (`Scenes/TreatmentsScene.jsx`), placed right after the
+   purple trust cover (index 3): eyebrow "Treatments", ticker **SPORTS / RECOVERY**,
+   lead "Recover Hard. Come Back Strong. Performance-focused massage…", and five
+   modality cards — Deep Tissue (i-bolt), Swedish (i-hands), Trigger Point Therapy
+   (i-spark), Prenatal (i-leaf), Travel (i-arrow) — each with its tagline (gradient
+   text) + description. Client copy used verbatim.
+2. **Nav reachable everywhere**: "Massage & recovery → #treatments" added to the nav
+   Treatments dropdown (#d1), the mobile sheet Treatments group, and the footer
+   Treatments column (i-hands icon in menus).
+3. **CSS**: `.treat-grid` (auto-fit minmax(172px,1fr)) + `.treat` cards (card tokens,
+   hover lift, gradient taglines). **`.scene-in` pinned to `grid-template-columns:
+   minmax(0,1fr)`** — fixes a real grid bug the new scene exposed: an auto track lets
+   %-width children (the card grid) size it to their max-content, blowing the page
+   out to ~954px on mobile (suite caught it: "no horizontal overflow" + "headline
+   words fit viewport" failed at 375px; both green after the fix).
+4. **Scene count 11 → 12**: suite updated (12 scenes; order check treatments=3,
+   gallery=4, movement=5, heat=6). Golden DOM re-captured (66,766 chars) —
+   intentional content addition. **57/57 on built site AND vite dev server, DOM gate
+   MATCH on both.** Screenshots `screenshots/after-v21/` (1440 + 375).
