@@ -8,7 +8,10 @@ page `/frmm` (Front Range Mobile Mechanics) — **do not touch `public/frmm/`**.
 - `index.html` — static boot shell (brand-purple boot layer, hero image preloads, `#root`).
 - `src/main.jsx` — entry: renders `<App/>` (flushSync) then calls `initEffects()` once.
 - `src/App.jsx` — **composition root**: imports and renders every component in DOM order.
-- `src/components/**` — hierarchical components (Chrome/, Scenes/, Icons/, Footer).
+- `src/components/**` — **one directory per component**: `chrome/` (site
+  chrome), `scenes/` (one dir per scene), `Footer/`. Each dir =
+  `index.jsx` + `README.md`, sub-parts in subdirectories (e.g.
+  `Nav/Dropdown/`, `TrustScene/pills/`). See `src/components/README.md`.
 - `src/effects.js` — ONE imperative behavior file (mechanics + UI wiring). Never split.
 - `src/index.css` — ONE stylesheet. Never split.
 - `public/frmm/index.html` — FRMM page (separate product; leave alone).
@@ -20,9 +23,9 @@ page `/frmm` (Front Range Mobile Mechanics) — **do not touch `public/frmm/`**.
 
 ## DOM CONTRACT (critical — never break)
 `effects.js` and the acceptance suite (`/opt/pwtest/verify.mjs`, 57 checks) depend on:
-- **11 scenes, exact order & ids:** `hero, intro, trust, gallery, movement, heat,
-  membership, membership-cards, fuel-menu, board, book`. Every scene carries
-  `data-bg` (`#FFFFFF` or `#8B2BFF`) and `data-ink` (`dark`/`light`).
+- **12 scenes, exact order & ids:** `hero, intro, trust, treatments, gallery,
+  movement, heat, membership, membership-cards, fuel-menu, board, book`. Every
+  scene carries `data-bg` (`#FFFFFF` or `#8B2BFF`) and `data-ink` (`dark`/`light`).
 - **IDs used by JS:** `bg-canvas`, `bgPurple`, `skipIntro`, `preloader`, `sticker`,
   `nav`, `burger`, `sheet`, `warp`, `hero-object`, `obj-inner`,
   `heroVeil`, `heroVeilW`, `holdTint`, `galRun`, `segbar`, `top`, `d1`, `d2`, `book`.

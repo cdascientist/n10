@@ -10,111 +10,113 @@
     element mounted under #root.
 
     Contains (breadcrumb down): chrome (BackgroundCanvas,
-    SkipIntroLink, Preloader, PromoSticker, Warp, IconDefs,
-    Nav, MobileSheet) → <main class="deck scene-run" id="top">
-    (HeroObject, cover-stack {HeroScene, IntroScene, TrustScene},
-    TreatmentsScene, GalleryScene, MovementScene, HeatScene, MembershipScene,
-    MembershipCardsScene, FuelMenuScene, BoardScene, BookScene) →
-    Footer.
+    SkipIntroLink, Preloader, PromoSticker, Warp, IconDefs, Nav,
+    MobileSheet — each src/components/chrome/<Name>/index.jsx) →
+    <main class="deck scene-run" id="top"> (HeroObject,
+    cover-stack {HeroScene, IntroScene, TrustScene}, TreatmentsScene,
+    GalleryScene, MovementScene, HeatScene, MembershipScene,
+    MembershipCardsScene, FuelMenuScene, BoardScene, BookScene — each
+    src/components/scenes/<Scene>/index.jsx) → Footer
+    (src/components/Footer/index.jsx).
     ════════════════════════════════════════════════════════════ */}
 
-import BackgroundCanvas from './components/BackgroundCanvas.jsx';
-import SkipIntroLink from './components/SkipIntroLink.jsx';
-import Preloader from './components/Preloader.jsx';
-import PromoSticker from './components/PromoSticker.jsx';
-import Warp from './components/Warp.jsx';
-import IconDefs from './components/IconDefs.jsx';
-import Nav from './components/Nav.jsx';
-import MobileSheet from './components/MobileSheet.jsx';
-import HeroObject from './components/HeroObject.jsx';
-import HeroScene from './components/Scenes/HeroScene.jsx';
-import IntroScene from './components/Scenes/IntroScene.jsx';
-import TrustScene from './components/Scenes/TrustScene.jsx';
-import TreatmentsScene from './components/Scenes/TreatmentsScene.jsx';
-import GalleryScene from './components/Scenes/GalleryScene.jsx';
-import MovementScene from './components/Scenes/MovementScene.jsx';
-import HeatScene from './components/Scenes/HeatScene.jsx';
-import MembershipScene from './components/Scenes/MembershipScene.jsx';
-import MembershipCardsScene from './components/Scenes/MembershipCardsScene.jsx';
-import FuelMenuScene from './components/Scenes/FuelMenuScene.jsx';
-import BoardScene from './components/Scenes/BoardScene.jsx';
-import BookScene from './components/Scenes/BookScene.jsx';
-import Footer from './components/Footer.jsx';
+import BackgroundCanvas from './components/chrome/BackgroundCanvas';
+import SkipIntroLink from './components/chrome/SkipIntroLink';
+import Preloader from './components/chrome/Preloader';
+import PromoSticker from './components/chrome/PromoSticker';
+import Warp from './components/chrome/Warp';
+import IconDefs from './components/chrome/IconDefs';
+import Nav from './components/chrome/Nav';
+import MobileSheet from './components/chrome/MobileSheet';
+import HeroObject from './components/chrome/HeroObject';
+import HeroScene from './components/scenes/HeroScene';
+import IntroScene from './components/scenes/IntroScene';
+import TrustScene from './components/scenes/TrustScene';
+import TreatmentsScene from './components/scenes/TreatmentsScene';
+import GalleryScene from './components/scenes/GalleryScene';
+import MovementScene from './components/scenes/MovementScene';
+import HeatScene from './components/scenes/HeatScene';
+import MembershipScene from './components/scenes/MembershipScene';
+import MembershipCardsScene from './components/scenes/MembershipCardsScene';
+import FuelMenuScene from './components/scenes/FuelMenuScene';
+import BoardScene from './components/scenes/BoardScene';
+import BookScene from './components/scenes/BookScene';
+import Footer from './components/Footer';
 
 export default function App() {
   return (
     <>
 
-      {/* #bg-canvas — full-viewport background layer (src/components/BackgroundCanvas.jsx) */}
+      {/* #bg-canvas — full-viewport background layer (src/components/chrome/BackgroundCanvas/index.jsx) */}
       <BackgroundCanvas />
 
-      {/* #skipIntro — intro skip link (src/components/SkipIntroLink.jsx) */}
+      {/* #skipIntro — intro skip link (src/components/chrome/SkipIntroLink/index.jsx) */}
       <SkipIntroLink />
 
-      {/* #preloader — boot preloader (src/components/Preloader.jsx) */}
+      {/* #preloader — boot preloader (src/components/chrome/Preloader/index.jsx) */}
       <Preloader />
 
-      {/* #sticker — promo badge (src/components/PromoSticker.jsx) */}
+      {/* #sticker — promo badge (src/components/chrome/PromoSticker/index.jsx) */}
       <PromoSticker />
 
-      {/* #warp — vignette warp overlay (src/components/Warp.jsx) */}
+      {/* #warp — vignette warp overlay (src/components/chrome/Warp/index.jsx) */}
       <Warp />
 
-      {/* hidden SVG defs — the #i-* icons plus #mark, #mark-ink, and #markG symbols (src/components/IconDefs.jsx) */}
+      {/* hidden SVG defs — the #i-* icons plus #mark, #mark-ink, #markG, #markGbp symbols (src/components/chrome/IconDefs/index.jsx) */}
       <IconDefs />
 
-      {/* #nav — site header (src/components/Nav.jsx) */}
+      {/* #nav — site header (src/components/chrome/Nav/index.jsx) */}
       <Nav />
 
-      {/* #sheet — mobile menu sheet (src/components/MobileSheet.jsx) */}
+      {/* #sheet — mobile menu sheet (src/components/chrome/MobileSheet/index.jsx) */}
       <MobileSheet />
 
       {/* <main class="deck scene-run" id="top"> — the scroll-scene stage */}
       <main className="deck scene-run" id="top">
 
-        {/* #hero-object — pinned mark, first child of main (src/components/HeroObject.jsx) */}
+        {/* #hero-object — pinned mark, first child of main (src/components/chrome/HeroObject/index.jsx) */}
         <HeroObject />
 
         {/* cover-stack — hero → intro → trust (the 3 cover pages) */}
         <div className="cover-stack">
-          {/* #hero — page 1 (src/components/Scenes/HeroScene.jsx) */}
+          {/* #hero — page 1 (src/components/scenes/HeroScene/index.jsx) */}
           <HeroScene />
-          {/* #intro — page 2 (src/components/Scenes/IntroScene.jsx) */}
+          {/* #intro — page 2 (src/components/scenes/IntroScene/index.jsx) */}
           <IntroScene />
-          {/* #trust — page 3, purple cover (src/components/Scenes/TrustScene.jsx) */}
+          {/* #trust — page 3, purple cover (src/components/scenes/TrustScene/index.jsx) */}
           <TrustScene />
         </div>{/* /cover-stack */}
 
-        {/* #treatments — sports recovery menu (src/components/Scenes/TreatmentsScene.jsx) */}
+        {/* #treatments — sports recovery menu (src/components/scenes/TreatmentsScene/index.jsx) */}
         <TreatmentsScene />
 
-        {/* #gallery — marquee scene (src/components/Scenes/GalleryScene.jsx) */}
+        {/* #gallery — marquee scene (src/components/scenes/GalleryScene/index.jsx) */}
         <GalleryScene />
 
-        {/* #movement — yoga tuesday (src/components/Scenes/MovementScene.jsx) */}
+        {/* #movement — yoga tuesday (src/components/scenes/MovementScene/index.jsx) */}
         <MovementScene />
 
-        {/* #heat — 190° / DON'T (src/components/Scenes/HeatScene.jsx) */}
+        {/* #heat — 190° / DON'T (src/components/scenes/HeatScene/index.jsx) */}
         <HeatScene />
 
-        {/* #membership — key/room intro (src/components/Scenes/MembershipScene.jsx) */}
+        {/* #membership — key/room intro (src/components/scenes/MembershipScene/index.jsx) */}
         <MembershipScene />
 
-        {/* #membership-cards — card grid (src/components/Scenes/MembershipCardsScene.jsx) */}
+        {/* #membership-cards — card grid (src/components/scenes/MembershipCardsScene/index.jsx) */}
         <MembershipCardsScene />
 
-        {/* #fuel-menu — fuel lab head (src/components/Scenes/FuelMenuScene.jsx) */}
+        {/* #fuel-menu — fuel lab head (src/components/scenes/FuelMenuScene/index.jsx) */}
         <FuelMenuScene />
 
-        {/* #board — fuel board tabs (src/components/Scenes/BoardScene.jsx) */}
+        {/* #board — fuel board tabs (src/components/scenes/BoardScene/index.jsx) */}
         <BoardScene />
 
-        {/* #book — booking, purple (src/components/Scenes/BookScene.jsx) */}
+        {/* #book — booking, purple (src/components/scenes/BookScene/index.jsx) */}
         <BookScene />
 
       </main>
 
-      {/* footer — .foot (src/components/Footer.jsx) */}
+      {/* footer — .foot (src/components/Footer/index.jsx) */}
       <Footer />
     </>
   );

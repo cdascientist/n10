@@ -45,7 +45,8 @@ imperatively in a single behaviour file after render.
 ```
 index.html ──► src/main.jsx ──► <App/> (composition root, src/App.jsx)
                     │                │
-                    │                └─► 22 components under src/components/
+                    │                └─► components/ (one dir per component)
+                    │                     chrome/ · scenes/ · Footer/
                     │
                     └─► initEffects() once ──► src/effects.js (GSAP + Lenis)
 ```
@@ -56,7 +57,7 @@ index.html ──► src/main.jsx ──► <App/> (composition root, src/App.js
 |---|---|---|
 | Entry | `src/main.jsx` | Mounts `<App/>` inside `flushSync` (render commits synchronously — prevents null-ref races on slow devices), then calls `initEffects()` exactly once. No StrictMode (React's passive-effect machinery used to re-invoke the scroll layer). |
 | Composition root | `src/App.jsx` | Imports and renders every component in the exact DOM order the DOM contract requires. ~121 lines. |
-| Components | `src/components/**` | 22 hierarchical components (chrome + scenes + footer). Each file opens with a breadcrumb header (purpose · used-by ↑ · contains ↓) and carries inline single-line breadcrumbs. |
+| Components | `src/components/**` | One directory per component (chrome/ + scenes/ + Footer/), each dir = `index.jsx` + `README.md`, sub-parts in subdirectories. Every file opens with a breadcrumb header (purpose · used-by ↑ · contains ↓) and carries inline single-line breadcrumbs. |
 | Behaviour | `src/effects.js` | **The one imperative file** — GSAP ScrollTrigger + Lenis mechanics, preloader gate, sticker, nav/sheet, marquee, tabs, counters, ripples. Deliberately not split. |
 | Styles | `src/index.css` | **The one stylesheet** — section banners map every block to its component. Deliberately not split. |
 
@@ -109,30 +110,36 @@ n10/
 │   ├── App.jsx             # composition root (imports + renders 22 components in order)
 │   ├── effects.js          # ONE imperative behaviour file (mechanics + wiring, commented)
 │   ├── index.css           # ONE stylesheet (commented, section-bannered)
-│   └── components/
-│       ├── BackgroundCanvas.jsx   # #bg-canvas + #bgPurple (Mechanic 1)
-│       ├── SkipIntroLink.jsx      # #skipIntro
-│       ├── Preloader.jsx          # #preloader
-│       ├── PromoSticker.jsx       # #sticker (founding-members badge)
-│       ├── Warp.jsx               # #warp vignette overlay
-│       ├── IconDefs.jsx           # hidden SVG defs: #i-* icons, #mark, #mark-ink, #markG
-│       ├── PromoBar.jsx           # #bar dismissible promo banner
-│       ├── Nav.jsx                # <header id="nav"> dropdowns (#d1/#d2) + burger
-│       ├── MobileSheet.jsx        # #sheet mobile menu
-│       ├── HeroObject.jsx         # #hero-object pinned mark (2 variants)
-│       ├── Footer.jsx             # <footer class="foot">
-│       └── Scenes/
-│           ├── HeroScene.jsx            # #hero      — page 1, logo on purple-tinted photo
-│           ├── IntroScene.jsx           # #intro     — half-hold glass, "Tension in/out"
-│           ├── TrustScene.jsx           # #trust     — 70% transparent purple cover + pills
-│           ├── GalleryScene.jsx         # #gallery   — "Inside a session" marquee (#galRun)
-│           ├── MovementScene.jsx        # #movement  — YOGA TUESDAY (base64 texture)
-│           ├── HeatScene.jsx            # #heat      — 190° DON'T (base64 texture)
-│           ├── MembershipScene.jsx      # #membership — KEY ROOM
-│           ├── MembershipCardsScene.jsx # #membership-cards — card grid
-│           ├── FuelMenuScene.jsx        # #fuel-menu — Fuel Lab head (THE BOARD)
-│           ├── BoardScene.jsx           # #board     — tabbed fuel menu (#segbar + panes)
-│           └── BookScene.jsx            # #book      — purple booking scene
+│   └── components/             # one directory per component (index.jsx + README.md + subdirs)
+│       ├── README.md           # how to read a component dir
+│       ├── chrome/             # site chrome — canvas, preloader, nav, sheet, icons, hero object
+│       │   ├── README.md
+│       │   ├── BackgroundCanvas/   # #bg-canvas + #bgPurple (Mechanic 1)
+│       │   ├── SkipIntroLink/      # #skipIntro
+│       │   ├── Preloader/          # #preloader
+│       │   ├── PromoSticker/       # #sticker (founding-members badge)
+│       │   ├── Warp/               # #warp vignette overlay
+│       │   ├── IconDefs/           # hidden SVG defs: #i-* icons, #mark, #mark-ink, #markG
+│       │   ├── Nav/                # <header id="nav"> dropdowns (#d1/#d2) + burger
+│       │   │   └── (Logo / Dropdown / Burger)
+│       │   ├── MobileSheet/        # #sheet mobile menu
+│       │   └── HeroObject/         # #hero-object pinned mark (2 variants)
+│       ├── scenes/             # one directory per scroll scene
+│       │   ├── README.md       # scene-order table (hero → … → book)
+│       │   ├── HeroScene/          # #hero      — page 1, logo on purple-tinted photo
+│       │   ├── IntroScene/         # #intro     — half-hold glass, "Tension in/out"
+│       │   ├── TrustScene/         # #trust     — 70% transparent purple cover + pills
+│       │   ├── TreatmentsScene/    # #treatments — SPORTS RECOVERY menu
+│       │   ├── GalleryScene/       # #gallery   — "Inside a session" marquee (#galRun)
+│       │   ├── MovementScene/      # #movement  — YOGA TUESDAY (base64 texture)
+│       │   ├── HeatScene/          # #heat      — 190° DON'T (base64 texture)
+│       │   ├── MembershipScene/    # #membership — KEY ROOM
+│       │   ├── MembershipCardsScene/ # #membership-cards — card grid
+│       │   ├── FuelMenuScene/      # #fuel-menu — Fuel Lab head (THE BOARD)
+│       │   ├── BoardScene/         # #board     — tabbed fuel menu (#segbar + panes)
+│       │   └── BookScene/          # #book      — purple booking scene
+│       └── Footer/             # <footer class="foot">
+│           └── (Brand / Columns / Hours / Legal)
 ├── public/
 │   └── frmm/index.html     # FRMM static page (separate product, see § FRMM)
 ├── dist/                    # vite build output — what nginx and app.js serve
@@ -147,11 +154,11 @@ n10/
 ## 🎬 Scene flow
 
 ```
-hero ──► intro ──► trust ──► gallery ──► movement ──► heat ──► membership
- (logo)   (half-hold) (purple   (inside a   (yoga      (190°      (key/room)
-          glass,       cover)    session)    tuesday)   don't)
- ──► membership-cards ──► fuel-menu ──► board ──► book
-     (card grid)          (THE BOARD)  (tabs)   (purple, booking)
+hero ──► intro ──► trust ──► treatments ──► gallery ──► movement ──► heat
+ (logo)   (half-hold) (purple   (sports      (inside a   (yoga      (190°
+          glass,       cover)    recovery)    session)    tuesday)   don't)
+ ──► membership ──► membership-cards ──► fuel-menu ──► board ──► book
+     (key/room)      (card grid)          (THE BOARD)  (tabs)   (purple, booking)
 ```
 
 The first three scenes form the opening "cover-stack": the hero is a sticky base,

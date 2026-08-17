@@ -476,3 +476,38 @@ Client: "on the header change the icon to black purple gradient."
    preloader, hero object, sheet-less footer etc. keep the standard purple `#mark`.
 3. Verified: nav logo use → `#mark-bp`, footer use → `#mark`; suite **57/57** (built),
    golden DOM re-captured (67,056 chars) + MATCH.
+
+
+# Changelog v19.1 — one-directory-per-component convention + READMEs throughout (2026-08-16, Claude Code)
+
+Client: "make almost everything a component, then apply inline commenting giving a
+description of the implementation and possibly the reference or application file…
+there should be a complete file structure with readmes peppered through the application
+file system describing the file content… if I want to modify the transparent page there
+should be a self described directory containing the page as well as sub directories for
+what is on that page plus a read me. use claude code to complete this task, build, test,
+push, deploy."
+
+Executed with Claude Code (headless worker; the agent team spec updated first:
+`implementer-react` now carries the directory convention).
+
+1. **One directory per component**: 22 component files moved via `git mv`
+   (shown as renames) into `src/components/<Area>/<Name>/index.jsx`
+   (`chrome/` = BackgroundCanvas, SkipIntroLink, Preloader, PromoSticker,
+   Warp, IconDefs, Nav, MobileSheet, HeroObject; `scenes/` = all 12 scenes;
+   `Footer/`).
+2. **22 sub-part components** extracted (each with breadcrumb header + inline
+   comments): Nav/Logo·Dropdown·Burger, HeroScene/background·LargeLogo,
+   IntroScene/Headline·CTARow·HeroSub, TrustScene/pills (TrustPill),
+   TreatmentsScene/TreatCard, GalleryScene/Marquee, Movement/Heat ArtCard,
+   MembershipCardsScene/MembershipCard, BoardScene/SegTabs·MenuPane,
+   BookScene/CloseIn, Footer/Brand·Columns·Hours·Legal. E.g. the transparent
+   trust cover = `scenes/TrustScene/` (page) + `pills/` (what's on it) + README.
+3. **47 READMEs** peppered through the tree — src/, components/, chrome/,
+   scenes/ area readmes + one in EVERY component/sub-part directory, each
+   covering: what the files do · used-by (breadcrumb up) · contains (down) ·
+   how to modify the section. Root README + CLAUDE.md updated to the new tree.
+4. **DOM byte-identity proven**: `domcheck` MATCH against the EXISTING golden
+   (67,056 chars — no re-capture needed), suite **57/57**, build PASS (all
+   gates run by the worker AND re-run independently). Both base64 textures
+   byte-identical. `effects.js` / `index.css` untouched (still one file each).
