@@ -14,8 +14,7 @@
     MobileSheet — each src/components/chrome/<Name>/index.jsx) →
     <main class="deck scene-run" id="top"> (HeroObject,
     cover-stack {HeroScene, IntroScene, TrustScene}, TreatmentsScene,
-    GalleryScene, MovementScene, HeatScene, MembershipScene,
-    MembershipCardsScene, FuelMenuScene, BoardScene, BookScene — each
+    GalleryScene, MovementScene, MembershipCardsScene — each
     src/components/scenes/<Scene>/index.jsx) → Footer
     (src/components/Footer/index.jsx).
     ════════════════════════════════════════════════════════════ */}
@@ -35,12 +34,7 @@ import TrustScene from './components/scenes/TrustScene';
 import TreatmentsScene from './components/scenes/TreatmentsScene';
 import GalleryScene from './components/scenes/GalleryScene';
 import MovementScene from './components/scenes/MovementScene';
-import HeatScene from './components/scenes/HeatScene';
-import MembershipScene from './components/scenes/MembershipScene';
 import MembershipCardsScene from './components/scenes/MembershipCardsScene';
-import FuelMenuScene from './components/scenes/FuelMenuScene';
-import BoardScene from './components/scenes/BoardScene';
-import BookScene from './components/scenes/BookScene';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -93,26 +87,11 @@ export default function App() {
         {/* #gallery — marquee scene (src/components/scenes/GalleryScene/index.jsx) */}
         <GalleryScene />
 
-        {/* #movement — yoga tuesday (src/components/scenes/MovementScene/index.jsx) */}
+        {/* #movement — restore movement (src/components/scenes/MovementScene/index.jsx) */}
         <MovementScene />
-
-        {/* #heat — 190° / DON'T (src/components/scenes/HeatScene/index.jsx) */}
-        <HeatScene />
-
-        {/* #membership — key/room intro (src/components/scenes/MembershipScene/index.jsx) */}
-        <MembershipScene />
 
         {/* #membership-cards — card grid (src/components/scenes/MembershipCardsScene/index.jsx) */}
         <MembershipCardsScene />
-
-        {/* #fuel-menu — fuel lab head (src/components/scenes/FuelMenuScene/index.jsx) */}
-        <FuelMenuScene />
-
-        {/* #board — fuel board tabs (src/components/scenes/BoardScene/index.jsx) */}
-        <BoardScene />
-
-        {/* #book — booking, purple (src/components/scenes/BookScene/index.jsx) */}
-        <BookScene />
 
       </main>
 

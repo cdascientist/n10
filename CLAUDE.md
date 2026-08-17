@@ -23,15 +23,16 @@ page `/frmm` (Front Range Mobile Mechanics) — **do not touch `public/frmm/`**.
 
 ## DOM CONTRACT (critical — never break)
 `effects.js` and the acceptance suite (`/opt/pwtest/verify.mjs`, 57 checks) depend on:
-- **12 scenes, exact order & ids:** `hero, intro, trust, treatments, gallery,
-  movement, heat, membership, membership-cards, fuel-menu, board, book`. Every
+- **7 scenes, exact order & ids:** `hero, intro, trust, treatments, gallery,
+  movement, membership-cards`. Every
   scene carries `data-bg` (`#FFFFFF` or `#8B2BFF`) and `data-ink` (`dark`/`light`).
 - **IDs used by JS:** `bg-canvas`, `bgPurple`, `skipIntro`, `preloader`, `sticker`,
   `nav`, `burger`, `sheet`, `warp`, `hero-object`, `obj-inner`,
-  `heroVeil`, `heroVeilW`, `holdTint`, `galRun`, `segbar`, `top`, `d1`, `d2`, `book`.
-- **SVG symbols** (`#mark`, `#mark-ink`, `#i-*`, `#markG`) referenced via `<use href>`.
+  `heroVeil`, `heroVeilW`, `holdTint`, `galRun`, `top`, `d1`.
+- **SVG symbols** (`#mark`, `#mark-bp`, `#mark-ink`, `#i-*`, `#markG`, `#markGbp`) referenced via `<use href>`.
 - `.scene` order inside `<main class="deck scene-run" id="top">`: `#hero-object` first,
-  then `.cover-stack` (hero → intro → trust), then the 8 plain scenes, then footer.
+  then `.cover-stack` (hero → intro → trust), then 4 plain scenes (treatments,
+  gallery, movement, membership-cards), then footer.
 - The protocol widget (`#proto`, `#tnum`, `#tbar`, `#stages`, `#verdict`, `#tot`) was
   REMOVED in v18.3 — do not re-add it; `effects.js` guards on its absence.
 - Never rename/remove/reorder markup, classNames, or attributes. Copy JSX verbatim

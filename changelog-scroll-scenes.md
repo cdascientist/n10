@@ -511,3 +511,32 @@ Executed with Claude Code (headless worker; the agent team spec updated first:
    (67,056 chars — no re-capture needed), suite **57/57**, build PASS (all
    gates run by the worker AND re-run independently). Both base64 textures
    byte-identical. `effects.js` / `index.css` untouched (still one file each).
+
+
+# Changelog v19.2 — content trim: heat, membership, fuel board, booking removed (2026-08-17)
+
+Client: "remove [heat & cold section], remove the Included, not upsold tile, then remove
+all the rest of the page content until the footer."
+
+1. **Scenes removed** (components + composition-root entries deleted):
+   `#heat` (190° DON'T), `#membership` (One key. Every room.), `#fuel-menu` + `#board`
+   (Fuel Lab board/tabs), `#book` (purple booking). Page now: hero → intro → trust →
+   treatments → gallery → movement → **membership-cards** → footer (7 scenes).
+2. **"Included, not upsold" tile removed** from the membership card grid (5 → 4 cards:
+   assigned therapist, 6 credits, quiet hours, phone policy).
+3. **Dead-link cleanup** (everything pointing at removed sections): nav Treatments
+   dropdown keeps Massage & recovery + Yoga & mobility (Sauna link dropped; Fuel Lab
+   dropdown, Membership item and Book button removed); mobile sheet trimmed to match;
+   footer columns reduced to Treatments (Massage/Yoga; Fuel Lab + Club columns
+   dropped); intro's Book CTA row and movement's "See the schedule" link removed
+   (their only targets are gone).
+4. **effects.js**: segmented-tab wiring guarded (`moveSeg` no-ops without `#segbar`,
+   and the load/timeout callers check `tabs[0]`) — the board scene is gone but the
+   code stays safe. Single behavior file still intact.
+5. **Suite updated**: 7 scenes; order check (treatments=3, gallery=4, movement=5,
+   membership-cards=6, removed ids absent); arc now ends white on membership-cards;
+   nav anchor test uses Gallery (Book button gone); interpolation probe parks the
+   trust→treatments purple→white blend; RM scroll-to checks trust; the brittle
+   keyboard check no longer requires the footer-edge links to be in-view (was
+   flaking). **57/57** built site; golden DOM re-captured (38,374 chars — the cuts).
+   README + CLAUDE.md updated (7-scene contract).

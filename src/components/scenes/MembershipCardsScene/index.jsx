@@ -7,12 +7,12 @@
     effects.js).
 
     Used-by (breadcrumb up): App (src/App.jsx) — rendered inside
-    <main className="deck scene-run" id="top"> after MembershipScene,
-    before FuelMenuScene (7th plain scene; DOM order stays).
+    <main className="deck scene-run" id="top"> after MovementScene,
+    the last scene before the footer (6th plain scene; DOM order stays).
 
     Contains (breadcrumb down): <section id="membership-cards"
     class="scene" data-bg="#FFFFFF" data-ink="dark"> > .wrap.scene-in
-    > .grid (5 x MembershipCard —
+    > .grid (4 x MembershipCard —
     src/components/scenes/MembershipCardsScene/MembershipCard/index.jsx).
     ════════════════════════════════════════════════════════════ */}
 
@@ -30,8 +30,6 @@ export default function MembershipCardsScene() {
           <MembershipCard className="card rv d-2 tilt" icon="#i-clock" kicker="Quiet hours" metric="14" suffix="/wk" text="Members-only blocks each week with half the floor and no walk-ins." style={{marginTop:10}} />
 
           <MembershipCard className="card rv d-3 tilt" bgSrc="https://images.unsplash.com/photo-1730207375825-d734728f877e?fm=jpg&q=76&w=1200&auto=format&fit=crop" icon="#i-lock" kicker="Phone policy" title="Screens stay in the locker" text="It is how the floor stays quiet. Lockers are on the way in, and the desk will hold anything you are waiting on." />
-
-          <MembershipCard className="card wide rv d-4 tilt" icon="#i-shield" kicker="Included, not upsold" title="Robes, towels, sandals, eucalyptus, showers" text="Everything you need is already in the room and already in the price. There is no retail cart at the end of your massage." />
         </div>
       </div>
     </section>

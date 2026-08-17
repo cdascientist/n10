@@ -67,13 +67,13 @@ index.html ──► src/main.jsx ──► <App/> (composition root, src/App.js
 attributes and order. The contract is documented in `CLAUDE.md` and enforced by a
 golden-DOM gate (see [Verification](#verification)):
 
-- **11 scenes in fixed order:** `hero → intro → trust → gallery → movement → heat →
-  membership → membership-cards → fuel-menu → board → book`, each with `data-bg`
+- **7 scenes in fixed order:** `hero → intro → trust → treatments → gallery →
+  movement → membership-cards`, each with `data-bg`
   (`#FFFFFF` / `#8B2BFF`) and `data-ink` (`dark` / `light`).
 - JS-lookup ids: `bg-canvas`, `bgPurple`, `skipIntro`, `preloader`, `sticker`,
-  `bar`, `barX`, `nav`, `burger`, `sheet`, `warp`, `hero-object`, `obj-inner`,
-  `heroVeil`, `heroVeilW`, `holdTint`, `galRun`, `segbar`, `top`, `d1`, `d2`, `book`.
-- SVG `<symbol>`s (`#mark`, `#mark-ink`, `#i-*`, `#markG`) referenced via `<use href>`.
+  `nav`, `burger`, `sheet`, `warp`, `hero-object`, `obj-inner`,
+  `heroVeil`, `heroVeilW`, `holdTint`, `galRun`, `top`, `d1`.
+- SVG `<symbol>`s (`#mark`, `#mark-bp`, `#mark-ink`, `#i-*`, `#markG`, `#markGbp`) referenced via `<use href>`.
 - Hard rules: only `transform` / `opacity` / `background-color` are animated; no CSS
   rule hides content by default (every hidden pose is applied by GSAP at runtime, so
   the page is fully readable with JS disabled).
@@ -154,17 +154,17 @@ n10/
 ## 🎬 Scene flow
 
 ```
-hero ──► intro ──► trust ──► treatments ──► gallery ──► movement ──► heat
- (logo)   (half-hold) (purple   (sports      (inside a   (yoga      (190°
-          glass,       cover)    recovery)    session)    tuesday)   don't)
- ──► membership ──► membership-cards ──► fuel-menu ──► board ──► book
-     (key/room)      (card grid)          (THE BOARD)  (tabs)   (purple, booking)
+hero ──► intro ──► trust ──► treatments ──► gallery ──► movement ──► membership-cards
+ (logo)   (half-hold) (purple   (sports      (inside a   (yoga/      (card grid)
+          glass,       cover)    recovery)    session)    movement)
 ```
 
 The first three scenes form the opening "cover-stack": the hero is a sticky base,
 the intro half-hold slides up to the viewport midpoint, and the 70%-transparent
 purple trust cover slides over both. Background colour interpolates continuously
-across every scene boundary (white ↔ purple) with no hard seams.
+across every scene boundary with no hard seams. (Heat, membership, Fuel Lab board
+and booking scenes were removed in v19.2 per client request; the page now ends on
+the white membership card grid, followed by the footer.)
 
 ---
 

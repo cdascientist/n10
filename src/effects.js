@@ -264,7 +264,7 @@ var tabs = [].slice.call(document.querySelectorAll(".seg [data-tab]"));
 var panes = [].slice.call(document.querySelectorAll("[data-pane]"));
 var segbar = document.getElementById("segbar");
 function moveSeg(b){
-  if(innerWidth <= 720) return;
+  if(!segbar || !b || innerWidth <= 720) return;
   segbar.style.width = b.offsetWidth+"px";
   segbar.style.transform = "translateX("+b.offsetLeft+"px)";
 }
@@ -276,11 +276,11 @@ tabs.forEach(function(t){
     moveSeg(t);
   });
 });
-addEventListener("load", function(){ moveSeg(tabs[0]); });
+addEventListener("load", function(){ if(tabs[0]) moveSeg(tabs[0]); });
 addEventListener("resize", function(){
   var c = document.querySelector('.seg [aria-selected="true"]'); if(c) moveSeg(c);
 }, {passive:true});
-setTimeout(function(){ moveSeg(tabs[0]); }, 240);
+setTimeout(function(){ if(tabs[0]) moveSeg(tabs[0]); }, 240);
 /* ── BUTTON RIPPLE (.btn) — spawns a transient .ripple span at the
    pointer-down position which the CSS animates outward; RM skips it. ── */
 document.querySelectorAll(".btn").forEach(function(b){
