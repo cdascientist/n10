@@ -17,10 +17,10 @@ import TrustPill from './TrustPill';
 export default function TrustPills() {
   return (
     <div className="trust">
-      <TrustPill icon="#i-shield" bold="Licensed" rest=" therapists" />
+      {/* <TrustPill icon="#i-shield" bold="Licensed" rest=" therapists" />
       <TrustPill icon="#i-heat" bold="190°" rest=" infrared" />
       <TrustPill icon="#i-cold" bold="42°" rest=" plunge" />
-      <TrustPill icon="#i-clock" bold="6a–10p" rest=" daily" />
+      <TrustPill icon="#i-clock" bold="6a–10p" rest=" daily" /> */}
     </div>
   );
 }
